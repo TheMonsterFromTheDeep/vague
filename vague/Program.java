@@ -1,6 +1,6 @@
 package vague;
 
-import vague.ui.Editor;
+import vague.ui.Window;
 
 /**
  * Main entry point for the Vague image editor.
@@ -12,7 +12,7 @@ public class Program {
     //Entry point for the Vague image editor. 
     public static void main(String[] args) {
         //TODO: Implement command line arguments
-        new Editor().run(); //Initialize a new Editor window and run it.
+        new Window().run(); //Initialize a new Editor window and run it.
     }
     
 }
