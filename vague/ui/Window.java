@@ -76,6 +76,7 @@ public class Window extends JFrame {
         addComponentListener(new ComponentListener() {
             @Override
             public void componentResized(ComponentEvent ce) {
+                //Resize the editor component.
                 editor.resize(panel.getWidth(), panel.getHeight());
             }
 

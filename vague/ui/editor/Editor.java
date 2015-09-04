@@ -5,11 +5,13 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import vague.ui.editor.image.Renderer;
+import vague.ui.editor.tabs.TabMenu;
 import vague.ui.module.Module;
 import vague.ui.window.MouseTracker;
 
 public abstract class Editor extends Module {
-
+    private TabMenu tabmenu;
+    
     private Renderer renderer; //Stores the end-user image renderer
     private MouseTracker mtracker; //Mouse tracker - used for panning image
     
@@ -17,6 +19,13 @@ public abstract class Editor extends Module {
     
     int width;
     int height;
+    
+    int windowStartX = 0; //Stores coordinates of window space not covered by other dialogs
+    int windowStartY = 0;
+    int windowEndX;
+    int windowEndY;
+    int windowWidth;
+    int windowHeight;
     
     boolean pan; //True if panning
     
@@ -26,13 +35,35 @@ public abstract class Editor extends Module {
         this.width = width;
         this.height = height;
         
+        windowEndX = width - 1;
+        windowEndY = height - 1;
+        
+        windowWidth = windowEndX - windowStartX;
+        windowHeight = windowEndY - windowStartY;
+        
         renderer = new Renderer();
         renderer.render();
+        
+        tabmenu = new TabMenu(width);
+        tabmenu.render();
     }
     
+    @Override
     public void resize(int width, int height) {
         this.width = width;
         this.height = height;
+        
+        this.resizeRenderingPane(width, height);
+        
+        windowEndX = width - 1;
+        windowEndY = height - 1;
+        
+        windowWidth = windowEndX - windowStartX;
+        windowHeight = windowEndY - windowStartY;
+        
+        tabmenu.resize(width);
+        
+        repaint();
     }
     
     @Override
@@ -94,11 +125,18 @@ public abstract class Editor extends Module {
     public void render() {
         graphics.setColor(background);
         graphics.fillRect(0, 0, width, height);
-        
+               
         graphics.drawImage(renderer.lastRender,
                 ((width - renderer.lastRender.getWidth()) / 2) + renderer.posx,
                 ((height - renderer.lastRender.getHeight()) / 2) + renderer.posy,
                 null);
+        
+        graphics.setColor(new Color(0xb3b6fb));
+        graphics.drawRect(windowStartX, windowStartY + 32, windowWidth, windowHeight - 32);
+        graphics.drawRect(windowStartX + 1, windowStartY + 33, windowWidth - 2, windowHeight - 34);
+        //graphics.setColor(new Color(0x8f93e7));
+        //graphics.fillRect(windowStartX, windowStartY, windowWidth + 1, windowStartY + 32);
+        graphics.drawImage(tabmenu.lastRender, 0, 0, null);
     }
     
     private void repaint() {

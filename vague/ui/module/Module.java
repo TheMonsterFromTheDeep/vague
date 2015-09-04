@@ -14,9 +14,29 @@ public abstract class Module {
     public BufferedImage lastRender;
     protected Graphics graphics;
     
+    int width;
+    int height;
+    
     public Module(int width, int height) {
         lastRender = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         graphics = lastRender.createGraphics();
+    }
+    
+    /**
+     * Resize the rendering pane of the module.
+     * @param width New width of the rendering pane.
+     * @param height New height of the rendering pane.
+     */
+    protected final void resizeRenderingPane(int width, int height) {
+        lastRender = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        graphics = lastRender.createGraphics();
+    }
+    
+    public void resize(int width, int height) {
+        this.width = width;
+        this.height = height;
+        
+        resizeRenderingPane(width, height);
     }
     
     public abstract void tick(int mousex, int mousey);
