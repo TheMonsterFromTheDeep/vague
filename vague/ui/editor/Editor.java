@@ -27,6 +27,18 @@ public class Editor extends Module {
         renderer.render();
     }
     
+    private void beginPanning(int startx, int starty) {
+        mtracker = new MouseTracker(startx,starty);
+        pan = true;
+        retainFocus = true;
+        drawSelf();
+    }
+    
+    private void stopPanning() {
+        pan = false;
+        retainFocus = false;
+    }
+    
     
     @Override
     public void tick(int mousex, int mousey) {
@@ -40,18 +52,14 @@ public class Editor extends Module {
     @Override
     public void mouseDown(MouseEvent e) {
         if(e.getButton() == MouseEvent.BUTTON2) {
-            mtracker = new MouseTracker(e.getX(),e.getY());
-            pan = true;
-            drawSelf();
+            beginPanning(e.getX(),e.getY());
         }
     }
 
     @Override
     public void mouseUp(MouseEvent e) {
         if(e.getButton() == MouseEvent.BUTTON2) {
-            //renderer.pan(e.getX() - mtracker.x, e.getY() - mtracker.y);
-            //drawSelf();
-            pan = false;
+            stopPanning();
         }
     }
     

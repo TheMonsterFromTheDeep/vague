@@ -62,7 +62,6 @@ public class ModulePane extends Module {
             int newX = 0;
             for(int i = 0; i < children.length; i++) {
                 children[i].locate(newX, children[i].y);
-                System.err.println(newX + " " + children[i].height + " " + this.height);
                 newX += children[i].height;
             }
         }
@@ -91,6 +90,27 @@ public class ModulePane extends Module {
     
     @Override
     public void tick(int mousex, int mousey) {
+        if(!children[activeChild].retainFocus) {
+            //We don't need to check if the mouse pos is out of this module's bounds because the higher-ups will do that by default
+            if(horizontal) {
+                if(mousex < children[activeChild].x) {
+                    activeChild--;
+                }
+                else if (mousex > children[activeChild].x + children[activeChild].width) {
+                    activeChild++;
+                }
+                if(activeChild < 0)  { activeChild = 0; } //If the child does happen to not exist than make sure bad things don't happen
+            }
+            else {
+                if(mousey < children[activeChild].y) {
+                    activeChild--;
+                }
+                else if (mousey > children[activeChild].y + children[activeChild].height) {
+                    activeChild++;
+                }
+                if(activeChild >= children.length) { activeChild = children.length - 1; }
+            }
+        }
         children[activeChild].tick(mousex - x, mousey - y); //Subtract top x and y because mousex and y are passed relatively
     }
 

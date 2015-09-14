@@ -27,6 +27,8 @@ public abstract class Module {
     public int width = 200;
     public int height = 200;
     
+    public boolean retainFocus; //If the module should retain focus even when the mouse moves out of it, this should be true.
+    
     private void doRenderComps() {
         lastRender = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         graphics = lastRender.createGraphics();
