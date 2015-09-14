@@ -88,6 +88,13 @@ public class Editor extends Module {
                 renderer.render();
                 drawSelf();
             }
+            if(e.isShiftDown()) {
+                if(e.getKeyCode() == KeyEvent.VK_8) {
+                    renderer.pan(-1 * renderer.posx, -1 * renderer.posy);
+                    renderer.render();
+                    drawSelf();
+                }
+            }
         }
     }
 
