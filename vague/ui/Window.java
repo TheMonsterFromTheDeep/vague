@@ -112,7 +112,7 @@ public class Window extends JFrame {
             public void actionPerformed(ActionEvent ae) {
                 int mousex = getWindowMouseX(); //Calculate mouse x and y
                 int mousey = getWindowMouseY();
-                modules.tick(mousex, mousey);
+                modules.tick();
             }
         });
         

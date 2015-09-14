@@ -41,7 +41,9 @@ public class Editor extends Module {
     
     
     @Override
-    public void tick(int mousex, int mousey) {
+    public void tick() {
+        int mousex = getMouseX();
+        int mousey = getMouseY();
         if(pan) {
             renderer.pan(mousex - mtracker.x, mousey - mtracker.y); //Pan the renderer
             mtracker.shift(mousex, mousey); //Shift the mousetracker
@@ -52,7 +54,8 @@ public class Editor extends Module {
     @Override
     public void mouseDown(MouseEvent e) {
         if(e.getButton() == MouseEvent.BUTTON2) {
-            beginPanning(e.getX(),e.getY());
+            System.err.println(getMouseX());
+            beginPanning(getMouseX(),getMouseY());
         }
     }
 

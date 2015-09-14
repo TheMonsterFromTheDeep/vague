@@ -44,8 +44,8 @@ public abstract class Module {
     
     protected void resizeComponent(int width, int height) { }
     
-    public int getCompMouseX() { return 0; }
-    public int getCompMouseY() { return 0; }
+    public int getCompMouseX() { return 0; } //Overloaded by the top-level module.
+    public int getCompMouseY() { return 0; } //IMPORTANT: MAKE SURE TO OVERLOAD THESE METHODS!!!!
     
     protected final int getMouseX() {
         if(hasParent) { return parent.getMouseX() - x; }
@@ -55,16 +55,6 @@ public abstract class Module {
     protected final int getMouseY() {
         if(hasParent) { return parent.getMouseY() - y; }
         return getCompMouseY();
-    }
-    
-    protected final int getMouseX(MouseEvent e) { 
-        if(hasParent) { return e.getX() - x - parent.x; }
-        else { return e.getX() - x; }
-    }
-    
-    protected final int getMouseY(MouseEvent e) { 
-        if(hasParent) { return e.getY() - y - parent.y; }
-        else { return e.getY() - y; }
     }
     
     public void resize(int width, int height) {
@@ -80,7 +70,7 @@ public abstract class Module {
     
     public void locate(int x, int y) { this.x = x; this.y = y; }
     
-    public abstract void tick(int mousex, int mousey);
+    public abstract void tick();
     public abstract void mouseDown(MouseEvent e);
     public abstract void mouseUp(MouseEvent e);
     public abstract void keyDown(KeyEvent e);

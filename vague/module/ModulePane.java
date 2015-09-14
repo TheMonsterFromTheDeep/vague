@@ -136,7 +136,9 @@ public class ModulePane extends Module {
     }
     
     @Override
-    public void tick(int mousex, int mousey) {
+    public void tick() {
+        int mousex = getMouseX();
+        int mousey = getMouseY();
         if(resizeModule) {
             mtracker.shift(mousex, mousey);
             if(horizontal) {
@@ -254,7 +256,7 @@ public class ModulePane extends Module {
                 }
                 
             }
-            children[activeChild].tick(mousex - x, mousey - y); //Subtract top x and y because mousex and y are passed relatively
+            children[activeChild].tick(); //Subtract top x and y because mousex and y are passed relatively
             
         }
     }
@@ -263,7 +265,7 @@ public class ModulePane extends Module {
     public void mouseDown(MouseEvent e) {
         if(firstResizeIndex > -1 && e.getButton() == MouseEvent.BUTTON1) {
             resizeModule = true;
-            mtracker = new MouseTracker(getMouseX(e),getMouseY(e));   
+            mtracker = new MouseTracker(getMouseX(),getMouseY());   
             retainFocus = true;
         }
         else { //Prevents multiple modules from resizing at once
