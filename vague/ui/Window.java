@@ -41,10 +41,10 @@ public class Window extends JFrame {
     ModulePane modules;
     
     private void initModules() {
-        editor = new Editor(DEFAULT_WIDTH,DEFAULT_HEIGHT / 2);
-        Editor editor2 = new Editor(DEFAULT_WIDTH,DEFAULT_HEIGHT / 2);
-        editor2.y += DEFAULT_HEIGHT / 2;
-        editor2.y += 300;
+        editor = new Editor(DEFAULT_WIDTH / 2,DEFAULT_HEIGHT);
+        Editor editor2 = new Editor(DEFAULT_WIDTH / 2,DEFAULT_HEIGHT);
+        editor2.x += DEFAULT_WIDTH / 2;
+        editor2.x += 3;
         
         //Editor editor3 = new Editor(DEFAULT_WIDTH / 2, DEFAULT_HEIGHT / 2);
         //editor3.x += DEFAULT_WIDTH / 2;
@@ -54,7 +54,7 @@ public class Window extends JFrame {
         //ModulePane sep = new ModulePane(new Module[] { editor,editor3 },true);
         
         //modules = new ModulePane(new Module[] { editor });
-        modules = new ModulePane(new Module[] { editor, editor2 }, false) {
+        modules = new ModulePane(new Module[] { editor, editor2 }, true) {
             @Override
             public void drawParent() {
                 panel.repaint();
