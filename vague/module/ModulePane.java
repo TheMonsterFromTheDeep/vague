@@ -213,10 +213,10 @@ public class ModulePane extends Module {
                     
                     if(Math.abs(mousex - (children[activeChild].x + children[activeChild].width)) <= resizeThreshold) {
                         firstResizeIndex = activeChild;
+                        if(firstResizeIndex == children.length - 1) { firstResizeIndex = -1; }
                     }
                     else if(Math.abs(mousex - children[activeChild].x) <= resizeThreshold) {
                         firstResizeIndex = activeChild - 1;
-                        drawOnlySelf();
                     }
                     else { 
                         if(firstResizeIndex > -1) {
@@ -239,6 +239,7 @@ public class ModulePane extends Module {
                     
                     if(Math.abs(mousey - (children[activeChild].y + children[activeChild].height)) <= resizeThreshold) {
                         firstResizeIndex = activeChild;
+                        if(firstResizeIndex == children.length - 1) { firstResizeIndex = -1; }
                     }
                     else if(Math.abs(mousey - children[activeChild].y) <= resizeThreshold) {
                         firstResizeIndex = activeChild - 1;
@@ -248,7 +249,7 @@ public class ModulePane extends Module {
                             firstResizeIndex = -1;
                             drawOnlySelf();
                         }
-                        firstResizeIndex = -1; 
+                        firstResizeIndex = -1;
                     }
                 }
                 
@@ -262,7 +263,8 @@ public class ModulePane extends Module {
     public void mouseDown(MouseEvent e) {
         if(firstResizeIndex > -1 && e.getButton() == MouseEvent.BUTTON1) {
             resizeModule = true;
-            mtracker = new MouseTracker(getMouseX(e),getMouseY(e));         
+            mtracker = new MouseTracker(getMouseX(e),getMouseY(e));   
+            retainFocus = true;
         }
         else { //Prevents multiple modules from resizing at once
             children[activeChild].mouseDown(e);
@@ -274,6 +276,8 @@ public class ModulePane extends Module {
         if(resizeModule) {
             resizeModule = false;
             firstResizeIndex = -1;
+            retainFocus = false;
+            drawOnlySelf();
         }
         children[activeChild].mouseUp(e);
     }

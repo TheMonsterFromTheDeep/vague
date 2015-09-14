@@ -41,7 +41,7 @@ public class Window extends JFrame {
     ModulePane modules;
     
     private void initModules() {
-        editor = new Editor(DEFAULT_WIDTH / 2,DEFAULT_HEIGHT);
+        /*editor = new Editor(DEFAULT_WIDTH / 2,DEFAULT_HEIGHT);
         Editor editor2 = new Editor(DEFAULT_WIDTH / 2,DEFAULT_HEIGHT);
         editor2.x += DEFAULT_WIDTH / 2;
         editor2.x += 3;
@@ -69,7 +69,33 @@ public class Window extends JFrame {
             public int getCompMouseY() { return getWindowMouseY(); }
         };
         //modules.setParent(null);
-        editor.drawSelf();
+        editor.drawSelf();*/
+        
+        Editor top = new Editor(DEFAULT_WIDTH / 2, DEFAULT_HEIGHT / 2);
+        Editor bottom = new Editor(DEFAULT_WIDTH / 2, DEFAULT_HEIGHT / 2);
+        bottom.y += (DEFAULT_HEIGHT / 2) + 3;
+        
+        Editor right = new Editor(DEFAULT_WIDTH / 2, DEFAULT_HEIGHT);
+        right.x += (DEFAULT_WIDTH / 2) + 3;
+        
+        ModulePane left = new ModulePane(new Module[] { top, bottom }, false);
+        
+        modules = new ModulePane(new Module[] { left, right }, true) {
+            @Override
+            public void drawParent() {
+                panel.repaint();
+            }
+            @Override
+            public void drawParent(Module m) {
+                panel.repaint();
+            }
+            @Override
+            public int getCompMouseX() { return getWindowMouseX(); }
+            @Override
+            public int getCompMouseY() { return getWindowMouseY(); }
+        };
+
+        //editor.drawSelf();
     }
     
     public Window() {
