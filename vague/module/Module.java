@@ -44,6 +44,29 @@ public abstract class Module {
     
     protected void resizeComponent(int width, int height) { }
     
+    public int getCompMouseX() { return 0; }
+    public int getCompMouseY() { return 0; }
+    
+    protected final int getMouseX() {
+        if(hasParent) { return parent.getMouseX() - x; }
+        return getCompMouseX();
+    }
+    
+    protected final int getMouseY() {
+        if(hasParent) { return parent.getMouseY() - y; }
+        return getCompMouseY();
+    }
+    
+    protected final int getMouseX(MouseEvent e) { 
+        if(hasParent) { return e.getX() - x - parent.x; }
+        else { return e.getX() - x; }
+    }
+    
+    protected final int getMouseY(MouseEvent e) { 
+        if(hasParent) { return e.getY() - y - parent.y; }
+        else { return e.getY() - y; }
+    }
+    
     public void resize(int width, int height) {
         resizeComponent(width, height);
         
@@ -69,6 +92,9 @@ public abstract class Module {
     public void drawParent() {
         if(hasParent) { parent.draw(); }
     }
+    public void drawParent(Module m) {
+        if(hasParent) { parent.draw(m); }
+    }
         
     public void draw(Module m) { //Overriden by ModulePane
         render(graphics);
@@ -82,7 +108,7 @@ public abstract class Module {
     
     public final void drawSelf() {
         render(graphics);
-        parent.draw(this);
+        drawParent(this);
     }
     
     public final void drawLimited() {

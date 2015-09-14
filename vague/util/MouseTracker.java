@@ -1,4 +1,4 @@
-package vague.ui.editor;
+package vague.util;
 
 /**
  * Tracks mouse position.

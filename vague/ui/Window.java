@@ -44,6 +44,14 @@ public class Window extends JFrame {
         editor = new Editor(DEFAULT_WIDTH,DEFAULT_HEIGHT / 2);
         Editor editor2 = new Editor(DEFAULT_WIDTH,DEFAULT_HEIGHT / 2);
         editor2.y += DEFAULT_HEIGHT / 2;
+        editor2.y += 300;
+        
+        //Editor editor3 = new Editor(DEFAULT_WIDTH / 2, DEFAULT_HEIGHT / 2);
+        //editor3.x += DEFAULT_WIDTH / 2;
+        //editor3.x += 3;
+        
+        
+        //ModulePane sep = new ModulePane(new Module[] { editor,editor3 },true);
         
         //modules = new ModulePane(new Module[] { editor });
         modules = new ModulePane(new Module[] { editor, editor2 }, false) {
@@ -51,8 +59,16 @@ public class Window extends JFrame {
             public void drawParent() {
                 panel.repaint();
             }
+            @Override
+            public void drawParent(Module m) {
+                panel.repaint();
+            }
+            @Override
+            public int getCompMouseX() { return getWindowMouseX(); }
+            @Override
+            public int getCompMouseY() { return getWindowMouseY(); }
         };
-        modules.setParent(null);
+        //modules.setParent(null);
         editor.drawSelf();
     }
     
@@ -68,10 +84,10 @@ public class Window extends JFrame {
         timer = new Timer(30, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                int mousex = MouseInfo.getPointerInfo().getLocation().x; //Calculate mouse x and y
-                int mousey = MouseInfo.getPointerInfo().getLocation().y;
+                int mousex = getWindowMouseX(); //Calculate mouse x and y
+                int mousey = getWindowMouseY();
                 modules.tick(mousex, mousey);
-            }  
+            }
         });
         
         panel = new JPanel() { //Initialize panel
@@ -159,6 +175,14 @@ public class Window extends JFrame {
         pack();
 
         
+    }
+    
+    private int getWindowMouseX() {
+        return MouseInfo.getPointerInfo().getLocation().x - this.getX() - this.getInsets().left;
+    }
+    
+    private int getWindowMouseY() {
+        return MouseInfo.getPointerInfo().getLocation().y - this.getY() - this.getInsets().top;
     }
     /**
      * Runs the window's program by showing it.

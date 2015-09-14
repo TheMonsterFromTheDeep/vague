@@ -1,9 +1,13 @@
 package vague.module;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.image.BufferedImage;
+import vague.ui.window.MouseTracker;
+import vague.util.ImageLoader;
 
 /**
  * A divided pane of modules. Stores either module panes or modules themselves.
@@ -15,6 +19,19 @@ public class ModulePane extends Module {
     int activeChild = 0; //Stores the index of the active child node
     
     boolean horizontal = false; //Stores whether the layout is vertical(false) or horizontal(true)
+    
+    int firstResizeIndex = -1; //Stores the index of the first module during a module resize - if no resizing is possibe, equals -1
+    boolean resizeModule = false; //Stores whether a module is currently being resized
+    
+    MouseTracker mtracker;
+    
+    static Color lineColor = new Color(0xb0b3dc); //Stores the color of the lines separating modules
+    static final int resizeThreshold = 15; //The pixel distance from which it is possible to resize modules
+    static final int minSize = 30; //Minimum size, in pixels, of child modules
+    
+    BufferedImage resizeControl;
+    
+    final int lineWidth = 3; //Stores the width of the line separating panes; used in calculating widths when resized
     
     public ModulePane(Module[] childmods, boolean direction) {
         this.horizontal = direction;
@@ -41,6 +58,26 @@ public class ModulePane extends Module {
         
         this.width = width;
         this.height = height;
+        
+        resizeControl = ImageLoader.loadProtected("/resource/img/ui/control/resize_arrow.png");
+    }
+    
+    public void drawOnlySelf() { //Draws the component without redrawaing all its child components
+        for(int i = 0; i < children.length; i++) {
+            //g.drawImage(children[i].lastRender, children[i].x, children[i].y + ((i > 0) ? 1 : 0), null);
+            graphics.drawImage(children[i].lastRender, children[i].x, children[i].y, null);
+            graphics.setColor(lineColor);
+            if(horizontal) {
+                graphics.fillRect(children[i].x + children[i].width, children[i].y, lineWidth, children[i].height);
+            }
+            else {
+                graphics.fillRect(children[i].x, children[i].y + children[i].height, children[i].width, lineWidth);
+            }
+            if(firstResizeIndex > -1) {
+                graphics.drawImage(resizeControl, getMouseX(), getMouseY() - 16, null);
+            }
+        }
+        drawParent(this);
     }
     
     @Override
@@ -62,7 +99,7 @@ public class ModulePane extends Module {
             int newX = 0;
             for(int i = 0; i < children.length; i++) {
                 children[i].locate(newX, children[i].y);
-                newX += children[i].height;
+                newX += children[i].height + lineWidth; //Add line widht so there is sppaace to draw line between modules
             }
         }
         else {
@@ -82,45 +119,134 @@ public class ModulePane extends Module {
             int newY = 0;
             for(int i = 0; i < children.length; i++) {
                 children[i].locate(children[i].x, newY);
-                System.err.println(newY + " " + children[i].height + " " + this.height);
-                newY += children[i].height;
+                newY += children[i].height + lineWidth; //Add lineWidth so that there is space to draw line between moduels
             }
         }
+        drawOnlySelf();
     }
     
     @Override
     public void tick(int mousex, int mousey) {
-        if(!children[activeChild].retainFocus) {
-            //We don't need to check if the mouse pos is out of this module's bounds because the higher-ups will do that by default
+        if(resizeModule) {
+            mtracker.shift(mousex, mousey);
             if(horizontal) {
-                if(mousex < children[activeChild].x) {
-                    activeChild--;
-                }
-                else if (mousex > children[activeChild].x + children[activeChild].width) {
-                    activeChild++;
-                }
-                if(activeChild < 0)  { activeChild = 0; } //If the child does happen to not exist than make sure bad things don't happen
+                //children[firstResizeIndex].width = mtracker.x - children[firstResizeIndex].x;
+                //if(firstResizeIndex < children.length) {                   
+                //    int bottomX = children[firstResizeIndex + 1].x + children[firstResizeIndex + 1].width;
+                //    children[firstResizeIndex + 1].x = children[firstResizeIndex].x + children[firstResizeIndex].width + lineWidth;
+                //    children[firstResizeIndex + 1].width = bottomX - children[firstResizeIndex + 1].x;
+                //}
             }
             else {
-                if(mousey < children[activeChild].y) {
-                    activeChild--;
+                //children[firstResizeIndex].height = mtracker.y - children[firstResizeIndex].y;
+                //if(firstResizeIndex < children.length) {                   
+                //    int bottomY = children[firstResizeIndex + 1].y + children[firstResizeIndex + 1].height;
+                //    children[firstResizeIndex + 1].y = children[firstResizeIndex].y + children[firstResizeIndex].height + lineWidth;
+                //    children[firstResizeIndex + 1].height = bottomY - children[firstResizeIndex + 1].y;
+                //}
+                int topHeight = mtracker.y - children[firstResizeIndex].y;
+                if(topHeight < minSize) { topHeight = minSize; }
+                if(firstResizeIndex < children.length) {
+                    int bottomY = children[firstResizeIndex + 1].y + children[firstResizeIndex + 1].height;
+                    int middleY = children[firstResizeIndex].y + topHeight + lineWidth;
+                    int lowerHeight = bottomY - middleY;
+                    
+                    if(lowerHeight < minSize) {
+                        topHeight -= (minSize - lowerHeight);
+                        middleY -= (minSize - lowerHeight);
+                        lowerHeight = minSize;
+                    }
+                    
+                    children[firstResizeIndex + 1].resize(children[firstResizeIndex + 1].width, lowerHeight);
+                    children[firstResizeIndex + 1].locate(children[firstResizeIndex + 1].x, middleY);
                 }
-                else if (mousey > children[activeChild].y + children[activeChild].height) {
-                    activeChild++;
-                }
-                if(activeChild >= children.length) { activeChild = children.length - 1; }
+                children[firstResizeIndex].resize(children[firstResizeIndex + 1].width, topHeight);
             }
+            resizeComponent(this.width, this.height);
         }
-        children[activeChild].tick(mousex - x, mousey - y); //Subtract top x and y because mousex and y are passed relatively
+        else {
+            
+            
+            if(!children[activeChild].retainFocus) {
+                if(firstResizeIndex > -1) {
+                    drawOnlySelf();
+                }
+                //We don't need to check if the mouse pos is out of this module's bounds because the higher-ups will do that by default
+                if(horizontal) {
+                    if(mousex < children[activeChild].x) {
+                        activeChild--;
+                    }
+                    else if (mousex > children[activeChild].x + children[activeChild].width) {
+                        activeChild++;
+                    }                 
+                    
+                    //This check is in both branches of if statement because otherwise exceptions can be thrown if focus is changed and then resizing is checked
+                    if(activeChild < 0)  { activeChild = 0; } //If the child does happen to not exist than make sure bad things don't happen
+                    if(activeChild >= children.length) { activeChild = children.length - 1; }
+                    
+                    if(Math.abs(mousex - (children[activeChild].x + children[activeChild].width)) <= resizeThreshold) {
+                        firstResizeIndex = activeChild;
+                    }
+                    else if(Math.abs(mousex - children[activeChild].x) <= resizeThreshold) {
+                        firstResizeIndex = activeChild - 1;
+                        drawOnlySelf();
+                    }
+                    else { 
+                        if(firstResizeIndex > -1) {
+                            firstResizeIndex = -1;
+                        }
+                        firstResizeIndex = -1;
+                    }
+                }
+                else {
+                    if(mousey < children[activeChild].y) {
+                        activeChild--;
+                    }
+                    else if (mousey > children[activeChild].y + children[activeChild].height) {
+                        activeChild++;
+                    }
+                    
+                    if(activeChild < 0)  { activeChild = 0; } //If the child does happen to not exist than make sure bad things don't happen
+                    if(activeChild >= children.length) { activeChild = children.length - 1; }
+                    
+                    if(Math.abs(mousey - (children[activeChild].y + children[activeChild].height)) <= resizeThreshold) {
+                        firstResizeIndex = activeChild;
+                    }
+                    else if(Math.abs(mousey - children[activeChild].y) <= resizeThreshold) {
+                        firstResizeIndex = activeChild - 1;
+                    }
+                    else { 
+                        if(firstResizeIndex > -1) {
+                            firstResizeIndex = -1;
+                            drawOnlySelf();
+                        }
+                        firstResizeIndex = -1; 
+                    }
+                }
+                
+            }
+            children[activeChild].tick(mousex - x, mousey - y); //Subtract top x and y because mousex and y are passed relatively
+            
+        }
     }
 
     @Override
     public void mouseDown(MouseEvent e) {
-        children[activeChild].mouseDown(e);
+        if(firstResizeIndex > -1 && e.getButton() == MouseEvent.BUTTON1) {
+            resizeModule = true;
+            mtracker = new MouseTracker(getMouseX(e),getMouseY(e));         
+        }
+        else { //Prevents multiple modules from resizing at once
+            children[activeChild].mouseDown(e);
+        }
     }
 
     @Override
     public void mouseUp(MouseEvent e) {
+        if(resizeModule) {
+            resizeModule = false;
+            firstResizeIndex = -1;
+        }
         children[activeChild].mouseUp(e);
     }
 
@@ -143,7 +269,15 @@ public class ModulePane extends Module {
     protected void render(Graphics g) {
         for(int i = 0; i < children.length; i++) {
             children[i].drawLimited();
+            //g.drawImage(children[i].lastRender, children[i].x, children[i].y + ((i > 0) ? 1 : 0), null);
             g.drawImage(children[i].lastRender, children[i].x, children[i].y, null);
+            g.setColor(lineColor);
+            if(horizontal) {
+                g.fillRect(children[i].x + children[i].width, children[i].y, lineWidth, children[i].height);
+            }
+            else {
+                g.fillRect(children[i].x, children[i].y + children[i].height, children[i].width, lineWidth);
+            }
         }
     }
     
