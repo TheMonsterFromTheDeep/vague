@@ -13,7 +13,6 @@ import vague.ui.window.MouseTracker;
 
 public class Editor extends Module {    
     private Renderer renderer; //Stores the end-user image renderer
-    private MouseTracker mtracker; //Mouse tracker - used for panning image
     
     public Color background;
     
@@ -28,7 +27,6 @@ public class Editor extends Module {
     }
     
     private void beginPanning(int startx, int starty) {
-        mtracker = new MouseTracker(startx,starty) { public void mouseMove() { }};
         pan = true;
         retainFocus = true;
         drawSelf();
@@ -46,7 +44,6 @@ public class Editor extends Module {
         int mousey = getMouseY();
         if(pan) {
             renderer.pan(difx, dify); //Pan the renderer
-            mtracker.shift(mousex, mousey); //Shift the mousetracker
             drawSelf();
         }       
     }
