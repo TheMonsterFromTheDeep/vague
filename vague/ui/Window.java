@@ -21,6 +21,7 @@ import javax.swing.Timer;
 import vague.ui.editor.Editor;
 import vague.module.Module;
 import vague.module.ModulePane;
+import vague.ui.window.MouseTracker;
 import vague.util.ImageLoader;
 
 /**
@@ -33,45 +34,15 @@ public class Window extends JFrame {
     
     public final static Color DEF_BG_COLOR = new Color(0xd0d3fb); //Default background color
     
+    MouseTracker mouseTracker;
+    
     private JPanel panel; //Panel for main drawing of graphics
     
     private final Timer timer;
     
-    Editor editor; //Editor - does all image editing; also stores various data like background color
-    
     ModulePane modules;
     
-    private void initModules() {
-        /*editor = new Editor(DEFAULT_WIDTH / 2,DEFAULT_HEIGHT);
-        Editor editor2 = new Editor(DEFAULT_WIDTH / 2,DEFAULT_HEIGHT);
-        editor2.x += DEFAULT_WIDTH / 2;
-        editor2.x += 3;
-        
-        //Editor editor3 = new Editor(DEFAULT_WIDTH / 2, DEFAULT_HEIGHT / 2);
-        //editor3.x += DEFAULT_WIDTH / 2;
-        //editor3.x += 3;
-        
-        
-        //ModulePane sep = new ModulePane(new Module[] { editor,editor3 },true);
-        
-        //modules = new ModulePane(new Module[] { editor });
-        modules = new ModulePane(new Module[] { editor, editor2 }, true) {
-            @Override
-            public void drawParent() {
-                panel.repaint();
-            }
-            @Override
-            public void drawParent(Module m) {
-                panel.repaint();
-            }
-            @Override
-            public int getCompMouseX() { return getWindowMouseX(); }
-            @Override
-            public int getCompMouseY() { return getWindowMouseY(); }
-        };
-        //modules.setParent(null);
-        editor.drawSelf();*/
-        
+    private void initModules() {        
         Editor top = new Editor(DEFAULT_WIDTH / 2, DEFAULT_HEIGHT / 2);
         Editor bottom = new Editor(DEFAULT_WIDTH / 2, DEFAULT_HEIGHT / 2);
         bottom.y += (DEFAULT_HEIGHT / 2) + 3;
@@ -95,8 +66,6 @@ public class Window extends JFrame {
             @Override
             public int getCompMouseY() { return getWindowMouseY(); }
         };
-
-        //editor.drawSelf();
     }
     
     public Window() {
@@ -105,15 +74,14 @@ public class Window extends JFrame {
         //TODO: Change close operation using window events
         setDefaultCloseOperation(EXIT_ON_CLOSE); //Set the close operation so the program will end when closed
         
-        
+        mouseTracker = new MouseTracker(0,0); //Initialize mouseTracker at 0, 0 so that mouse move is accurate at start
         
         //Only move at 33 fps to conserve resources
         timer = new Timer(30, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                int mousex = getWindowMouseX(); //Calculate mouse x and y
-                int mousey = getWindowMouseY();
-                modules.tick();
+                mouseTracker.shift(getWindowMouseX(), getWindowMouseY());
+                modules.mouseMove(mouseTracker.getDifX(),mouseTracker.getDifY());
             }
         });
         

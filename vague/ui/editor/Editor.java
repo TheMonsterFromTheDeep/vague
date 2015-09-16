@@ -41,11 +41,11 @@ public class Editor extends Module {
     
     
     @Override
-    public void tick() {
+    public void mouseMove(int difx, int dify) {
         int mousex = getMouseX();
         int mousey = getMouseY();
         if(pan) {
-            renderer.pan(mousex - mtracker.x, mousey - mtracker.y); //Pan the renderer
+            renderer.pan(difx, dify); //Pan the renderer
             mtracker.shift(mousex, mousey); //Shift the mousetracker
             drawSelf();
         }       

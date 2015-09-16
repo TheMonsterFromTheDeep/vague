@@ -70,7 +70,7 @@ public abstract class Module {
     
     public void locate(int x, int y) { this.x = x; this.y = y; }
     
-    public abstract void tick();
+    public abstract void mouseMove(int changeMouseX, int changeMouseY);
     public abstract void mouseDown(MouseEvent e);
     public abstract void mouseUp(MouseEvent e);
     public abstract void keyDown(KeyEvent e);

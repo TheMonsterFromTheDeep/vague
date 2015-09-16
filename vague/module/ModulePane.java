@@ -136,7 +136,7 @@ public class ModulePane extends Module {
     }
     
     @Override
-    public void tick() {
+    public void mouseMove(int difx, int dify) {
         int mousex = getMouseX();
         int mousey = getMouseY();
         if(resizeModule) {
@@ -148,7 +148,7 @@ public class ModulePane extends Module {
                 //    children[firstResizeIndex + 1].x = children[firstResizeIndex].x + children[firstResizeIndex].width + lineWidth;
                 //    children[firstResizeIndex + 1].width = bottomX - children[firstResizeIndex + 1].x;
                 //}
-                int topWidth = mtracker.x - children[firstResizeIndex].x;
+                int topWidth = mtracker.getX() - children[firstResizeIndex].x;
                 if(topWidth < minSize) { topWidth = minSize; }
                 if(firstResizeIndex < children.length) {
                     int bottomX = children[firstResizeIndex + 1].x + children[firstResizeIndex + 1].width;
@@ -173,7 +173,7 @@ public class ModulePane extends Module {
                 //    children[firstResizeIndex + 1].y = children[firstResizeIndex].y + children[firstResizeIndex].height + lineWidth;
                 //    children[firstResizeIndex + 1].height = bottomY - children[firstResizeIndex + 1].y;
                 //}
-                int topHeight = mtracker.y - children[firstResizeIndex].y;
+                int topHeight = mtracker.getY() - children[firstResizeIndex].y;
                 if(topHeight < minSize) { topHeight = minSize; }
                 if(firstResizeIndex < children.length) {
                     int bottomY = children[firstResizeIndex + 1].y + children[firstResizeIndex + 1].height;
@@ -256,7 +256,7 @@ public class ModulePane extends Module {
                 }
                 
             }
-            children[activeChild].tick(); //Subtract top x and y because mousex and y are passed relatively
+            children[activeChild].mouseMove(difx - x, dify - y); //Subtract top x and y because mousex and y are passed relatively
             
         }
     }

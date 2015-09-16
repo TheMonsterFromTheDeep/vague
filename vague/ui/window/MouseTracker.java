@@ -5,8 +5,11 @@ package vague.ui.window;
  * @author TheMonsterFromTheDeep
  */
 public class MouseTracker {
-    public int x; //The start x and y of the mouse.
-    public int y;
+    private int x; //The start x and y of the mouse.
+    private int y;
+    
+    private int difx = 0;
+    private int dify = 0;
     
     public MouseTracker(int x, int y) {
         this.x = x;
@@ -19,7 +22,15 @@ public class MouseTracker {
      * @param y Y of new position.
      */
     public void shift(int x, int y) {
+        difx = x - this.x;
+        dify = y - this.y;
+        
         this.x = x;
         this.y = y;
     }
+    
+    public int getX() { return x; }
+    public int getY() { return y; }
+    public int getDifX() { return difx; }
+    public int getDifY() { return dify; }
 }
