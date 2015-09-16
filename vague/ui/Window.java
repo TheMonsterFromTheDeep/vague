@@ -21,7 +21,7 @@ import javax.swing.Timer;
 import vague.ui.editor.Editor;
 import vague.module.Module;
 import vague.module.ModulePane;
-import vague.ui.window.MouseTracker;
+import vague.module.MouseTracker;
 import vague.util.ImageLoader;
 
 /**
@@ -76,7 +76,7 @@ public class Window extends JFrame {
         
         mouseTracker = new MouseTracker(0,0) {//Initialize mouseTracker at 0, 0 so that mouse move is accurate at start
             public void mouseMove() {
-                modules.mouseMove(this.getDifX(),this.getDifY()); //"this" refers to mousetracker; move modules if mouse tracker moved
+                modules.mouseMove(this.getData()); //"this" refers to mousetracker; move modules if mouse tracker moved
             }
         };
         

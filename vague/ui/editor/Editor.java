@@ -8,8 +8,9 @@ import java.awt.event.MouseWheelEvent;
 import vague.ui.editor.image.Renderer;
 import vague.ui.tabmenu.TabMenu;
 import vague.module.Module;
+import vague.module.MouseData;
 import vague.ui.Window;
-import vague.ui.window.MouseTracker;
+import vague.module.MouseTracker;
 
 public class Editor extends Module {    
     private Renderer renderer; //Stores the end-user image renderer
@@ -39,11 +40,11 @@ public class Editor extends Module {
     
     
     @Override
-    public void mouseMove(int difx, int dify) {
+    public void mouseMove(MouseData mouseData) {
         int mousex = getMouseX();
         int mousey = getMouseY();
         if(pan) {
-            renderer.pan(difx, dify); //Pan the renderer
+            renderer.pan(mouseData.getDifX(), mouseData.getDifY()); //Pan the renderer
             drawSelf();
         }       
     }

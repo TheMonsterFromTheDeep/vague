@@ -1,4 +1,4 @@
-package vague.ui.window;
+package vague.module;
 
 /**
  * Tracks mouse position.
@@ -35,6 +35,8 @@ public abstract class MouseTracker {
     public int getY() { return y; }
     public int getDifX() { return difx; }
     public int getDifY() { return dify; }
+    
+    public MouseData getData() { return new MouseData(x, y, difx, dify); }
     
     public abstract void mouseMove(); //Overloaded and called when mouse moved.
 }
