@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.MouseInfo;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
@@ -129,24 +130,23 @@ public class Window extends JFrame {
         
         initModules();
         
-        addComponentListener(new ComponentListener() {
+        this.setMinimumSize(new Dimension(220,110));
+        addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent ce) {
-                //Resize the editor component.
+                Dimension d = Window.this.getSize();
+                Dimension minD = Window.this.getMinimumSize();
+                if(d.width < minD.width) {
+                    d.width = minD.width;
+                }
+                if(d.height < minD.height) {
+                    d.height = minD.height;
+                }
+                System.err.println(d.width);
+                Window.this.setSize(d);
                 modules.resize(panel.getWidth(), panel.getHeight());
             }
 
-            @Override
-            public void componentMoved(ComponentEvent ce) {
-            }
-
-            @Override
-            public void componentShown(ComponentEvent ce) {
-            }
-
-            @Override
-            public void componentHidden(ComponentEvent ce) {
-            }
         });
         
         addKeyListener(new KeyListener() {
@@ -197,6 +197,7 @@ public class Window extends JFrame {
                 modules.mouseScroll(e);
             }
         });
+        
         
         pack();
 

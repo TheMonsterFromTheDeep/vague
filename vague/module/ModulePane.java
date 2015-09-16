@@ -191,7 +191,7 @@ public class ModulePane extends Module {
                 }
                 children[firstResizeIndex].resize(children[firstResizeIndex + 1].width, topHeight);
             }
-            resizeComponent(this.width, this.height);
+            drawOnlySelf();
         }
         else {
             
