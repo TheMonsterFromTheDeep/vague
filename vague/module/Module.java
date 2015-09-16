@@ -12,14 +12,13 @@ import java.awt.image.BufferedImage;
  */
 public abstract class Module {
     Module parent;
+    Module[] children;
     
     boolean hasParent = false;
+    boolean hasChildren = false;
     
     public BufferedImage lastRender;
     protected Graphics graphics;
-    
-    public boolean verticallyAbsolute = false; //Store whether the component should be dynamically resized or not
-    public boolean horizontallyAbsolute = false; 
     
     public int x = 0;
     public int y = 0;
@@ -65,7 +64,7 @@ public abstract class Module {
         
         doRenderComps(); //Update the rendering data
         
-        draw();
+        drawSelf();
     }
     
     public void locate(int x, int y) { this.x = x; this.y = y; }

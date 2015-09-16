@@ -96,16 +96,13 @@ public class ModulePane extends Module {
         if(horizontal) {
             double[] percents = new double[children.length]; //Stores percents for dynamically resized elements; -1 if element is not dynamically resized
             for(int i = 0; i < children.length; i++) {
-                if(children[i].verticallyAbsolute) { percents[i] = -1; } //Set percent to negative 1 if it is absolute
-                else {
-                    percents[i] = (double)children[i].width / (double)this.width;
-                }
+                percents[i] = (double)children[i].width / (double)this.width;
             }
             for(int i = 0; i < children.length; i++) {
-                if(percents[i] == -1) { children[i].resize(children[i].width, h); }
-                else {
+                //if(percents[i] == -1) { children[i].resize(children[i].width, h); }
+                //else {
                     children[i].resize((int)Math.round(w * percents[i]), h);
-                }
+                //}
             }
             int newX = 0;
             for(int i = 0; i < children.length; i++) {
@@ -116,16 +113,13 @@ public class ModulePane extends Module {
         else {
             double[] percents = new double[children.length]; //Stores percents for dynamically resized elements; -1 if element is not dynamically resized
             for(int i = 0; i < children.length; i++) {
-                if(children[i].verticallyAbsolute) { percents[i] = -1; } //Set percent to negative 1 if it is absolute
-                else {
-                    percents[i] = (double)children[i].height / (double)this.height;
-                }
+                percents[i] = (double)children[i].height / (double)this.height;
             }
             for(int i = 0; i < children.length; i++) {
-                if(percents[i] == -1) { children[i].resize(w, children[i].height); }
-                else {
+                //if(percents[i] == -1) { children[i].resize(w, children[i].height); }
+                //else {
                     children[i].resize(w, (int)Math.round(h * percents[i]));
-                }
+                //}
             }
             int newY = 0;
             for(int i = 0; i < children.length; i++) {
