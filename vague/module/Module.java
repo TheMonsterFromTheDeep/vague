@@ -7,14 +7,17 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
 
 /**
- * Each section of the ui is contained in a module. The modules are then drawn on to the screen.
+ * Each section of the UI is contained in a module. The modules are then drawn on to the screen.
  * @author TheMonsterFromTheDeep
  */
 public abstract class Module {
     Module parent;
     Module[] children;
     
-    boolean hasParent = false;
+    Module activeChild = null; //Stores a reference to the active child module
+    int activeIndex = -1; //Stores the index of the active child
+    
+    boolean hasParent = false; //Stores whether the module has parents / children
     boolean hasChildren = false;
     
     public BufferedImage lastRender;
@@ -75,6 +78,25 @@ public abstract class Module {
     public abstract void keyDown(KeyEvent e);
     public abstract void keyUp(KeyEvent e);
     protected abstract void render(Graphics g);
+    
+    public final boolean hasChildren() { return hasChildren; }
+    public final boolean hasParent() { return hasParent; }
+    
+    public final Module activeChild() { return activeChild; }
+    
+    public final void addChild(Module m) {
+        Module[] tmp = children;
+        children = new Module[children.length + 1];
+        System.arraycopy(tmp,0,children,0,tmp.length);
+        children[children.length] = m;
+    }
+    
+    public final void setActiveChild(int index) {
+        if(index > 0 && index < children.length) {
+            activeIndex = index;
+            activeChild = children[index];
+        }
+    }
     
     public final void clearParent() { parent = null; hasParent = false; }
     public final void setParent(Module m) { parent = m; hasParent = true; }
