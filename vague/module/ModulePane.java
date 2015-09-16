@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
+import vague.util.ImageData;
 import vague.util.ImageLoader;
 
 /**
@@ -59,10 +60,11 @@ public class ModulePane extends Module {
         this.height = height;
         
         if(horizontal) {
-            resizeControl = ImageLoader.loadProtected("/resource/img/ui/control/resize_arrow_horizontal.png");
+            resizeControl = ImageData.data.resizeArrowHorizontal;
+            
         }
         else {
-            resizeControl = ImageLoader.loadProtected("/resource/img/ui/control/resize_arrow.png");
+            resizeControl = ImageData.data.resizeArrowVertical;
         }
     }
     
