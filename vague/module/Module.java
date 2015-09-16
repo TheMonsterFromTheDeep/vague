@@ -11,14 +11,14 @@ import java.awt.image.BufferedImage;
  * @author TheMonsterFromTheDeep
  */
 public abstract class Module {
-    Module parent;
-    Module[] children;
+    protected Module parent;
+    protected Module[] children = { };
     
-    Module activeChild = null; //Stores a reference to the active child module
-    int activeIndex = -1; //Stores the index of the active child
+    protected Module activeChild = null; //Stores a reference to the active child module
+    protected int activeIndex = -1; //Stores the index of the active child
     
-    boolean hasParent = false; //Stores whether the module has parents / children
-    boolean hasChildren = false;
+    protected boolean hasParent = false; //Stores whether the module has parents / children
+    protected boolean hasChildren = false;
     
     public BufferedImage lastRender;
     protected Graphics graphics;
@@ -46,17 +46,14 @@ public abstract class Module {
     
     protected void resizeComponent(int width, int height) { }
     
-    public int getCompMouseX() { return 0; } //Overloaded by the top-level module.
-    public int getCompMouseY() { return 0; } //IMPORTANT: MAKE SURE TO OVERLOAD THESE METHODS!!!!
-    
-    protected final int getMouseX() {
+    protected int getMouseX() {
         if(hasParent) { return parent.getMouseX() - x; }
-        return getCompMouseX();
+        return 0;
     }
     
-    protected final int getMouseY() {
+    protected int getMouseY() {
         if(hasParent) { return parent.getMouseY() - y; }
-        return getCompMouseY();
+        return 0;
     }
     
     public void resize(int width, int height) {
@@ -88,7 +85,9 @@ public abstract class Module {
         Module[] tmp = children;
         children = new Module[children.length + 1];
         System.arraycopy(tmp,0,children,0,tmp.length);
-        children[children.length] = m;
+        children[tmp.length] = m; //Set at tmp.length which is last index in new array
+        
+        if(children.length == 1) { setActiveChild(0); hasChildren = true; } //If there was no child before one was added, then that child must become the only active child.
     }
     
     public final void setActiveChild(int index) {
