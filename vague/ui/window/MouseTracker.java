@@ -4,7 +4,7 @@ package vague.ui.window;
  * Tracks mouse position.
  * @author TheMonsterFromTheDeep
  */
-public class MouseTracker {
+public abstract class MouseTracker {
     private int x; //The start x and y of the mouse.
     private int y;
     
@@ -27,10 +27,14 @@ public class MouseTracker {
         
         this.x = x;
         this.y = y;
+        
+        if(difx != 0 || dify != 0) { mouseMove(); } //Call mouse move if there is a difference in mouse pos
     }
     
     public int getX() { return x; }
     public int getY() { return y; }
     public int getDifX() { return difx; }
     public int getDifY() { return dify; }
+    
+    public abstract void mouseMove(); //Overloaded and called when mouse moved.
 }

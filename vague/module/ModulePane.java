@@ -265,7 +265,7 @@ public class ModulePane extends Module {
     public void mouseDown(MouseEvent e) {
         if(firstResizeIndex > -1 && e.getButton() == MouseEvent.BUTTON1) {
             resizeModule = true;
-            mtracker = new MouseTracker(getMouseX(),getMouseY());   
+            mtracker = new MouseTracker(getMouseX(),getMouseY()) { public void mouseMove() { }};   
             retainFocus = true;
         }
         else { //Prevents multiple modules from resizing at once

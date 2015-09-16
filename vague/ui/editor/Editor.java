@@ -28,7 +28,7 @@ public class Editor extends Module {
     }
     
     private void beginPanning(int startx, int starty) {
-        mtracker = new MouseTracker(startx,starty);
+        mtracker = new MouseTracker(startx,starty) { public void mouseMove() { }};
         pan = true;
         retainFocus = true;
         drawSelf();

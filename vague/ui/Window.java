@@ -74,14 +74,18 @@ public class Window extends JFrame {
         //TODO: Change close operation using window events
         setDefaultCloseOperation(EXIT_ON_CLOSE); //Set the close operation so the program will end when closed
         
-        mouseTracker = new MouseTracker(0,0); //Initialize mouseTracker at 0, 0 so that mouse move is accurate at start
+        mouseTracker = new MouseTracker(0,0) {//Initialize mouseTracker at 0, 0 so that mouse move is accurate at start
+            public void mouseMove() {
+                modules.mouseMove(this.getDifX(),this.getDifY()); //"this" refers to mousetracker; move modules if mouse tracker moved
+            }
+        };
         
         //Only move at 33 fps to conserve resources
         timer = new Timer(30, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                mouseTracker.shift(getWindowMouseX(), getWindowMouseY());
-                modules.mouseMove(mouseTracker.getDifX(),mouseTracker.getDifY());
+                mouseTracker.shift(getWindowMouseX(), getWindowMouseY()); //Update mousetracker; mousetracker will cause mouseMove() method if the mouse moved
+                
             }
         });
         
