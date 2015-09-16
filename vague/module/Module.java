@@ -91,7 +91,7 @@ public abstract class Module {
     }
     
     public final void setActiveChild(int index) {
-        if(index > 0 && index < children.length) {
+        if(index >= 0 && index < children.length) {
             activeIndex = index;
             activeChild = children[index];
         }

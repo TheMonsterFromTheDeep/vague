@@ -17,6 +17,7 @@ public abstract class WindowInterfacer extends Module {
         super(width, height);
         
         this.addChild(construct);
+        this.setActiveChild(0);
     }
     
     @Override
@@ -76,6 +77,7 @@ public abstract class WindowInterfacer extends Module {
 
     @Override
     protected void render(Graphics g) {
+        activeChild.draw();
         g.drawImage(activeChild.lastRender, 0, 0, null);
     }
 

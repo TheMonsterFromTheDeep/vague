@@ -120,9 +120,8 @@ public class Window extends JFrame {
                 if(d.height < minD.height) {
                     d.height = minD.height;
                 }
-                System.err.println(d.width);
                 Window.this.setSize(d);
-                modules.resize(panel.getWidth(), panel.getHeight());
+                moduleInterface.resize(panel.getWidth(), panel.getHeight());
             }
 
         });
@@ -176,10 +175,7 @@ public class Window extends JFrame {
             }
         });
         
-        
-        pack();
-
-        
+        pack(); 
     }
     
     private int getWindowMouseX() {
