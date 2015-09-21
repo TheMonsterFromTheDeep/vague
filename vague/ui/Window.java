@@ -18,11 +18,12 @@ import java.awt.event.MouseWheelEvent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-import vague.module.Container;
+import vague.module.container.Container;
 import vague.ui.editor.Editor;
 import vague.module.Module;
 import vague.module.ModulePane;
 import vague.module.MouseTracker;
+import vague.module.container.VerticalModulePane;
 import vague.util.ImageLoader;
 
 /**
@@ -41,7 +42,7 @@ public class Window extends JFrame {
     
     private final Timer timer;
     
-    Container modules;
+    VerticalModulePane modules;
     
     WindowInterfacer moduleInterface; //Allows the window to interface with the module system
     
@@ -55,7 +56,7 @@ public class Window extends JFrame {
         
         //ModulePane left = new ModulePane(new Module[] { top, bottom }, false);
         
-        modules = new Container(new Module[] { top, bottom } );
+        modules = new VerticalModulePane(DEFAULT_WIDTH, DEFAULT_HEIGHT, new Module[] { top, bottom } );
     }
     
     public Window() {

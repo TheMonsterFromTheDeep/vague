@@ -1,9 +1,12 @@
-package vague.module;
+package vague.module.container;
 
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import vague.module.Dummy;
+import vague.module.Module;
+import vague.module.MouseData;
 
 /**
  * A container class that contains multiple child modules. Contains extra methods for interacting with child modules.
