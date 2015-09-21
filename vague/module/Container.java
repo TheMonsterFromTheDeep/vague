@@ -53,9 +53,7 @@ public class Container extends Module {
     @Override
     public void mouseMove(MouseData mouseData) {
         if(!activeChild.retainFocus) {
-            System.err.println("mouse in!");
             if(!activeChild.mouseInside(mouseData)) {
-                System.err.println("mosue left!");
                 for(int i = 0; i < children.length; i++) {
                     if(children[i].mouseInside(mouseData)) {
                         setActiveChild(i);

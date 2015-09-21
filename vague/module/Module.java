@@ -129,7 +129,7 @@ public abstract class Module {
     
     //Returns true if the mouse is inside bounds, false if mouse is outside bounds
     public final boolean mouseInside(MouseData m) {
-        return !(m.getX() < this.x || m.getY() > this.y || m.getX() < this.x + this.width || m.getY() > this.y + this.height);
+        return (m.getX() > this.x && m.getY() > this.y && m.getX() < this.x + this.width && m.getY() < this.y + this.height);
     }
     
     public void mouseScroll(MouseWheelEvent e) { }
