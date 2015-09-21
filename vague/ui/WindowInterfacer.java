@@ -18,6 +18,13 @@ public abstract class WindowInterfacer extends Module {
         
         this.addChild(construct);
         this.setActiveChild(0);
+        
+        activeChild.setParent(this);
+    }
+    
+    @Override
+    protected void resizeComponent(int width, int height) {
+        activeChild.resize(width, height);
     }
     
     @Override
@@ -35,11 +42,13 @@ public abstract class WindowInterfacer extends Module {
     
     @Override
     public void drawParent() {
+        render(graphics);
         drawWindow();
     }
     
     @Override
     public void drawParent(Module m) {
+        render(graphics);
         drawWindow();
     }
     
@@ -76,9 +85,10 @@ public abstract class WindowInterfacer extends Module {
     }
 
     @Override
-    protected void render(Graphics g) {
-        activeChild.draw();
+    protected void render(Graphics g) {        
+        activeChild.drawLimited();
         g.drawImage(activeChild.lastRender, 0, 0, null);
+        drawWindow();
     }
 
 }

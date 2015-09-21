@@ -122,7 +122,7 @@ public abstract class Module {
     }
     
     public final void drawLimited() {
-        render(graphics);       
+        render(graphics);
     }
     
     public void mouseScroll(MouseWheelEvent e) { }

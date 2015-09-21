@@ -83,7 +83,7 @@ public class Window extends JFrame {
         
         mouseTracker = new MouseTracker(0,0) {//Initialize mouseTracker at 0, 0 so that mouse move is accurate at start
             public void mouseMove() {
-                modules.mouseMove(this.getData()); //"this" refers to mousetracker; move modules if mouse tracker moved
+                moduleInterface.mouseMove(this.getData()); //"this" refers to mousetracker; move modules if mouse tracker moved
             }
         };
         
