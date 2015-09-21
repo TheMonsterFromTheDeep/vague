@@ -89,8 +89,7 @@ public abstract class WindowInterfacer extends Module {
     }
 
     @Override
-    protected void render(Graphics g) {        
-        activeChild.drawLimited();
+    protected void render(Graphics g) {
         g.drawImage(activeChild.lastRender, 0, 0, null);
         drawWindow();
     }
