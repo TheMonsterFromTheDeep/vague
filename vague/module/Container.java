@@ -37,9 +37,9 @@ public class Container extends Module {
     @Override
     protected void resizeComponent(int width, int height) { //Basic resize method
         for(int i = 0; i < children.length; i++) {
-            System.err.println(this.height / children[i].height);
             children[i].resize(Math.round(width / (this.width / children[i].width)), Math.round(height / (this.height / children[i].height)));
         }
+        System.err.println("resized");
     }
     
     @Override
@@ -69,6 +69,7 @@ public class Container extends Module {
 
     @Override
     protected void render(Graphics g) {
+        System.err.println("drawring");
         for(int i = 0; i < children.length; i++) {
             children[i].drawLimited();
             g.drawImage(children[i].lastRender, children[i].x, children[i].y, null);

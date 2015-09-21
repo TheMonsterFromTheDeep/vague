@@ -64,7 +64,7 @@ public abstract class Module {
         
         doRenderComps(); //Update the rendering data
         
-        drawSelf();
+        drawLimited(); //Rendering higher-up should be taken care of by container classes
     }
     
     public void locate(int x, int y) { this.x = x; this.y = y; }
