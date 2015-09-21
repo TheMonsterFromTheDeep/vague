@@ -312,6 +312,6 @@ public class ModulePane extends Module {
     @Override
     public void draw(Module m) {
         graphics.drawImage(m.lastRender, m.x, m.y, null);
-        drawParent();
+        drawParent(this);
     }
 }

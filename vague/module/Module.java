@@ -116,9 +116,6 @@ public abstract class Module {
     
     public final void clearParent() { parent = null; hasParent = false; } //Clears the parent
     public final void setParent(Module m) { parent = m; hasParent = true; } //Sets the parent
-    public void drawParent() { //Draws the parent
-        if(hasParent) { parent.draw(); }
-    }
     public void drawParent(Module m) { //Tells the parent to draw only a certain child module ((this) is normally passed)
         if(hasParent) { parent.draw(m); }
     }
@@ -131,7 +128,7 @@ public abstract class Module {
          * redrawn.
          */
         render(graphics); //For non-container classes, do the same thing as the normal draw method.
-        drawParent();
+        drawParent(this);
     }
     
     

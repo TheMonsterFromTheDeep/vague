@@ -37,12 +37,7 @@ public abstract class WindowInterfacer extends Module {
     
     public abstract int windowMouseX(); //Overloaded by Window class to interface mouse pos between window and module system
     public abstract int windowMouseY();
-    
-    @Override
-    public void drawParent() {
-        drawWindow();
-    }
-    
+
     @Override
     public void drawParent(Module m) {
         drawWindow();
