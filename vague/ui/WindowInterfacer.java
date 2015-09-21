@@ -13,13 +13,17 @@ import vague.module.MouseData;
  */
 public abstract class WindowInterfacer extends Module {
     
+    private void initParent() {
+        activeChild.setParent(this);
+    }
+    
     public WindowInterfacer(int width, int height, Module construct) { //Requires width and height because is supposed to be whole window
         super(width, height);
         
         this.addChild(construct);
         this.setActiveChild(0);
         
-        activeChild.setParent(this);
+        initParent();
     }
     
     @Override
