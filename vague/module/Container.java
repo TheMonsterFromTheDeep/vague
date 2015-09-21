@@ -54,7 +54,6 @@ public class Container extends Module {
     
     @Override
     public void draw(Module m) {
-        System.err.println("drawing continaer");
         graphics.drawImage(m.lastRender, m.x, m.y, null);
         drawParent(this);
     }
