@@ -87,6 +87,8 @@ public abstract class Module {
         System.arraycopy(tmp,0,children,0,tmp.length);
         children[tmp.length] = m; //Set at tmp.length which is last index in new array
         
+        m.setParent(this);
+        
         if(children.length == 1) { setActiveChild(0); hasChildren = true; } //If there was no child before one was added, then that child must become the only active child.
     }
     
@@ -106,7 +108,7 @@ public abstract class Module {
         if(hasParent) { parent.draw(m); }
     }
         
-    public void draw(Module m) { //Overriden by ModulePane
+    public void draw(Module m) { //Overriden by container classes
         render(graphics);
         drawParent();
     }
@@ -123,6 +125,11 @@ public abstract class Module {
     
     public final void drawLimited() {
         render(graphics);
+    }
+    
+    //Returns true if the mouse is inside bounds, false if mouse is outside bounds
+    public final boolean mouseInside(MouseData m) {
+        return !(m.getX() < this.x || m.getY() > this.y || m.getX() < this.x + this.width || m.getY() > this.y + this.height);
     }
     
     public void mouseScroll(MouseWheelEvent e) { }
