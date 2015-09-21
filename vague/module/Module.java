@@ -137,14 +137,9 @@ public abstract class Module {
     
     public final void draw() { //Redraws the module and its parent
         render(graphics); //Render the module
-        drawParent(); //Tell parent to re-draw
+        drawParent(this); //Tell parent to re-draw only this module
     }
-    
-    public final void drawSelf() { //Draws only self
-        render(graphics); //Draw module
-        drawParent(this); //Tell parent to draw only this module
-    }
-    
+  
     public final void drawLimited() { //Draw without updating parents
         //This is called when a parent is re-rendering a child. It is called so that an infinite recursive
         //loop of parent drawing child and child drawing parent will not happen.
