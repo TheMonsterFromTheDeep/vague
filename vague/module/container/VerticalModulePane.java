@@ -2,6 +2,7 @@ package vague.module.container;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import vague.module.Module;
 import vague.module.MouseData;
@@ -9,6 +10,9 @@ import vague.module.MouseData;
 public class VerticalModulePane extends Container {   
     int firstResizeIndex = -1; //Stores the index of the first module during a module resize - if no resizing is possibe, equals -1
     boolean resizeModule = false; //Stores whether a module is currently being resized
+    
+    boolean resizingChild = false; //Stores whether the pane is currently resizing child modules
+    int resizeIndex = -1; //Stores the index of the child being resized  
     
     final static Color LINE_COLOR = new Color(0xb0b3dc); //Stores the color of the lines separating modules
     final static Color VIEWPORT_COLOR = new Color(0xbfc2e7); //Stores the color of the viewport for each module
@@ -55,17 +59,48 @@ public class VerticalModulePane extends Container {
     }
     
     @Override
-    public void mouseMove(MouseData mouseData) {
-        if(!activeChild.retainFocus) { //If the active child doesn't retain focus, check to see if another object is is focus
-            if(!activeChild.mouseInside(mouseData)) { //If the active child no longer contains mouse, it shouldn't necessarily be in focus
-                for(int i = 0; i < children.length; i++) { //Iterate through child modules
-                    if(children[i].mouseInside(mouseData)) { //if the mouse is inside a child module, set that one as active
-                        setActiveChild(i);
+    public void mouseDown(MouseEvent e) {
+        if(e.getButton() == MouseEvent.BUTTON1) {
+            if(!activeChild.retainFocus) {//If the active child is retaining focus, then nothing should resize
+                if(activeIndex < children.length - 1) { //If the active child is not the last, check for as first resize
+                    if(Math.abs((activeChild.y + activeChild.height) - getMouseY()) < THRESHOLD) {
+                        resizeIndex = activeIndex;
+                        resizingChild = true;
                     }
                 }
-            } //If none of the modules contain the mouse, the originally active one remains active.
+            }
         }
-        activeChild.mouseMove(mouseData.getShift(-x,-y,-x,-y)); //Pass the mouse data down to the active child along with the necessary shifts
+        if(!resizingChild) {
+            activeChild.mouseDown(e);
+        }
+    }
+    
+    @Override
+    public void mouseUp(MouseEvent e) {
+        resizingChild = false;
+        activeChild.mouseUp(e);
+    }
+    
+    @Override
+    public void mouseMove(MouseData mouseData) {
+        if(!resizingChild) {
+            if(!activeChild.retainFocus) { //If the active child doesn't retain focus, check to see if another object is is focus
+                if(!activeChild.mouseInside(mouseData)) { //If the active child no longer contains mouse, it shouldn't necessarily be in focus
+                    for(int i = 0; i < children.length; i++) { //Iterate through child modules
+                        if(children[i].mouseInside(mouseData)) { //if the mouse is inside a child module, set that one as active
+                            setActiveChild(i);
+                        }
+                    }
+                } //If none of the modules contain the mouse, the originally active one remains active.
+            }
+            activeChild.mouseMove(mouseData.getShift(-x,-y,-x,-y)); //Pass the mouse data down to the active child along with the necessary shifts
+        }
+        else {
+            children[resizeIndex].resize(width, children[resizeIndex].height + mouseData.getDifY()); //Mouse moving up: module shrinks; mouse moving down: module grows
+            children[resizeIndex + 1].locate(0, children[resizeIndex].y + children[resizeIndex].height + LINE_WIDTH);
+            children[resizeIndex + 1].resize(width, children[resizeIndex + 1].height - mouseData.getDifY()); //Mouse moving up: module grows; mouse moving down: module shrinks
+            draw();
+        }
     }
     
     private void drawViewport(int x, int y, int width, int height) {
