@@ -122,13 +122,20 @@ public class VerticalModulePane extends Container {
             children[resizeIndex].resize(width, children[resizeIndex].height + mouseData.getDifY()); //Mouse moving up: module shrinks; mouse moving down: module grows
             children[resizeIndex + 1].locate(0, children[resizeIndex].y + children[resizeIndex].height + LINE_WIDTH);
             children[resizeIndex + 1].resize(width, children[resizeIndex + 1].height - mouseData.getDifY()); //Mouse moving up: module grows; mouse moving down: module shrinks
-            draw();
+            draw(children[resizeIndex]);
+            draw(children[resizeIndex + 1]);
+            drawLine(children[resizeIndex].y + children[resizeIndex].height);
         }
     }
     
     private void drawViewport(int x, int y, int width, int height) {
         graphics.drawRect(x, y, width, height);
         graphics.drawRect(x + 1, y + 1, width - 2, height - 2);
+    }
+    
+    private void drawLine(int y) {
+        graphics.setColor(LINE_COLOR);
+        graphics.fillRect(0,y,width,LINE_WIDTH);
     }
     
     @Override
