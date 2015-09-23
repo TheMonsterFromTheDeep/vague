@@ -64,8 +64,8 @@ public class Container extends Module {
     @Override
     protected void resizeComponent(int width, int height) { //Basic resize method
         for(int i = 0; i < children.length; i++) {
-            children[i].resize((int)Math.round((double)children[i].width * ((double)width / (double)this.width)), (int)Math.round((double)children[i].height * ((double)height / (double)this.height)));
-            children[i].locate(((children[i].x > 0) ? (int)Math.round((double)children[i].x * ((double)width / (double)this.width)) : 0), ((children[i].y > 0) ? (int)Math.round((double)children[i].y * ((double)height / (double)this.height)) : 0));
+            children[i].resize((int)Math.round(width * ((double)children[i].width / (double)this.width)), (int)Math.round(height * ((double)children[i].height / (double)this.height)));
+            children[i].locate(((children[i].x > 0) ? (int)Math.round(width * ((double)children[i].x / (double)this.width)) : 0), ((children[i].y > 0) ? (int)Math.round(height * ((double)children[i].y / (double)this.height)) : 0));
         }
     }
     

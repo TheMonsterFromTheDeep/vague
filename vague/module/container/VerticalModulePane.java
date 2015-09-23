@@ -11,6 +11,7 @@ public class VerticalModulePane extends Container {
     boolean resizeModule = false; //Stores whether a module is currently being resized
     
     final static Color LINE_COLOR = new Color(0xb0b3dc); //Stores the color of the lines separating modules
+    final static Color VIEWPORT_COLOR = new Color(0xbfc2e7); //Stores the color of the viewport for each module
     static final int THRESHOLD = 15; //The pixel distance from which it is possible to resize modules
     static final int MIN_SIZE = 30; //Minimum size, in pixels, of child modules
     
@@ -45,15 +46,12 @@ public class VerticalModulePane extends Container {
     
     @Override
     protected void resizeComponent(int width, int height) { //Basic resize method
-        int size = (height - ((children.length - 1) * LINE_WIDTH)) / (children.length);
-        int total = 0;
-        for(int i = 0; i < children.length - 1; i++) {
-            children[i].resize(width,size);
-            children[i].locate(0, ((size + LINE_WIDTH) * i));
-            total += size + LINE_WIDTH;
+        int ypos = 0;
+        for(int i = 0; i < children.length; i++) {
+            children[i].resize(width, (int)Math.round(height * ((double)children[i].height / (double)this.height)));
+            children[i].locate(0, ypos);
+            ypos += children[i].height + LINE_WIDTH;
         }
-        children[children.length - 1].resize(width, height - total);
-        children[children.length - 1].locate(0, total);
     }
     
     @Override
@@ -70,12 +68,27 @@ public class VerticalModulePane extends Container {
         activeChild.mouseMove(mouseData.getShift(-x,-y,-x,-y)); //Pass the mouse data down to the active child along with the necessary shifts
     }
     
+    private void drawViewport(int x, int y, int width, int height) {
+        graphics.drawRect(x, y, width, height);
+        graphics.drawRect(x + 1, y + 1, width - 2, height - 2);
+    }
+    
+    @Override
+    public void draw(Module m) { //Overloaded so viewport can be drawn
+        graphics.drawImage(m.lastRender, m.x, m.y, null);
+        graphics.setColor(VIEWPORT_COLOR);
+        drawViewport(m.x,m.y,m.width,m.height);
+        drawParent(this);
+    }
+    
     @Override
     public void render(Graphics g) {
         g.setColor(LINE_COLOR);
         g.fillRect(0, 0, this.width, this.height); //Fills a rectangle in bg; looks like lines when seen through cracks between modules
+        g.setColor(VIEWPORT_COLOR);
         for(int i = 0; i < children.length; i++) {
             g.drawImage(children[i].lastRender, children[i].x, children[i].y, null);
+            drawViewport(children[i].x, children[i].y, children[i].width, children[i].height);
         }
     }
 }
