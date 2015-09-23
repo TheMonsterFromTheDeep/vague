@@ -59,10 +59,13 @@ public class VerticalModulePane extends Container {
     
     @Override
     public void render(Graphics g) {
-        g.setColor(LINE_COLOR);
-        g.fillRect(0, 0, this.width, this.height); //Fills a rectangle in bg; looks like lines when seen through cracks between modules
+        System.err.println("begin render!");
+        //g.setColor(LINE_COLOR);
+        //g.fillRect(0, 0, this.width, this.height); //Fills a rectangle in bg; looks like lines when seen through cracks between modules
         for(int i = 0; i < children.length; i++) {
             g.drawImage(children[i].lastRender, children[i].x, children[i].y, null);
+            System.err.println("child " + i + ": height = " + children[i].height + "; image height = " + children[i].lastRender.getHeight());
         }
+        System.err.println("end render!");
     }
 }
