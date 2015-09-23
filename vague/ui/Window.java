@@ -42,7 +42,7 @@ public class Window extends JFrame {
     
     private final Timer timer;
     
-    Container modules;
+    VerticalModulePane modules;
     
     WindowInterfacer moduleInterface; //Allows the window to interface with the module system
     
@@ -58,7 +58,7 @@ public class Window extends JFrame {
         
         //ModulePane left = new ModulePane(new Module[] { top, bottom }, false);
         
-        modules = new Container(new Module[] { top, bottom } );
+        modules = new VerticalModulePane(DEFAULT_WIDTH, DEFAULT_HEIGHT, new Module[] { top, bottom } );
     }
     
     public Window() {

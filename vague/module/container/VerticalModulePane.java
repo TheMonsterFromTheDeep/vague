@@ -44,6 +44,19 @@ public class VerticalModulePane extends Container {
     }
     
     @Override
+    protected void resizeComponent(int width, int height) { //Basic resize method
+        int size = (height - ((children.length - 1) * LINE_WIDTH)) / (children.length);
+        int total = 0;
+        for(int i = 0; i < children.length - 1; i++) {
+            children[i].resize(width,size);
+            children[i].locate(0, ((size + LINE_WIDTH) * i));
+            total += size + LINE_WIDTH;
+        }
+        children[children.length - 1].resize(width, height - total);
+        children[children.length - 1].locate(0, total);
+    }
+    
+    @Override
     public void mouseMove(MouseData mouseData) {
         if(!activeChild.retainFocus) { //If the active child doesn't retain focus, check to see if another object is is focus
             if(!activeChild.mouseInside(mouseData)) { //If the active child no longer contains mouse, it shouldn't necessarily be in focus
@@ -59,13 +72,10 @@ public class VerticalModulePane extends Container {
     
     @Override
     public void render(Graphics g) {
-        System.err.println("begin render!");
-        //g.setColor(LINE_COLOR);
-        //g.fillRect(0, 0, this.width, this.height); //Fills a rectangle in bg; looks like lines when seen through cracks between modules
+        g.setColor(LINE_COLOR);
+        g.fillRect(0, 0, this.width, this.height); //Fills a rectangle in bg; looks like lines when seen through cracks between modules
         for(int i = 0; i < children.length; i++) {
             g.drawImage(children[i].lastRender, children[i].x, children[i].y, null);
-            System.err.println("child " + i + ": height = " + children[i].height + "; image height = " + children[i].lastRender.getHeight());
         }
-        System.err.println("end render!");
     }
 }
