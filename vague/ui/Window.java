@@ -23,6 +23,7 @@ import vague.ui.editor.Editor;
 import vague.module.Module;
 import vague.module.ModulePane;
 import vague.module.MouseTracker;
+import vague.module.container.HorizontalModulePane;
 import vague.module.container.VerticalModulePane;
 import vague.util.ImageLoader;
 
@@ -42,23 +43,25 @@ public class Window extends JFrame {
     
     private final Timer timer;
     
-    VerticalModulePane modules;
+    HorizontalModulePane modules;
     
     WindowInterfacer moduleInterface; //Allows the window to interface with the module system
     
     private void initModules() { 
         int testwidth = 3;
         
-        Editor top = new Editor(DEFAULT_WIDTH, (DEFAULT_HEIGHT / 2));
-        Editor bottom = new Editor(DEFAULT_WIDTH, (DEFAULT_HEIGHT / 2) - testwidth);
-        bottom.y += (DEFAULT_HEIGHT / 2) + testwidth;
+        //Editor top = new Editor(DEFAULT_WIDTH, (DEFAULT_HEIGHT / 2));
+        //Editor bottom = new Editor(DEFAULT_WIDTH, (DEFAULT_HEIGHT / 2) - testwidth);
+        //bottom.y += (DEFAULT_HEIGHT / 2) + testwidth;
         
+        Editor left = new Editor(DEFAULT_WIDTH / 2, DEFAULT_HEIGHT);
+        Editor middle = new Editor(2000,2000);
         Editor right = new Editor(DEFAULT_WIDTH / 2, DEFAULT_HEIGHT);
         right.x += (DEFAULT_WIDTH / 2);
         
         //ModulePane left = new ModulePane(new Module[] { top, bottom }, false);
         
-        modules = new VerticalModulePane(DEFAULT_WIDTH, DEFAULT_HEIGHT, new Module[] { top, bottom } );
+        modules = new HorizontalModulePane(DEFAULT_WIDTH, DEFAULT_HEIGHT, new Module[] { left, middle, right } );
     }
     
     public Window() {
