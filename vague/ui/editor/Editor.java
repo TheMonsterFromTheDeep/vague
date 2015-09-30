@@ -52,7 +52,6 @@ public class Editor extends Module {
     @Override
     public void mouseDown(MouseEvent e) {
         if(e.getButton() == MouseEvent.BUTTON2) {
-            System.err.println(getMouseX());
             beginPanning(getMouseX(),getMouseY());
         }
     }

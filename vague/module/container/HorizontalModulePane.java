@@ -125,6 +125,7 @@ public class HorizontalModulePane extends Container {
         else {
             int leftWidth = children[resizeIndex].width + mouseData.getDifX(); //Mouse moving left: module shrinks; mouse moving right: module grows
             int rightWidth = children[resizeIndex + 1].width - mouseData.getDifX(); //Mouse moving left: module grows; mouse moving right: module shrinks 
+            
             if(leftWidth < MIN_SIZE) {
                 int dif = (MIN_SIZE - leftWidth); //Stores the difference between the left width and the minimum size
                 leftWidth = MIN_SIZE;
@@ -135,8 +136,9 @@ public class HorizontalModulePane extends Container {
                 rightWidth = MIN_SIZE;
                 leftWidth -= dif; //The left size needs to be changed by the difference so that it will line up with the right module
             }
+            
             children[resizeIndex].resize(leftWidth, height); //Mouse moving up: module shrinks; mouse moving down: module grows
-            children[resizeIndex + 1].locate(children[resizeIndex].y + leftWidth + LINE_WIDTH, 0);
+            children[resizeIndex + 1].locate(children[resizeIndex].x + leftWidth + LINE_WIDTH, 0);
             children[resizeIndex + 1].resize(rightWidth, height); //Mouse moving up: module grows; mouse moving down: module shrinks       
             
             drawChild(children[resizeIndex]);
