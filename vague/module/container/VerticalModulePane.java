@@ -54,7 +54,11 @@ public class VerticalModulePane extends Container {
     protected void resizeComponent(int width, int height) { //Basic resize method
         int ypos = 0;
         for(int i = 0; i < children.length; i++) {
-            children[i].resize(width, (int)Math.round(height * ((double)children[i].height / (double)this.height)));
+            int newHeight = (int)Math.round(height * ((double)children[i].height / (double)this.height));
+            if(newHeight < MIN_SIZE) {
+                newHeight = MIN_SIZE;
+            }
+            children[i].resize(width, newHeight);
             children[i].locate(0, ypos);
             ypos += children[i].height + LINE_WIDTH;
         }
@@ -119,9 +123,21 @@ public class VerticalModulePane extends Container {
             }
         }       
         else {
-            children[resizeIndex].resize(width, children[resizeIndex].height + mouseData.getDifY()); //Mouse moving up: module shrinks; mouse moving down: module grows
-            children[resizeIndex + 1].locate(0, children[resizeIndex].y + children[resizeIndex].height + LINE_WIDTH);
-            children[resizeIndex + 1].resize(width, children[resizeIndex + 1].height - mouseData.getDifY()); //Mouse moving up: module grows; mouse moving down: module shrinks       
+            int topHeight = children[resizeIndex].height + mouseData.getDifY(); //Mouse moving up: module shrinks; mouse moving down: module grows
+            int bottomHeight = children[resizeIndex + 1].height - mouseData.getDifY(); //Mouse moving up: module grows; mouse moving down: module shrinks 
+            if(topHeight < MIN_SIZE) {
+                int dif = (MIN_SIZE - topHeight); //Stores the difference between the top height and the minimum size
+                topHeight = MIN_SIZE;
+                bottomHeight -= dif; //The bottom size needs to be changed by the difference so that it will line up with the top module
+            }
+            if(bottomHeight < MIN_SIZE) {
+                int dif = (MIN_SIZE - bottomHeight); //Stores the difference between the bottom height and the minimum size
+                bottomHeight = MIN_SIZE;
+                topHeight -= dif; //The top size needs to be changed by the difference so that it will line up with the bottom module
+            }
+            children[resizeIndex].resize(width, topHeight); //Mouse moving up: module shrinks; mouse moving down: module grows
+            children[resizeIndex + 1].locate(0, children[resizeIndex].y + topHeight + LINE_WIDTH);
+            children[resizeIndex + 1].resize(width, bottomHeight); //Mouse moving up: module grows; mouse moving down: module shrinks       
             
             drawChild(children[resizeIndex]);
             drawChild(children[resizeIndex + 1]);
