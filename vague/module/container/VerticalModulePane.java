@@ -121,10 +121,14 @@ public class VerticalModulePane extends Container {
         else {
             children[resizeIndex].resize(width, children[resizeIndex].height + mouseData.getDifY()); //Mouse moving up: module shrinks; mouse moving down: module grows
             children[resizeIndex + 1].locate(0, children[resizeIndex].y + children[resizeIndex].height + LINE_WIDTH);
-            children[resizeIndex + 1].resize(width, children[resizeIndex + 1].height - mouseData.getDifY()); //Mouse moving up: module grows; mouse moving down: module shrinks
-            draw(children[resizeIndex]);
-            draw(children[resizeIndex + 1]);
+            children[resizeIndex + 1].resize(width, children[resizeIndex + 1].height - mouseData.getDifY()); //Mouse moving up: module grows; mouse moving down: module shrinks       
+            
+            drawChild(children[resizeIndex]);
+            drawChild(children[resizeIndex + 1]);
+            
             drawLine(children[resizeIndex].y + children[resizeIndex].height);
+            drawResizeArrow(getMouseX(), getMouseY());
+            drawParent(this);
         }
     }
     
@@ -138,12 +142,22 @@ public class VerticalModulePane extends Container {
         graphics.fillRect(0,y,width,LINE_WIDTH);
     }
     
+    private void drawResizeArrow(int x, int y) {
+        graphics.drawImage(ImageData.data.resizeArrowVertical,x - 5, y - 16, null);
+    }
+    
     @Override
     public void draw(Module m) { //Overloaded so viewport can be drawn
         graphics.drawImage(m.lastRender, m.x, m.y, null);
         graphics.setColor(VIEWPORT_COLOR);
         drawViewport(m.x,m.y,m.width,m.height);
         drawParent(this);
+    }
+    
+    public void drawChild(Module m) { //Draw child without redrawing parent
+        graphics.drawImage(m.lastRender, m.x, m.y, null);
+        graphics.setColor(VIEWPORT_COLOR);
+        drawViewport(m.x,m.y,m.width,m.height);
     }
     
     @Override
@@ -156,7 +170,7 @@ public class VerticalModulePane extends Container {
             drawViewport(children[i].x, children[i].y, children[i].width, children[i].height);
         }
         if(drawArrow) {
-            g.drawImage(ImageData.data.resizeArrowVertical,getMouseX() - 5, getMouseY() - 16, null);
+            drawResizeArrow(getMouseX(), getMouseY());
         }
     }
 }
