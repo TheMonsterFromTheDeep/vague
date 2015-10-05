@@ -23,6 +23,7 @@ import vague.ui.editor.Editor;
 import vague.module.Module;
 import vague.module.ModulePane;
 import vague.module.MouseTracker;
+import vague.module.container.DynModule;
 import vague.module.container.HorizontalModulePane;
 import vague.module.container.VerticalModulePane;
 import vague.util.ImageLoader;
@@ -43,7 +44,7 @@ public class Window extends JFrame {
     
     private final Timer timer;
     
-    HorizontalModulePane modules;
+    VerticalModulePane modules;
     
     WindowInterfacer moduleInterface; //Allows the window to interface with the module system
     
@@ -54,17 +55,22 @@ public class Window extends JFrame {
         //Editor bottom = new Editor(DEFAULT_WIDTH, (DEFAULT_HEIGHT / 2) - testwidth);
         //bottom.y += (DEFAULT_HEIGHT / 2) + testwidth;
         
-        Editor top = new Editor(10,10);
-        Editor bottom = new Editor(10,10);
+        //Editor top = new Editor(10,10);
+        //Editor bottom = new Editor(10,10);
         //Editor left = new Editor(DEFAULT_WIDTH / 2, DEFAULT_HEIGHT);
-        VerticalModulePane left = new VerticalModulePane(1000,1000,new Module[] { top, bottom });
-        Editor middle = new Editor(2000,2000);
-        Editor right = new Editor(DEFAULT_WIDTH / 2, DEFAULT_HEIGHT);
-        right.x += (DEFAULT_WIDTH / 2);
+        //VerticalModulePane left = new VerticalModulePane(1000,1000,new Module[] { top, bottom });
+        //Editor middle = new Editor(2000,2000);
+        //Editor right = new Editor(DEFAULT_WIDTH / 2, DEFAULT_HEIGHT);
+        //right.x += (DEFAULT_WIDTH / 2);
         
         //ModulePane left = new ModulePane(new Module[] { top, bottom }, false);
         
-        modules = new HorizontalModulePane(DEFAULT_WIDTH, DEFAULT_HEIGHT, new Module[] { left, middle, right } );
+        //modules = new HorizontalModulePane(DEFAULT_WIDTH, DEFAULT_HEIGHT, new Module[] { left, middle, right } );
+        
+        Editor editorT = new Editor(1000, 1000);
+        DynModule editor = new DynModule(editorT, 1000, 1000);
+        Editor tmp = new Editor(1000, 1000);
+        modules = new VerticalModulePane(DEFAULT_WIDTH, DEFAULT_HEIGHT, new Module[] { tmp, editor });
     }
     
     public Window() {

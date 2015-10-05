@@ -19,7 +19,7 @@ public class VerticalModulePane extends Container {
     final static Color LINE_COLOR = new Color(0xb0b3dc); //Stores the color of the lines separating modules
     final static Color VIEWPORT_COLOR = new Color(0xbfc2e7); //Stores the color of the viewport for each module
     static final int THRESHOLD = 12; //The pixel distance from which it is possible to resize modules
-    static final int MIN_SIZE = 30; //Minimum size, in pixels, of child modules
+    static final int MIN_SIZE = 60; //Minimum size, in pixels, of child modules
     
     int resizeOffset = 0; //Stores the shift offset of the resize control if moveed beyond the possible bounds for resize
     
