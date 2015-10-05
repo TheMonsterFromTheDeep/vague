@@ -8,13 +8,15 @@ import java.awt.image.BufferedImage;
  * @author TheMonsterFromTheDeep
  */
 public class ImageData {
-    public static ImageData data = new ImageData();
+    public static ImageData data;
     
-    public BufferedImage resizeArrowHorizontal;
-    public BufferedImage resizeArrowVertical;
+    public BufferedImage RESIZE_ARROW_HORIZONTAL;
+    public BufferedImage RESIZE_ARROW_VERTICAL;
+    public BufferedImage DYN_MODULE_SPLIT;
     
     public ImageData() {
-        resizeArrowHorizontal = ImageLoader.loadProtected("/resource/img/ui/control/resize_arrow_horizontal.png");
-        resizeArrowVertical = ImageLoader.loadProtected("/resource/img/ui/control/resize_arrow_vertical.png");
+        RESIZE_ARROW_HORIZONTAL = ImageLoader.loadProtected("/resource/img/ui/control/resize_arrow_horizontal.png");
+        RESIZE_ARROW_VERTICAL = ImageLoader.loadProtected("/resource/img/ui/control/resize_arrow_vertical.png");
+        DYN_MODULE_SPLIT = ImageLoader.loadProtected("/resource/img/ui/control/module_split.png");
     }
 }

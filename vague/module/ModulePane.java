@@ -60,11 +60,11 @@ public class ModulePane extends Module {
         this.height = height;
         
         if(horizontal) {
-            resizeControl = ImageData.data.resizeArrowHorizontal;
+            resizeControl = ImageData.data.RESIZE_ARROW_HORIZONTAL;
             
         }
         else {
-            resizeControl = ImageData.data.resizeArrowVertical;
+            resizeControl = ImageData.data.RESIZE_ARROW_VERTICAL;
         }
     }
     

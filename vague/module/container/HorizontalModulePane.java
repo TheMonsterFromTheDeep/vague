@@ -178,7 +178,7 @@ public class HorizontalModulePane extends Container {
     }
     
     private void drawResizeArrow(int x, int y) {
-        graphics.drawImage(ImageData.data.resizeArrowHorizontal, x - 16, y - 5, null);
+        graphics.drawImage(ImageData.data.RESIZE_ARROW_HORIZONTAL, x - 16, y - 5, null);
     }
     
     @Override

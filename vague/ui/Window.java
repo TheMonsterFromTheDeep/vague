@@ -26,6 +26,7 @@ import vague.module.MouseTracker;
 import vague.module.container.DynModule;
 import vague.module.container.HorizontalModulePane;
 import vague.module.container.VerticalModulePane;
+import vague.util.ImageData;
 import vague.util.ImageLoader;
 
 /**
@@ -74,6 +75,8 @@ public class Window extends JFrame {
     }
     
     public Window() {
+        ImageData.data = new ImageData();
+        
         setTitle("Vague Image Editor"); //Set the title of the window
         setIconImage(ImageLoader.loadProtected("/resource/img/logo.png")); //Load the image icon
         //TODO: Change close operation using window events

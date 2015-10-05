@@ -176,7 +176,7 @@ public class VerticalModulePane extends Container {
     }
     
     private void drawResizeArrow(int x, int y) {
-        graphics.drawImage(ImageData.data.resizeArrowVertical,x - 5, y - 16, null);
+        graphics.drawImage(ImageData.data.RESIZE_ARROW_VERTICAL,x - 5, y - 16, null);
     }
     
     @Override
