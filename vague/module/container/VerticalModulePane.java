@@ -21,6 +21,8 @@ public class VerticalModulePane extends Container {
     static final int THRESHOLD = 12; //The pixel distance from which it is possible to resize modules
     static final int MIN_SIZE = 30; //Minimum size, in pixels, of child modules
     
+    int resizeOffset = 0; //Stores the shift offset of the resize control if moveed beyond the possible bounds for resize
+    
     BufferedImage resizeControl;
     
     final static int LINE_WIDTH = 3; //Stores the width of the line separating panes; used in calculating widths when resized
@@ -72,11 +74,15 @@ public class VerticalModulePane extends Container {
                     if(Math.abs((activeChild.y) - getMouseY()) < THRESHOLD && activeIndex > 0) {
                         resizeIndex = activeIndex - 1;
                         resizingChild = true;
+                        retainFocus = true;
+                        resizeOffset = 0;
                         draw();
                     }
                     else if(Math.abs((activeChild.y + activeChild.height) - getMouseY()) < THRESHOLD && activeIndex < children.length - 1) {
                         resizeIndex = activeIndex;
                         resizingChild = true;
+                        retainFocus = true;
+                        resizeOffset = 0;
                         draw();
                     }
                 }
@@ -91,6 +97,8 @@ public class VerticalModulePane extends Container {
     public void mouseUp(MouseEvent e) {
         if(resizingChild) {
             resizingChild = false;
+            retainFocus = false;
+            resizeOffset = 0;
             draw();
         }
         activeChild.mouseUp(e);
@@ -101,11 +109,14 @@ public class VerticalModulePane extends Container {
         if(!resizingChild) {
             if(!activeChild.retainFocus) { //If the active child doesn't retain focus, check to see if another object is is focus
                 if(!activeChild.mouseInside(mouseData)) { //If the active child no longer contains mouse, it shouldn't necessarily be in focus
+                    int last = activeIndex;
                     for(int i = 0; i < children.length; i++) { //Iterate through child modules
                         if(children[i].mouseInside(mouseData)) { //if the mouse is inside a child module, set that one as active
                             setActiveChild(i);
                         }
-                    }                    
+                    }
+                    children[last].mouseMove(mouseData.getShift(-x,-y,-x,-y)); //Move the mouse for the active child in order to prevent some rendering errors
+                    draw();
                 } //If none of the modules contain the mouse, the originally active one remains active.
             }
             activeChild.mouseMove(mouseData.getShift(-x,-y,-x,-y)); //Pass the mouse data down to the active child along with the necessary shifts
@@ -123,8 +134,12 @@ public class VerticalModulePane extends Container {
             }
         }       
         else {
-            int topHeight = children[resizeIndex].height + mouseData.getDifY(); //Mouse moving up: module shrinks; mouse moving down: module grows
-            int bottomHeight = children[resizeIndex + 1].height - mouseData.getDifY(); //Mouse moving up: module grows; mouse moving down: module shrinks 
+            int topHeight = children[resizeIndex].height;
+            int bottomHeight = children[resizeIndex + 1].height;
+            if(Math.abs(resizeOffset) < THRESHOLD) {
+                topHeight = children[resizeIndex].height + mouseData.getDifY(); //Mouse moving up: module shrinks; mouse moving down: module grows
+                bottomHeight = children[resizeIndex + 1].height - mouseData.getDifY(); //Mouse moving up: module grows; mouse moving down: module shrinks 
+            }
             if(topHeight < MIN_SIZE) {
                 int dif = (MIN_SIZE - topHeight); //Stores the difference between the top height and the minimum size
                 topHeight = MIN_SIZE;
@@ -138,6 +153,8 @@ public class VerticalModulePane extends Container {
             children[resizeIndex].resize(width, topHeight); //Mouse moving up: module shrinks; mouse moving down: module grows
             children[resizeIndex + 1].locate(0, children[resizeIndex].y + topHeight + LINE_WIDTH);
             children[resizeIndex + 1].resize(width, bottomHeight); //Mouse moving up: module grows; mouse moving down: module shrinks       
+            
+            resizeOffset = mouseData.getY() - (children[resizeIndex].y + children[resizeIndex].height);
             
             drawChild(children[resizeIndex]);
             drawChild(children[resizeIndex + 1]);

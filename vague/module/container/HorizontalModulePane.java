@@ -21,6 +21,8 @@ public class HorizontalModulePane extends Container {
     static final int THRESHOLD = 12; //The pixel distance from which it is possible to resize modules
     static final int MIN_SIZE = 30; //Minimum size, in pixels, of child modules
     
+    int resizeOffset = 0; //Stores the shift offset of the resize control if moveed beyond the possible bounds for resize
+    
     BufferedImage resizeControl;
     
     final static int LINE_WIDTH = 3; //Stores the width of the line separating panes; used in calculating widths when resized
@@ -72,11 +74,15 @@ public class HorizontalModulePane extends Container {
                     if(Math.abs((activeChild.x) - getMouseX()) < THRESHOLD && activeIndex > 0) {
                         resizeIndex = activeIndex - 1;
                         resizingChild = true;
+                        retainFocus = true;
+                        resizeOffset = 0;
                         draw();
                     }
                     else if(Math.abs((activeChild.x + activeChild.width) - getMouseX()) < THRESHOLD && activeIndex < children.length - 1) {
                         resizeIndex = activeIndex;
                         resizingChild = true;
+                        retainFocus = true;
+                        resizeOffset = 0;
                         draw();
                     }
                 }
@@ -91,6 +97,8 @@ public class HorizontalModulePane extends Container {
     public void mouseUp(MouseEvent e) {
         if(resizingChild) {
             resizingChild = false;
+            retainFocus = false;
+            resizeOffset = 0;
             draw();
         }
         activeChild.mouseUp(e);
@@ -101,11 +109,14 @@ public class HorizontalModulePane extends Container {
         if(!resizingChild) {
             if(!activeChild.retainFocus) { //If the active child doesn't retain focus, check to see if another object is is focus
                 if(!activeChild.mouseInside(mouseData)) { //If the active child no longer contains mouse, it shouldn't necessarily be in focus
+                    int last = activeIndex; //Store the index of the last active child
                     for(int i = 0; i < children.length; i++) { //Iterate through child modules
                         if(children[i].mouseInside(mouseData)) { //if the mouse is inside a child module, set that one as active
                             setActiveChild(i);
                         }
-                    }                    
+                    }
+                    children[last].mouseMove(mouseData.getShift(-x,-y,-x,-y)); //Move the mouse for the active child in order to prevent some rendering errors
+                    draw();
                 } //If none of the modules contain the mouse, the originally active one remains active.
             }
             activeChild.mouseMove(mouseData.getShift(-x,-y,-x,-y)); //Pass the mouse data down to the active child along with the necessary shifts
@@ -123,8 +134,12 @@ public class HorizontalModulePane extends Container {
             }
         }       
         else {
-            int leftWidth = children[resizeIndex].width + mouseData.getDifX(); //Mouse moving left: module shrinks; mouse moving right: module grows
-            int rightWidth = children[resizeIndex + 1].width - mouseData.getDifX(); //Mouse moving left: module grows; mouse moving right: module shrinks 
+            int leftWidth = children[resizeIndex].width;
+            int rightWidth =  children[resizeIndex + 1].width;
+            if(Math.abs(resizeOffset) < THRESHOLD) {
+                leftWidth = children[resizeIndex].width + mouseData.getDifX(); //Mouse moving left: module shrinks; mouse moving right: module grows
+                rightWidth = children[resizeIndex + 1].width - mouseData.getDifX(); //Mouse moving left: module grows; mouse moving right: module shrinks 
+            }
             
             if(leftWidth < MIN_SIZE) {
                 int dif = (MIN_SIZE - leftWidth); //Stores the difference between the left width and the minimum size
@@ -141,11 +156,13 @@ public class HorizontalModulePane extends Container {
             children[resizeIndex + 1].locate(children[resizeIndex].x + leftWidth + LINE_WIDTH, 0);
             children[resizeIndex + 1].resize(rightWidth, height); //Mouse moving up: module grows; mouse moving down: module shrinks       
             
+            resizeOffset = mouseData.getX() - (children[resizeIndex].x + children[resizeIndex].width);
+            
             drawChild(children[resizeIndex]);
             drawChild(children[resizeIndex + 1]);
             
             drawLine(children[resizeIndex].x + children[resizeIndex].width);
-            drawResizeArrow(getMouseX(), getMouseY());
+            drawResizeArrow(getMouseX() - resizeOffset, getMouseY());
             drawParent(this);
         }
     }

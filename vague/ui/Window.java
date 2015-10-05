@@ -54,7 +54,10 @@ public class Window extends JFrame {
         //Editor bottom = new Editor(DEFAULT_WIDTH, (DEFAULT_HEIGHT / 2) - testwidth);
         //bottom.y += (DEFAULT_HEIGHT / 2) + testwidth;
         
-        Editor left = new Editor(DEFAULT_WIDTH / 2, DEFAULT_HEIGHT);
+        Editor top = new Editor(10,10);
+        Editor bottom = new Editor(10,10);
+        //Editor left = new Editor(DEFAULT_WIDTH / 2, DEFAULT_HEIGHT);
+        VerticalModulePane left = new VerticalModulePane(1000,1000,new Module[] { top, bottom });
         Editor middle = new Editor(2000,2000);
         Editor right = new Editor(DEFAULT_WIDTH / 2, DEFAULT_HEIGHT);
         right.x += (DEFAULT_WIDTH / 2);
