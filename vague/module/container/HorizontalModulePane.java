@@ -57,8 +57,8 @@ public class HorizontalModulePane extends Container {
         int xpos = 0;
         for(int i = 0; i < children.length; i++) {
             int newWidth = (int)Math.round(width * ((double)children[i].width / (double)this.width));
-            if(newWidth < MIN_SIZE) {
-                newWidth = MIN_SIZE;
+            if(newWidth < children[i].minwidth) {
+                newWidth = children[i].minwidth;
             }
             children[i].resize(newWidth, height);
             children[i].locate(xpos, 0);
@@ -119,7 +119,7 @@ public class HorizontalModulePane extends Container {
                     draw();
                 } //If none of the modules contain the mouse, the originally active one remains active.
             }
-            activeChild.mouseMove(mouseData.getShift(-x,-y,-x,-y)); //Pass the mouse data down to the active child along with the necessary shifts
+            activeChild.mouseMove(mouseData.getShift(-activeChild.x,-activeChild.y,-activeChild.x,-activeChild.y)); //Pass the mouse data down to the active child along with the necessary shifts
             if(Math.abs((activeChild.x) - getMouseX()) < THRESHOLD && activeIndex > 0) {
                 drawArrow = true;
                 draw();
@@ -141,14 +141,14 @@ public class HorizontalModulePane extends Container {
                 rightWidth = children[resizeIndex + 1].width - mouseData.getDifX(); //Mouse moving left: module grows; mouse moving right: module shrinks 
             }
             
-            if(leftWidth < MIN_SIZE) {
-                int dif = (MIN_SIZE - leftWidth); //Stores the difference between the left width and the minimum size
-                leftWidth = MIN_SIZE;
+            if(leftWidth < children[resizeIndex].minwidth) {
+                int dif = (children[resizeIndex].minwidth - leftWidth); //Stores the difference between the left width and the minimum size
+                leftWidth = children[resizeIndex].minwidth;
                 rightWidth -= dif; //The right size needs to be changed by the difference so that it will line up with the left module
             }
-            if(rightWidth < MIN_SIZE) {
-                int dif = (MIN_SIZE - rightWidth); //Stores the difference between the right width and the minimum size
-                rightWidth = MIN_SIZE;
+            if(rightWidth < children[resizeIndex + 1].minwidth) {
+                int dif = (children[resizeIndex + 1].minwidth - rightWidth); //Stores the difference between the right width and the minimum size
+                rightWidth = children[resizeIndex + 1].minwidth;
                 leftWidth -= dif; //The left size needs to be changed by the difference so that it will line up with the right module
             }
             

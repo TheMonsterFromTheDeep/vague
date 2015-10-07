@@ -29,6 +29,9 @@ public abstract class Module {
     public int width = 200; //Stores the width and height of the module
     public int height = 200;
     
+    public int minwidth = 30;
+    public int minheight = 30;
+    
     public boolean retainFocus; //If the module should retain focus even when the mouse moves out of it, this should be true.
     
     private void doRenderComps() { //called whenever the module is resized. This resizes lastRender so it can fit all the new data of the object.

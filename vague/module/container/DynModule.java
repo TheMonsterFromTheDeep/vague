@@ -12,19 +12,26 @@ import vague.util.ImageData;
  * @author TheMonsterFromTheDeep
  */
 public class DynModule extends Container {
-    
-    static final int SIDE_WIDTH = 15; //Stores the widths of various parts of the DynModule
-    static final int TOP_WIDTH = 15;
-    static final int BOTTOM_WIDTH = 40;
+    static final int BOTTOM_WIDTH = 30;
     
     public static Color SIDE_COLOR = new Color(0xbabde3);
     public static Color VIEWPORT_COLOR = new Color(0xa7aacd);
     
-    public DynModule(Module child, int width, int height) {             
+    final static int SPLIT_NONE = 0; //The different states for readiness for splitting
+    final static int SPLIT_BR = 1;
+    final static int SPLIT_BOTTOM = 2;
+    final static int SPLIT_TL = 3;
+    
+    int splitStatus = SPLIT_NONE;
+    
+    public DynModule(Module child, int width, int height) { 
+        this.minwidth = 30;
+        this.minheight = BOTTOM_WIDTH + 30;
+        
         resize(width, height);
         
-        child.resize(width - (2 * SIDE_WIDTH), height - (TOP_WIDTH + BOTTOM_WIDTH));
-        child.locate(SIDE_WIDTH, TOP_WIDTH);
+        child.resize(width, height - BOTTOM_WIDTH);
+        child.locate(0, 0);
         
         child.setParent(this);
         
@@ -34,13 +41,25 @@ public class DynModule extends Container {
     
     @Override
     protected void resizeComponent(int width, int height) { //Basic resize method
-        activeChild.resize(width - (2 * SIDE_WIDTH), height - (TOP_WIDTH + BOTTOM_WIDTH));
-        System.err.println(activeIndex);
+        activeChild.resize(width, height - BOTTOM_WIDTH);
     }
     
     @Override
     public void mouseMove(MouseData mouseData) {
-        activeChild.mouseMove(mouseData); //Pass the mouse data down to the active child along with the necessary shifts
+        if((mouseData.getX() + 30 > width) && (mouseData.getY() + 30 > height)) {
+            splitStatus = SPLIT_BR;
+               
+            drawLimited();
+            drawBRArrow(mouseData.getX(), mouseData.getY());
+            drawParent(this);
+        }
+        else {
+            activeChild.mouseMove(mouseData); //Pass the mouse data down to the active child along with the necessary shifts 
+            if(splitStatus != SPLIT_NONE) {
+                splitStatus = SPLIT_NONE;
+                draw();
+            }
+        }
     }
     
     @Override
@@ -49,12 +68,11 @@ public class DynModule extends Container {
         drawParent(this);
     }
     
-    protected void drawViewport() {
-        graphics.setColor(VIEWPORT_COLOR);
-        graphics.drawRect(SIDE_WIDTH - 2, TOP_WIDTH - 2, activeChild.width + 3, activeChild.height + 3);
-        graphics.drawRect(SIDE_WIDTH - 1, TOP_WIDTH - 1, activeChild.width + 2, activeChild.height + 2);
+    //Draws the bottom right ararow
+    protected void drawBRArrow(int x, int y) {
+        graphics.drawImage(ImageData.data.SPLIT_ARROW_BR, x - 16, y - 16, null);
     }
-    
+
     @Override
     protected void render(Graphics g) {
         g.setColor(SIDE_COLOR);
@@ -62,9 +80,19 @@ public class DynModule extends Container {
         
         g.drawImage(ImageData.data.DYN_MODULE_SPLIT, width - 20, height - 20, null);
         
-        drawViewport();
-        
         activeChild.drawLimited();
         g.drawImage(activeChild.lastRender, activeChild.x, activeChild.y, null);
+        
+        if(splitStatus != SPLIT_NONE) {
+            switch(splitStatus) {
+                case SPLIT_BR:
+                    drawBRArrow(getMouseX(),getMouseY());
+                    break;
+                case SPLIT_BOTTOM:
+                    break;
+                case SPLIT_TL:
+                    break;
+            }
+        }
     }
 }
