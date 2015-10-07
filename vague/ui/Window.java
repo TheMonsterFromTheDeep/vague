@@ -18,9 +18,15 @@ import java.awt.event.MouseWheelEvent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import vague.module.container.Container;
 import vague.ui.editor.Editor;
 import vague.module.Module;
 import vague.module.ModulePane;
+import vague.module.MouseTracker;
+import vague.module.container.DynModule;
+import vague.module.container.HorizontalModulePane;
+import vague.module.container.VerticalModulePane;
+import vague.util.ImageData;
 import vague.util.ImageLoader;
 
 /**
@@ -33,87 +39,78 @@ public class Window extends JFrame {
     
     public final static Color DEF_BG_COLOR = new Color(0xd0d3fb); //Default background color
     
+    MouseTracker mouseTracker;
+    
     private JPanel panel; //Panel for main drawing of graphics
     
     private final Timer timer;
     
-    Editor editor; //Editor - does all image editing; also stores various data like background color
+    VerticalModulePane modules;
     
-    ModulePane modules;
+    WindowInterfacer moduleInterface; //Allows the window to interface with the module system
     
-    private void initModules() {
-        /*editor = new Editor(DEFAULT_WIDTH / 2,DEFAULT_HEIGHT);
-        Editor editor2 = new Editor(DEFAULT_WIDTH / 2,DEFAULT_HEIGHT);
-        editor2.x += DEFAULT_WIDTH / 2;
-        editor2.x += 3;
+    private void initModules() { 
+        int testwidth = 3;
         
-        //Editor editor3 = new Editor(DEFAULT_WIDTH / 2, DEFAULT_HEIGHT / 2);
-        //editor3.x += DEFAULT_WIDTH / 2;
-        //editor3.x += 3;
+        //Editor top = new Editor(DEFAULT_WIDTH, (DEFAULT_HEIGHT / 2));
+        //Editor bottom = new Editor(DEFAULT_WIDTH, (DEFAULT_HEIGHT / 2) - testwidth);
+        //bottom.y += (DEFAULT_HEIGHT / 2) + testwidth;
         
+        //Editor top = new Editor(10,10);
+        //Editor bottom = new Editor(10,10);
+        //Editor left = new Editor(DEFAULT_WIDTH / 2, DEFAULT_HEIGHT);
+        //VerticalModulePane left = new VerticalModulePane(1000,1000,new Module[] { top, bottom });
+        //Editor middle = new Editor(2000,2000);
+        //Editor right = new Editor(DEFAULT_WIDTH / 2, DEFAULT_HEIGHT);
+        //right.x += (DEFAULT_WIDTH / 2);
         
-        //ModulePane sep = new ModulePane(new Module[] { editor,editor3 },true);
+        //ModulePane left = new ModulePane(new Module[] { top, bottom }, false);
         
-        //modules = new ModulePane(new Module[] { editor });
-        modules = new ModulePane(new Module[] { editor, editor2 }, true) {
-            @Override
-            public void drawParent() {
-                panel.repaint();
-            }
-            @Override
-            public void drawParent(Module m) {
-                panel.repaint();
-            }
-            @Override
-            public int getCompMouseX() { return getWindowMouseX(); }
-            @Override
-            public int getCompMouseY() { return getWindowMouseY(); }
-        };
-        //modules.setParent(null);
-        editor.drawSelf();*/
+        //modules = new HorizontalModulePane(DEFAULT_WIDTH, DEFAULT_HEIGHT, new Module[] { left, middle, right } );
         
-        Editor top = new Editor(DEFAULT_WIDTH / 2, DEFAULT_HEIGHT / 2);
-        Editor bottom = new Editor(DEFAULT_WIDTH / 2, DEFAULT_HEIGHT / 2);
-        bottom.y += (DEFAULT_HEIGHT / 2) + 3;
-        
-        Editor right = new Editor(DEFAULT_WIDTH / 2, DEFAULT_HEIGHT);
-        right.x += (DEFAULT_WIDTH / 2) + 3;
-        
-        ModulePane left = new ModulePane(new Module[] { top, bottom }, false);
-        
-        modules = new ModulePane(new Module[] { left, right }, true) {
-            @Override
-            public void drawParent() {
-                panel.repaint();
-            }
-            @Override
-            public void drawParent(Module m) {
-                panel.repaint();
-            }
-            @Override
-            public int getCompMouseX() { return getWindowMouseX(); }
-            @Override
-            public int getCompMouseY() { return getWindowMouseY(); }
-        };
-
-        //editor.drawSelf();
+        Editor editorT = new Editor(1000, 1000);
+        DynModule editor = new DynModule(editorT, 1000, 1000);
+        Editor tmp = new Editor(1000, 1000);
+        modules = new VerticalModulePane(DEFAULT_WIDTH, DEFAULT_HEIGHT, new Module[] { tmp, editor });
     }
     
     public Window() {
+        ImageData.data = new ImageData();
+        
         setTitle("Vague Image Editor"); //Set the title of the window
         setIconImage(ImageLoader.loadProtected("/resource/img/logo.png")); //Load the image icon
         //TODO: Change close operation using window events
         setDefaultCloseOperation(EXIT_ON_CLOSE); //Set the close operation so the program will end when closed
         
+        initModules();
+        moduleInterface = new WindowInterfacer(DEFAULT_WIDTH, DEFAULT_HEIGHT, modules) {
+            @Override
+            public int windowMouseX() {
+                return getWindowMouseX();
+            }
+
+            @Override
+            public int windowMouseY() {
+                return getWindowMouseY();
+            }
+
+            @Override
+            public void drawWindow() {
+                panel.repaint();
+            }
+        };
         
+        mouseTracker = new MouseTracker(0,0) {//Initialize mouseTracker at 0, 0 so that mouse move is accurate at start
+            public void mouseMove() {
+                moduleInterface.mouseMove(this.getData()); //"this" refers to mousetracker; move modules if mouse tracker moved
+            }
+        };
         
         //Only move at 33 fps to conserve resources
         timer = new Timer(30, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                int mousex = getWindowMouseX(); //Calculate mouse x and y
-                int mousey = getWindowMouseY();
-                modules.tick();
+                mouseTracker.shift(getWindowMouseX(), getWindowMouseY()); //Update mousetracker; mousetracker will cause mouseMove() method if the mouse moved                
             }
         });
         
@@ -128,7 +125,7 @@ public class Window extends JFrame {
         
         add(panel); //Add panel to frame so that drawing stuff happens
         
-        initModules();
+        
         
         this.setMinimumSize(new Dimension(220,110));
         addComponentListener(new ComponentAdapter() {
@@ -142,9 +139,8 @@ public class Window extends JFrame {
                 if(d.height < minD.height) {
                     d.height = minD.height;
                 }
-                System.err.println(d.width);
                 Window.this.setSize(d);
-                modules.resize(panel.getWidth(), panel.getHeight());
+                moduleInterface.resize(panel.getWidth(), panel.getHeight());
             }
 
         });
@@ -157,12 +153,12 @@ public class Window extends JFrame {
 
             @Override
             public void keyPressed(KeyEvent ke) {
-                modules.keyDown(ke);
+                moduleInterface.keyDown(ke);
             }
 
             @Override
             public void keyReleased(KeyEvent ke) {
-                modules.keyUp(ke);
+                moduleInterface.keyUp(ke);
             }
         });
         
@@ -174,12 +170,12 @@ public class Window extends JFrame {
 
             @Override
             public void mousePressed(MouseEvent me) {
-                modules.mouseDown(me);
+                moduleInterface.mouseDown(me);
             }
 
             @Override
             public void mouseReleased(MouseEvent me) {
-                modules.mouseUp(me);
+                moduleInterface.mouseUp(me);
             }
 
             @Override
@@ -194,14 +190,11 @@ public class Window extends JFrame {
         addMouseWheelListener(new MouseAdapter() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) { //Listen for mouse scroll events
-                modules.mouseScroll(e);
+                moduleInterface.mouseScroll(e);
             }
         });
         
-        
-        pack();
-
-        
+        pack(); 
     }
     
     private int getWindowMouseX() {
@@ -224,6 +217,6 @@ public class Window extends JFrame {
      * @param g The graphics object passed by paintComponent of which to use for all drawing.
      */
     private void draw(Graphics g) {
-        g.drawImage(modules.lastRender, 0, 0, null); //Draw editor render - editor is bottom layer in drawing and takes up full screen
+        g.drawImage(moduleInterface.lastRender, 0, 0, null); //Draw editor render - editor is bottom layer in drawing and takes up full screen
     }
 }

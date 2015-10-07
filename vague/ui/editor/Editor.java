@@ -8,12 +8,12 @@ import java.awt.event.MouseWheelEvent;
 import vague.ui.editor.image.Renderer;
 import vague.ui.tabmenu.TabMenu;
 import vague.module.Module;
+import vague.module.MouseData;
 import vague.ui.Window;
-import vague.ui.window.MouseTracker;
+import vague.module.MouseTracker;
 
 public class Editor extends Module {    
     private Renderer renderer; //Stores the end-user image renderer
-    private MouseTracker mtracker; //Mouse tracker - used for panning image
     
     public Color background;
     
@@ -28,10 +28,9 @@ public class Editor extends Module {
     }
     
     private void beginPanning(int startx, int starty) {
-        mtracker = new MouseTracker(startx,starty);
         pan = true;
         retainFocus = true;
-        drawSelf();
+        draw();
     }
     
     private void stopPanning() {
@@ -41,20 +40,18 @@ public class Editor extends Module {
     
     
     @Override
-    public void tick() {
+    public void mouseMove(MouseData mouseData) {
         int mousex = getMouseX();
         int mousey = getMouseY();
         if(pan) {
-            renderer.pan(mousex - mtracker.x, mousey - mtracker.y); //Pan the renderer
-            mtracker.shift(mousex, mousey); //Shift the mousetracker
-            drawSelf();
+            renderer.pan(mouseData.getDifX(), mouseData.getDifY()); //Pan the renderer
+            draw();
         }       
     }
 
     @Override
     public void mouseDown(MouseEvent e) {
         if(e.getButton() == MouseEvent.BUTTON2) {
-            System.err.println(getMouseX());
             beginPanning(getMouseX(),getMouseY());
         }
     }
@@ -71,7 +68,7 @@ public class Editor extends Module {
         if(e.isControlDown()) { //If control key is down, zoom in/out
             renderer.scale(-1 * e.getWheelRotation()); //Scale renderer inverse of wheelrotation (up wheel rotation is negative, but up wheel rotation should be positive scale -> bigger -> zoom in)
             renderer.render(); //Re-render the scaled image
-            drawSelf();
+            draw();
         }
     }
 
@@ -81,18 +78,18 @@ public class Editor extends Module {
             if(e.getKeyCode() == KeyEvent.VK_EQUALS) {
                 renderer.scale(1);
                 renderer.render(); //Re-render image to reflect changes
-                drawSelf();
+                draw();
             }
             if(e.getKeyCode() == KeyEvent.VK_MINUS) {
                 renderer.scale(-1);
                 renderer.render();
-                drawSelf();
+                draw();
             }
             if(e.isShiftDown()) {
                 if(e.getKeyCode() == KeyEvent.VK_8) {
                     renderer.pan(-1 * renderer.posx, -1 * renderer.posy);
                     renderer.render();
-                    drawSelf();
+                    draw();
                 }
             }
         }

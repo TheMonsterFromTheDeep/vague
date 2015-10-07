@@ -6,7 +6,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
-import vague.ui.window.MouseTracker;
+import vague.util.ImageData;
 import vague.util.ImageLoader;
 
 /**
@@ -23,7 +23,7 @@ public class ModulePane extends Module {
     int firstResizeIndex = -1; //Stores the index of the first module during a module resize - if no resizing is possibe, equals -1
     boolean resizeModule = false; //Stores whether a module is currently being resized
     
-    MouseTracker mtracker;
+    //MouseTracker mtracker;
     
     static Color lineColor = new Color(0xb0b3dc); //Stores the color of the lines separating modules
     static final int resizeThreshold = 15; //The pixel distance from which it is possible to resize modules
@@ -60,10 +60,11 @@ public class ModulePane extends Module {
         this.height = height;
         
         if(horizontal) {
-            resizeControl = ImageLoader.loadProtected("/resource/img/ui/control/resize_arrow_horizontal.png");
+            resizeControl = ImageData.data.RESIZE_ARROW_HORIZONTAL;
+            
         }
         else {
-            resizeControl = ImageLoader.loadProtected("/resource/img/ui/control/resize_arrow.png");
+            resizeControl = ImageData.data.RESIZE_ARROW_VERTICAL;
         }
     }
     
@@ -95,16 +96,13 @@ public class ModulePane extends Module {
         if(horizontal) {
             double[] percents = new double[children.length]; //Stores percents for dynamically resized elements; -1 if element is not dynamically resized
             for(int i = 0; i < children.length; i++) {
-                if(children[i].verticallyAbsolute) { percents[i] = -1; } //Set percent to negative 1 if it is absolute
-                else {
-                    percents[i] = (double)children[i].width / (double)this.width;
-                }
+                percents[i] = (double)children[i].width / (double)this.width;
             }
             for(int i = 0; i < children.length; i++) {
-                if(percents[i] == -1) { children[i].resize(children[i].width, h); }
-                else {
+                //if(percents[i] == -1) { children[i].resize(children[i].width, h); }
+                //else {
                     children[i].resize((int)Math.round(w * percents[i]), h);
-                }
+                //}
             }
             int newX = 0;
             for(int i = 0; i < children.length; i++) {
@@ -115,16 +113,13 @@ public class ModulePane extends Module {
         else {
             double[] percents = new double[children.length]; //Stores percents for dynamically resized elements; -1 if element is not dynamically resized
             for(int i = 0; i < children.length; i++) {
-                if(children[i].verticallyAbsolute) { percents[i] = -1; } //Set percent to negative 1 if it is absolute
-                else {
-                    percents[i] = (double)children[i].height / (double)this.height;
-                }
+                percents[i] = (double)children[i].height / (double)this.height;
             }
             for(int i = 0; i < children.length; i++) {
-                if(percents[i] == -1) { children[i].resize(w, children[i].height); }
-                else {
+                //if(percents[i] == -1) { children[i].resize(w, children[i].height); }
+                //else {
                     children[i].resize(w, (int)Math.round(h * percents[i]));
-                }
+                //}
             }
             int newY = 0;
             for(int i = 0; i < children.length; i++) {
@@ -136,11 +131,11 @@ public class ModulePane extends Module {
     }
     
     @Override
-    public void tick() {
+    public void mouseMove(MouseData mouseData) {
         int mousex = getMouseX();
         int mousey = getMouseY();
         if(resizeModule) {
-            mtracker.shift(mousex, mousey);
+            //mtracker.shift(mousex, mousey);
             if(horizontal) {
                 //children[firstResizeIndex].width = mtracker.x - children[firstResizeIndex].x;
                 //if(firstResizeIndex < children.length) {                   
@@ -148,7 +143,7 @@ public class ModulePane extends Module {
                 //    children[firstResizeIndex + 1].x = children[firstResizeIndex].x + children[firstResizeIndex].width + lineWidth;
                 //    children[firstResizeIndex + 1].width = bottomX - children[firstResizeIndex + 1].x;
                 //}
-                int topWidth = mtracker.x - children[firstResizeIndex].x;
+                int topWidth = mouseData.getX() - children[firstResizeIndex].x;
                 if(topWidth < minSize) { topWidth = minSize; }
                 if(firstResizeIndex < children.length) {
                     int bottomX = children[firstResizeIndex + 1].x + children[firstResizeIndex + 1].width;
@@ -173,7 +168,7 @@ public class ModulePane extends Module {
                 //    children[firstResizeIndex + 1].y = children[firstResizeIndex].y + children[firstResizeIndex].height + lineWidth;
                 //    children[firstResizeIndex + 1].height = bottomY - children[firstResizeIndex + 1].y;
                 //}
-                int topHeight = mtracker.y - children[firstResizeIndex].y;
+                int topHeight = mouseData.getY() - children[firstResizeIndex].y;
                 if(topHeight < minSize) { topHeight = minSize; }
                 if(firstResizeIndex < children.length) {
                     int bottomY = children[firstResizeIndex + 1].y + children[firstResizeIndex + 1].height;
@@ -256,7 +251,7 @@ public class ModulePane extends Module {
                 }
                 
             }
-            children[activeChild].tick(); //Subtract top x and y because mousex and y are passed relatively
+            children[activeChild].mouseMove(mouseData.getShift(0, 0, -x, -y)); //Subtract top x and y because mousex and y are passed relatively
             
         }
     }
@@ -265,7 +260,6 @@ public class ModulePane extends Module {
     public void mouseDown(MouseEvent e) {
         if(firstResizeIndex > -1 && e.getButton() == MouseEvent.BUTTON1) {
             resizeModule = true;
-            mtracker = new MouseTracker(getMouseX(),getMouseY());   
             retainFocus = true;
         }
         else { //Prevents multiple modules from resizing at once
@@ -318,6 +312,6 @@ public class ModulePane extends Module {
     @Override
     public void draw(Module m) {
         graphics.drawImage(m.lastRender, m.x, m.y, null);
-        drawParent();
+        drawParent(this);
     }
 }
