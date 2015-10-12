@@ -45,6 +45,11 @@ public class Module {
     //The parent of this Module.
     private Module parent;
     //Stores whether this module *has* a parent.
+    /*
+    Question: is this even relevant? Most of the methods that rely on hasParent being true
+    shouldn't even be called if a module doesn't have a parent and wouldn't make any sense to
+    call if the module doesn't have a parent.
+    */
     private boolean hasParent;
     
     public Module() {
@@ -113,6 +118,29 @@ public class Module {
     public final void clearParent() {
         hasParent = false;
         parent = null;
+    }
+    
+    /**
+     * Causes the Module to draw one of its child nodes.
+     * 
+     * Also causes the Module to ask its parent to draw itself, so that the graphical
+     * changes caused by drawChild() will be reflected higher up in the module system
+     * hierarchy.
+     * 
+     * Overloadable so that the top-level window/module system interfacer
+     * can properly draw without drawing its out parent.
+     * @param m 
+     */
+    public void drawChild(Module m) {
+        graphics.drawImage(m.render(),m.x(),m.y(),null);
+        drawParent();
+    }
+    
+    /**
+     * Causes the parent to update it's graphical representation of the child object.
+     */
+    public void drawParent() {
+        parent.drawChild(this);
     }
     
     /**
@@ -247,5 +275,21 @@ public class Module {
         change it here so it doesn't have to be changed elsewhere?
          */
         return buffer;
+    }
+    
+    /**
+     * Returns whether parent classes should bother to draw this module.
+     * If it has a size of zero, than it's graphical data buffer will not contain any useful graphical
+     * information, and so the parent shouldn't bother to re-draw the module.
+     * 
+     * In the future, this may also indicate whether a module has been hidden by the user and should
+     * not be drawn.
+     * 
+     * This method does not particularly indicate whether the container class should draw
+     * any *other* modules differently.
+     * @return A boolean value indicating whether parent classes should draw the module.
+     */
+    public final boolean visible() {
+        return size.equals(Vector.ZERO);
     }
 }
