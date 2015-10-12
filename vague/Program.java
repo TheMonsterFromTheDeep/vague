@@ -11,6 +11,14 @@ public class Program {
      * @param args Command line arguments.
      */
     public static void main(String[] args) {
+        //Create a new ImageLoader and load images before the application is run.
+        ImageLoader.IMG = new ImageLoader();
+        
+        /*
+        In the future, a temporary window will be used that is displayed while all resources are loading,
+        if that amount of resources ever exists.
+        */
+        
         //Creates a new Window object and makes it useable for interaction with the user.
         new Window().run();
     }

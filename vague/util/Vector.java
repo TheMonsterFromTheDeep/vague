@@ -49,7 +49,52 @@ public class Vector {
         this.y += v.y;
     }
     
+    /**
+     * Subtracts another vector from this one.
+     * @param v The vector to subtract from this one.
+     */
+    public void subtract(Vector v) {
+        this.x -= v.x;
+        this.y -= v.y;
+    }
+    
+    /**
+     * Returns a Vector sum of this Vector and the passed Vector object.
+     * 
+     * This method does not modify this object.
+     * @param v The Vector to sum to this one.
+     * @return A Vector object containing the sum of this vector and the passed object.
+     */
+    public Vector getSum(Vector v) {
+        return new Vector(this.x + v.x, this.y + v.y);
+    }
+    
+    /**
+     * Returns a Vector difference of this Vector and the passed Vector object.
+     * 
+     * This method does not modify this object.
+     * @param v The Vector to subtract to this one.
+     * @return A Vector object containing the difference between this vector and the passed object.
+     */
+    public Vector getDif(Vector v) {
+        return new Vector(this.x - v.x, this.y - v.y);
+    }
+    
+    /**
+     * Returns whether both the x and the y are the same as the specified Vector.
+     * @param v The vector to compare to.
+     * @return Whether the two vectors are equal.
+     */
     public boolean equals(Vector v) {
         return (this.x == v.x) && (this.y == v.y);
+    }
+    
+    /**
+     * Returns whether either the x or the y are the same as the specified Vector.
+     * @param v The vector to compare to.
+     * @return Whether the two vectors are similar.
+     */
+    public boolean similar(Vector v) {
+        return (this.x == v.x) || (this.y == v.y);
     }
 }

@@ -37,6 +37,7 @@ public class Window extends JFrame {
     public Window() {
         //The format for the title is "$Filename | Vague".
         super("Untitled | Vague"); //Set the title of the window. The default file is "Untitled".
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //When the window is closed, the program should exit.
         
         /*
         Initialize the components of the buffered graphics system.
