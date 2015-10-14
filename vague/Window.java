@@ -67,6 +67,36 @@ public class Window extends JFrame {
 
         
         /*
+        A JPanel object will be used for all graphical presentation.
+        
+        The paintComponent() method will be overloaded and used to call drawing
+        methods of child classes.
+        */
+        JPanel panel = new JPanel() {
+            @Override
+            public void paintComponent(Graphics g) {
+                g.drawImage(system.render(), 0, 0, null);
+                //draw(g); //Pass the graphics object to the class's draw() method so it can render the things it needs to
+            }
+        };
+        panel.setPreferredSize(new java.awt.Dimension(DEFAULT_WIDTH,DEFAULT_HEIGHT));
+        this.add(panel); //Add the JPanel so that its rendering will be reflected on the shown window
+        this.pack(); //Pack the JFrame
+        
+                
+        system = new Exchange(new Doodle(DEFAULT_WIDTH,DEFAULT_HEIGHT)) {
+            @Override
+            public Vector mousePosition() {
+                return windowMousePosition();
+            }
+
+            @Override
+            public void drawWindow() {
+                panel.repaint();
+            }
+        };
+        
+        /*
         In order to prevent the window from being resized beyond a certain margin, the minimum size
         needs to be set and a special component adapter is added which resizes the module when it is
         resized but will not let it resize beyond the minimum size.
@@ -78,7 +108,8 @@ public class Window extends JFrame {
                 Dimension size = Window.this.getSize();
                 if(size.width < MIN_WIDTH) { size.width = MIN_WIDTH; }
                 if(size.height < MIN_HEIGHT) { size.height = MIN_HEIGHT; }
-                Window.this.setSize(size);                
+                Window.this.setSize(size); 
+                system.resize(size.width,size.height);
             }
         });
         
@@ -88,10 +119,10 @@ public class Window extends JFrame {
         */
         this.addKeyListener(new KeyListener() {
             @Override
-            public void keyTyped(KeyEvent ke) { system.keyDown(ke); }
+            public void keyTyped(KeyEvent ke) { system.keyType(ke); }
 
             @Override
-            public void keyPressed(KeyEvent ke) { system.keyType(ke); }
+            public void keyPressed(KeyEvent ke) { system.keyDown(ke); }
 
             @Override
             public void keyReleased(KeyEvent ke) { system.keyUp(ke); }
@@ -128,35 +159,6 @@ public class Window extends JFrame {
                 }
             }
         });
-        
-        /*
-        A JPanel object will be used for all graphical presentation.
-        
-        The paintComponent() method will be overloaded and used to call drawing
-        methods of child classes.
-        */
-        JPanel panel = new JPanel() {
-            @Override
-            public void paintComponent(Graphics g) {
-                draw(g); //Pass the graphics object to the class's draw() method so it can render the things it needs to
-            }
-        };
-        panel.setPreferredSize(new java.awt.Dimension(DEFAULT_WIDTH,DEFAULT_HEIGHT));
-        this.add(panel); //Add the JPanel so that its rendering will be reflected on the shown window
-        this.pack(); //Pack the JFrame
-        
-                
-        system = new Exchange(new Doodle(DEFAULT_WIDTH,DEFAULT_HEIGHT)) {
-            @Override
-            public Vector mousePosition() {
-                return windowMousePosition();
-            }
-
-            @Override
-            public void drawWindow() {
-                panel.repaint();
-            }
-        };
     }
     
     /**
@@ -175,7 +177,10 @@ public class Window extends JFrame {
      * @return a Vector containing the mouse position.
      */
     private Vector windowMousePosition() {
-        return new Vector(MouseInfo.getPointerInfo().getLocation().x, MouseInfo.getPointerInfo().getLocation().y);
+        return new Vector(
+                MouseInfo.getPointerInfo().getLocation().x - this.getX() - this.getInsets().left,
+                MouseInfo.getPointerInfo().getLocation().y - this.getY() - this.getInsets().top
+        );
     }
     
     /**
@@ -192,6 +197,6 @@ public class Window extends JFrame {
      * @param g 
      */
     private void draw(Graphics g) {
-        g.drawImage(system.render(), 0, 0, null);
+        
     }
 }

@@ -1,5 +1,6 @@
 package vague.module;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -30,6 +31,8 @@ public class Module extends ModuleBase {
     private Vector position; //Stores the position of the Module.
     private Vector size; //Stores the size of the module.
     
+    protected Color bgColor; //Stores the color that is put in the background whenever applicable
+    
     public Module() {
         /**
          * Default position and size of the Module.
@@ -55,6 +58,8 @@ public class Module extends ModuleBase {
      * width and height.
      */
     private void doRenderCalc() {
+        BufferedImage old = new BufferedImage(size.x, size.y, BufferedImage.TYPE_INT_ARGB);
+        old.createGraphics().drawImage(buffer, 0, 0, null);
         if(size.similar(Vector.ZERO)) {
             //If the size is zero, the buffer needs to have some sort of size
             //so it is created as an image with a width of 1 and height of 1.
@@ -66,7 +71,18 @@ public class Module extends ModuleBase {
         }
         //Allow graphics to be used.
         graphics = buffer.createGraphics();
+        graphics.setColor(bgColor);
+        graphics.fillRect(0, 0, buffer.getWidth(), buffer.getHeight());
+        graphics.drawImage(old, 0, 0, null);
     }
+    
+    /**
+     * Can be called if a module needs to be sure it is ready for rendering.
+     * 
+     * For example, it can be called in a constructor if a module must start with
+     * a certain graphical state.
+     */  
+    protected final void readyForRendering() { doRenderCalc(); }
     
     /**
      * Causes the Module to re-draw itself, saving all changes to the

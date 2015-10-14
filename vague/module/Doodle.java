@@ -3,6 +3,7 @@ package vague.module;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import vague.util.Vector;
 
 /**
@@ -16,21 +17,29 @@ public class Doodle extends Module {
     boolean drawing = false;
     
     Color drawColor = new Color(0xff0f0f);
-    Color fillColor = new Color(0xefefef);
+    Color fillColor = new Color(0xaaffaa);
+    
+    Vector last;
     
     public Doodle(int width, int height) {       
         super(width, height);
         graphics.setColor(fillColor);
         graphics.fillRect(0, 0, width(), height());
-        
+        this.bgColor = fillColor;
+    }
+    
+    private void doodle(Vector pos) {
+        graphics.setColor(drawColor);
+        graphics.fillOval(pos.x - 5, pos.y - 5, 10, 10);
+        graphics.drawLine(pos.x, pos.y, last.x, last.y);
+        drawParent();
+        last = pos;
     }
     
     @Override
     public void mouseMove(Vector pos) {
         if(drawing) {
-            graphics.setColor(drawColor);
-            graphics.fillRect(pos.x - 5, pos.y - 5, 10, 10);
-            drawParent();
+            doodle(pos);
         }
     }
     
@@ -38,6 +47,8 @@ public class Doodle extends Module {
     public void mouseDown(MouseEvent e) {
         if(e.getButton() == MouseEvent.BUTTON1) {
             drawing = true;
+            last = mousePosition();
+            doodle(mousePosition());
         }
     }
     
@@ -52,8 +63,7 @@ public class Doodle extends Module {
     public void keyDown(KeyEvent e) {
         if(e.getKeyCode() == KeyEvent.VK_SPACE) {
             graphics.setColor(fillColor);
-            graphics.fillRect(0, 0, width(), height());
-            
+            graphics.fillRect(0, 0, width(), height());          
             drawParent();
         }
     }

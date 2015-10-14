@@ -54,11 +54,6 @@ public abstract class Exchange extends ModuleBase {
     
     @Override
     public void drawChild(Module m) {
-        System.err.println("drawing child");
-        graphics.drawImage(m.render(),
-                m.x(),
-                m.y(),
-                null);
         drawWindow();
     }
     
