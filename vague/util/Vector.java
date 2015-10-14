@@ -85,7 +85,7 @@ public class Vector {
      * @param v The vector to compare to.
      * @return Whether the two vectors are equal.
      */
-    public boolean equals(Vector v) {
+    public boolean exacts(Vector v) {
         return (this.x == v.x) && (this.y == v.y);
     }
     

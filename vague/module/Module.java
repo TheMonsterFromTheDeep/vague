@@ -20,7 +20,7 @@ import vague.util.Vector;
  * Non-abstract modules can also be initialized without subclassing.
  * @author TheMonsterFromTheDeep
  */
-public class Module {
+public class Module extends ModuleBase {
     /**
      * Position and size are private so that they are not modified outside the class.
      * 
@@ -29,28 +29,6 @@ public class Module {
      */
     private Vector position; //Stores the position of the Module.
     private Vector size; //Stores the size of the module.
-    
-    //Stores the rendered version of the module. Private because nothing should modify it.
-    private BufferedImage buffer;
-    /*
-    The graphics object draws directly to "buffer". It is expected of the child
-    modules that the graphics object is not modified to draw on another image.    
-    -->Question: maybe subclass graphics so that it can't be modified?
-    
-    The 'graphics' object  is protected so that subclasses can access it and
-    do their drawing code.
-    */
-    protected Graphics graphics;
-    
-    //The parent of this Module.
-    private Module parent;
-    //Stores whether this module *has* a parent.
-    /*
-    Question: is this even relevant? Most of the methods that rely on hasParent being true
-    shouldn't even be called if a module doesn't have a parent and wouldn't make any sense to
-    call if the module doesn't have a parent.
-    */
-    private boolean hasParent;
     
     public Module() {
         /**
@@ -98,29 +76,6 @@ public class Module {
     public void redraw() { }
     
     /**
-     * Sets the parent of the module.
-     * 
-     * Mostly called by container classes so that their child modules
-     * will be able to call methods of their parent.
-     * @param m The module to become the parent.
-     */
-    public final void setParent(Module m) {
-        hasParent = true;
-        parent = m;
-    }
-    
-    /**
-     * Clears the parent of the module.
-     * 
-     * The module will no longer have a parent (it will be nullified) and it will no longer
-     * consider itself as having a parent.
-     */
-    public final void clearParent() {
-        hasParent = false;
-        parent = null;
-    }
-    
-    /**
      * Causes the Module to draw one of its child nodes.
      * 
      * Also causes the Module to ask its parent to draw itself, so that the graphical
@@ -129,8 +84,11 @@ public class Module {
      * 
      * Overloadable so that the top-level window/module system interfacer
      * can properly draw without drawing its out parent.
+     * 
+     * Overrides so that it can call the drawParent() method.
      * @param m 
      */
+    @Override
     public void drawChild(Module m) {
         graphics.drawImage(m.render(),m.x(),m.y(),null);
         drawParent();
@@ -156,9 +114,13 @@ public class Module {
      * the mouse position directly.
      * @return A Vector object containing the mouse position.
      */
+    @Override
     public Vector mousePosition() {
         return parent.mousePosition().getDif(position);
     }
+    
+    //Called when the mouse is moved - container classes pass mouse offset as well
+    public void mouseMove(Vector mousePos) { }
     
     /*
     Mouse event methods to be overloaded in subclasses.
@@ -290,6 +252,6 @@ public class Module {
      * @return A boolean value indicating whether parent classes should draw the module.
      */
     public final boolean visible() {
-        return size.equals(Vector.ZERO);
+        return size.exacts(Vector.ZERO);
     }
 }
