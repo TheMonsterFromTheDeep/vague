@@ -14,7 +14,6 @@ import java.awt.event.MouseListener;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-import vague.module.Doodle;
 import vague.module.Exchange;
 import vague.module.Module;
 import vague.util.MouseTracker;
@@ -84,7 +83,7 @@ public class Window extends JFrame {
         this.pack(); //Pack the JFrame
         
                 
-        system = new Exchange(new Doodle(DEFAULT_WIDTH,DEFAULT_HEIGHT)) {
+        system = new Exchange(new Module()) {
             @Override
             public Vector mousePosition() {
                 return windowMousePosition();
