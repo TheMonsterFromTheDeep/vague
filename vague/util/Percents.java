@@ -32,14 +32,15 @@ public class Percents {
      * Creates a Percents object based on the values for a percentage.
      * 
      * This constructor uses integer values.
-     * @param partialWidth The width of the part.
-     * @param totalWidth The width of the whole.
-     * @param partialHeight The height of the part.
-     * @param totalHeight The height of the whole.
+     * @param partX The x of the part.
+     * @param totalX The x of the whole.
+     * @param partY The y of the part.
+     * @param totalY The y of the whole.
      */
     public Percents(int partX, int totalX, int partY, int totalY) {
-        x = partX / totalX;
-        y = partY / totalY;
+        //Cast to double so percent != 0 
+        x = (double)partX / totalX;
+        y = (double)partY / totalY;
         initialized = true;
     }
     
@@ -47,10 +48,10 @@ public class Percents {
      * Creates a Percents object based on the values for a percentage.
      * 
      * This constructor uses floating point values.
-     * @param partialWidth The width of the part.
-     * @param totalWidth The width of the whole.
-     * @param partialHeight The height of the part.
-     * @param totalHeight The height of the whole.
+     * @param partX The x of the part.
+     * @param totalX The x of the whole.
+     * @param partY The y of the part.
+     * @param totalY The y of the whole.
      */
     public Percents(double partX, double totalX, double partY, double totalY) {
         x = partX / totalX;
@@ -69,8 +70,9 @@ public class Percents {
     }
     
     public void update(int partX, int totalX, int partY, int totalY) {
-        x = partX / totalX;
-        y = partY / totalY;
+        //Cast to double so percent != 0
+        x = (double)partX / totalX;
+        y = (double)partY / totalY;
         initialized = true;
     }
     

@@ -16,6 +16,8 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 import vague.module.Exchange;
 import vague.module.Module;
+import vague.module.TestModule;
+import vague.module.container.Container;
 import vague.util.MouseTracker;
 import vague.util.Vector;
 
@@ -82,8 +84,13 @@ public class Window extends JFrame {
         this.add(panel); //Add the JPanel so that its rendering will be reflected on the shown window
         this.pack(); //Pack the JFrame
         
-                
-        system = new Exchange(new Module()) {
+        TestModule left = new TestModule(DEFAULT_WIDTH / 2, DEFAULT_HEIGHT / 2, 1);
+        TestModule right = new TestModule(DEFAULT_WIDTH / 2, DEFAULT_HEIGHT / 2, 2);
+        TestModule bottom = new TestModule(DEFAULT_WIDTH, DEFAULT_HEIGHT / 2, 3);
+        right.locate(DEFAULT_WIDTH / 2, 0);
+        bottom.locate(0, DEFAULT_HEIGHT / 2);
+        Module[] myTestModuleGuys = new Module[] { left, right, bottom };
+        system = new Exchange(new Container(DEFAULT_WIDTH, DEFAULT_HEIGHT, myTestModuleGuys)) {
             @Override
             public Vector mousePosition() {
                 return windowMousePosition();
@@ -164,6 +171,7 @@ public class Window extends JFrame {
      * Runs the program, allowing the user to interact with the controls.
      */
     public void run() {
+        system.redraw(); //Redraw so that there is content on the screen
         this.setVisible(true); //Set the window visible so that the user can interact.
         mouseTimer.start(); //Start the mouse timer so that most of the app will actually work
     }

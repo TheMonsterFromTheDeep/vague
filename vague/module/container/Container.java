@@ -18,7 +18,8 @@ public class Container extends Module {
     Module activeChild; //Stores a reference to the active child
     int activeIndex; //Stores the index of the active child: equal to -1 if there is no active child
     
-    public Container(Module[] children) {
+    public Container(int width, int height, Module[] children) {
+        super(width, height);
         if(children.length < 1) {
             children = new Module[0]; //If there are no children, then there are no children
             clearActiveChild(); //Clear the active child because there can't be an active child
@@ -26,6 +27,11 @@ public class Container extends Module {
         else {
             this.children = children;
             setActiveChild(0); //Set an active child so that nothing weird happens
+        }
+        for(int i = 0; i < children.length; i++) {
+            children[i].setParent(this);
+            children[i].sizedata.update(children[i].width(), width(), children[i].height(), height());
+            children[i].posdata.update(children[i].x(), width(), children[i].y(), height());
         }
     }
     
@@ -52,7 +58,7 @@ public class Container extends Module {
     protected final void updateAllPercents() {
         for(int i = 0; i < children.length; i++) {
             children[i].sizedata.update(children[i].width(), width(), children[i].height(), height());
-            children[i].sizedata.update(children[i].x(), width(), children[i].y(), height());
+            children[i].posdata.update(children[i].x(), width(), children[i].y(), height());
         }
     }
     
@@ -74,6 +80,14 @@ public class Container extends Module {
     protected final void setActiveChild(int index) {
         activeIndex = index;
         activeChild = children[index];
+    }
+    
+    @Override
+    public void onResize(Vector newSize) {
+        for(int i = 0; i < children.length; i++) {
+            children[i].resize(children[i].sizedata.getFactor(newSize));
+            children[i].locate(children[i].posdata.getFactor(newSize));
+        }
     }
     
     @Override
@@ -112,4 +126,14 @@ public class Container extends Module {
     public void keyUp(KeyEvent e) { activeChild.keyUp(e); }
     @Override
     public void keyType(KeyEvent e) { activeChild.keyType(e); }
+    
+    @Override
+    public void redraw() {
+        for(int i = 0; i < children.length; i++) {
+            if(children[i].visible()) {
+                children[i].redraw();
+                graphics.drawImage(children[i].render(), children[i].x(), children[i].y(), null);
+            }
+        }
+    }
 }

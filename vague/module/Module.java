@@ -112,6 +112,10 @@ public class Module extends ModuleBase {
      * Causes the Module to re-draw itself, saving all changes to the
      * 'buffer' BufferedImage. The buffer is accessed by other classes through
      * the render() method.
+     * 
+     * IMPORTANT: redraw is only ever called if it is also called in the parent.
+     * ergo, it is not necessary to call the drawParent() method within the redraw()
+     * method.
      */
     public void redraw() { }
     
@@ -206,6 +210,7 @@ public class Module extends ModuleBase {
         onResize(new Vector(width, height));
         size = new Vector(width, height);
         doRenderCalc();
+        redraw(); //Redraw in case it needs to be re-drawn
     }
     
     /**
@@ -219,6 +224,7 @@ public class Module extends ModuleBase {
         onResize(v);
         size = new Vector(v); //The Vector is copied so that nothing has a reference to size through a refererence
         doRenderCalc();
+        redraw();
     }
     
     /**

@@ -51,6 +51,10 @@ public abstract class Exchange extends ModuleBase {
     
     public abstract void drawWindow();
     
+    public final void redraw() {
+        child.redraw();
+    }
+    
     @Override
     public void drawChild(Module m) {
         drawWindow();
