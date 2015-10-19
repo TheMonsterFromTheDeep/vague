@@ -1,7 +1,6 @@
 package vague.module;
 
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -58,14 +57,21 @@ public class Module extends ModuleBase {
      * width and height.
      */
     private void doRenderCalc() {
-        BufferedImage old = new BufferedImage(size.x, size.y, BufferedImage.TYPE_INT_ARGB);
-        old.createGraphics().drawImage(buffer, 0, 0, null);
+        BufferedImage old; //Declare a BufferedImage object to hold the current data of the buffer
+                           //so that it can be drawn back to the new buffer
         if(size.similar(Vector.ZERO)) {
+            //if the size is zero, the old BufferedImage needs to be created with a size of 1,1
+            //so that it can be created correctly
+            old = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+            old.createGraphics().drawImage(buffer, 0, 0, null);
             //If the size is zero, the buffer needs to have some sort of size
             //so it is created as an image with a width of 1 and height of 1.
             buffer = new BufferedImage(1,1,BufferedImage.TYPE_INT_ARGB);
         }
         else {
+            //If the size is not zero, the old buffer can simply have the new size 
+            old = new BufferedImage(size.x, size.y, BufferedImage.TYPE_INT_ARGB);
+            old.createGraphics().drawImage(buffer, 0, 0, null);
             //Simply create the buffer with the width and height of the module.
             buffer = new BufferedImage(size.x,size.y,BufferedImage.TYPE_INT_ARGB);
         }

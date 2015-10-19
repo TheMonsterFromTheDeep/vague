@@ -1,4 +1,10 @@
-package vague.module;
+package vague.module.container;
+
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import vague.module.Module;
+import vague.util.Vector;
 
 /**
  * The Container class is a basic Module which contains other Modules.
@@ -7,7 +13,7 @@ package vague.module;
  * which are controllable and splittable by the user.
  * @author TheMonsterFromTheDeep
  */
-public class Container {
+public class Container extends Module {
     Module[] children; //Stores the child Modules of the container
     Module activeChild; //Stores a reference to the active child
     int activeIndex; //Stores the index of the active child
@@ -27,4 +33,23 @@ public class Container {
         activeIndex = index;
         activeChild = children[index];
     }
+    
+    @Override
+    public void mouseMove(Vector mousePos) { activeChild.mouseMove(mousePos.getDif(new Vector(x(),y()))); }
+
+    @Override
+    public void mouseDown(MouseEvent e) { activeChild.mouseDown(e); }
+    @Override
+    public void mouseUp(MouseEvent e) { activeChild.mouseUp(e); }
+    @Override
+    public void mouseClick(MouseEvent e) { activeChild.mouseClick(e); }
+    @Override
+    public void mouseScroll(MouseWheelEvent e) { activeChild.mouseScroll(e); }
+
+    @Override
+    public void keyDown(KeyEvent e) { activeChild.keyDown(e); }
+    @Override
+    public void keyUp(KeyEvent e) { activeChild.keyUp(e); }
+    @Override
+    public void keyType(KeyEvent e) { activeChild.keyType(e); }
 }
