@@ -70,9 +70,10 @@ public abstract class Exchange extends ModuleBase {
      * 
      * The Exchange passes the mouse movement data and calls its child mouse movement events.
      * @param mousePos The position of the mouse (originating from the Window)
+     * @param mouseDif The difference in the position of the mouse (originating from the Window)
      */
-    public void mouseMove(Vector mousePos) {
-        child.mouseMove(mousePos);
+    public void mouseMove(Vector mousePos, Vector mouseDif) {
+        child.mouseMove(mousePos, mouseDif);
     }
     
     /*

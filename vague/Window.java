@@ -154,7 +154,7 @@ public class Window extends JFrame {
             public void actionPerformed(ActionEvent ae) {
                 mouseTracker.track(windowMousePosition());
                 if(mouseTracker.moved()) {
-                    system.mouseMove(mouseTracker.position());
+                    system.mouseMove(mouseTracker.position(),mouseTracker.difference());
                 }
             }
         });

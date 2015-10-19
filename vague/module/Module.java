@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
+import vague.util.Percents;
 import vague.util.Vector;
 
 /**
@@ -31,6 +32,23 @@ public class Module extends ModuleBase {
     private Vector size; //Stores the size of the module.
     
     protected Color bgColor; //Stores the color that is put in the background whenever applicable
+    
+    public Percents sizedata = new Percents(); //Stores percents of this Module's size compared to it's container Module's size.
+                                               //Used by container classes.
+    
+    public Percents posdata = new Percents(); //Stores percents of this Module's position offset.
+                                               //Used by container classes.
+    
+    /*
+    This boolean stores whether the Module should retain focus. Vague is designed such that
+    moving the mouse into a different module should change the focus to that module. However,
+    sometimes a Module needs to make sure that focus won't change - for example, if the user
+    is panning the editor, they should be able to continue panning even if the mouse leaves
+    the Module where they are panning the mouse. 
+    
+    Container Modules should check this value before changing focus.
+    */
+    public boolean retainFocus;
     
     public Module() {
         /**
@@ -141,8 +159,25 @@ public class Module extends ModuleBase {
         return parent.mousePosition().getDif(position);
     }
     
+    /**
+     * Returns whether the Module contains the specified point.
+     * 
+     * The Container classes often need to know whether a point is within the bounds of a Module,
+     * particularly whether the Module contains the mouse so that it is active.
+     * @param point The point to check against.
+     * @return Whether the point is within the Module's bounds.
+     */
+    public final boolean containsPoint(Vector point) {
+        return (
+                point.x >= position.x &&
+                point.y >= position.y &&
+                point.x < position.x + size.x &&
+                point.y < position.y + size.y
+        );
+    }
+    
     //Called when the mouse is moved - container classes pass mouse offset as well
-    public void mouseMove(Vector mousePos) { }
+    public void mouseMove(Vector mousePos, Vector mouseDif) { }
     
     /*
     Mouse event methods to be overloaded in subclasses.
@@ -229,6 +264,9 @@ public class Module extends ModuleBase {
     public final int width() { return size.x; }
     public final int height() { return size.y; }
     
+    //Returns a copy of the size Vector so it can be used without being changed.
+    public final Vector size() { return new Vector(size); }
+    
     /*
     x() and y() return the x and y position of the module, respectively.
     
@@ -236,6 +274,21 @@ public class Module extends ModuleBase {
     */
     public final int x() { return position.x; }
     public final int y() { return position.y; }
+    
+    //Returns a copy of the position Vector so it can be used without being changed.
+    public final Vector position() { return new Vector(position); }
+    
+    /*
+    right() and bottom() return the x and y values of the right of the Module and thhe bottom of the Module,
+    respectively.
+    
+    These cannot be modified.
+    */
+    public final int right() { return position.x + size.x; }
+    public final int bottom() { return position.y + size.y; }
+    
+    //Returns the position of the bottom right corner of the module. Useful for various application. 
+    public final Vector bottomRight() { return new Vector(position.getSum(size)); }
     
     /**
      * This method returns the rendered version of the Module.
@@ -274,6 +327,6 @@ public class Module extends ModuleBase {
      * @return A boolean value indicating whether parent classes should draw the module.
      */
     public final boolean visible() {
-        return size.exacts(Vector.ZERO);
+        return !size.similar(Vector.ZERO);
     }
 }
