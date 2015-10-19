@@ -184,6 +184,15 @@ public class Module extends ModuleBase {
     public void mouseMove(Vector mousePos, Vector mouseDif) { }
     
     /*
+    Called when a parent Module determines this child to be in / out of focus.
+    
+    These are used so child Modules can take necessary action when they are focused or taken
+    out of focus.
+    */
+    public void onFocus() { }
+    public void onUnfocus() { }
+    
+    /*
     Mouse event methods to be overloaded in subclasses.
      */
     public void mouseDown(MouseEvent e) { }

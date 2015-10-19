@@ -94,12 +94,16 @@ public class Container extends Module {
     public void mouseMove(Vector mousePos, Vector mouseDif) {
         if(!activeChild.retainFocus) {
             if (!activeChild.containsPoint(mousePos) || !activeChild.visible()) {
+                activeChild.onUnfocus();
                 boolean updated = false; //Stores whether a new active Module was discovered
-                for(int i = 0; i < children.length; i++) { //Iterate through child Modules to see if any are active
+                int i = 0;
+                while(!updated && i < children.length) { //Iterate through child Modules to see if any are active
                     if(children[i].containsPoint(mousePos)) { //If the Module contains the mouse, it should be active
                         updated = true; //A Module has been made active
                         setActiveChild(i); //Set the active child
-                    }
+                        children[i].onFocus();
+                    }                
+                    i++;
                 }
                 if(!updated) { //If the active child hasn't been updated, then it should be cleared
                     clearActiveChild();

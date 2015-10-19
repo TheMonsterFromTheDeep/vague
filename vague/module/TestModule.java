@@ -9,27 +9,32 @@ import vague.util.Vector;
  * @author TheMonsterFromTheDeep
  */
 public class TestModule extends Module {
-    Color COLOR_1 = new Color(0xff0000); //TODO: Replace with array
-    Color COLOR_2 = new Color(0x00ff00);
-    Color COLOR_3 = new Color(0x0000ff);
+    static Color[] colors = new Color[] { new Color(0xff0000), new Color(0x00ff00), new Color(0x0000ff) };
+    
+    private int id;
     
     public TestModule(int width, int height, int type) {
         super(width, height);
-        switch(type) {
-            case 1:
-                bgColor = COLOR_1;
-                break;
-            case 2:
-                bgColor = COLOR_2;
-                break;
-            case 3:
-                bgColor = COLOR_3;
-                break;
-        }
+        bgColor = colors[type-1];
+        id = type-1;
     }
     
     @Override
     public void onResize(Vector v) {
+    }
+    
+    @Override
+    public void onFocus() {
+        this.bgColor = Color.ORANGE;
+        redraw();
+        drawParent();
+    }
+    
+    @Override
+    public void onUnfocus() {
+        this.bgColor = colors[id];
+        redraw();
+        drawParent();
     }
     
     @Override
