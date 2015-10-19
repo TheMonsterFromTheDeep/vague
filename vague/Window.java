@@ -90,7 +90,7 @@ public class Window extends JFrame {
         right.locate(DEFAULT_WIDTH / 2, 0);
         bottom.locate(0, DEFAULT_HEIGHT / 2);
         Module[] myTestModuleGuys = new Module[] { left, right, bottom };
-        system = new Exchange(new Container(DEFAULT_WIDTH, DEFAULT_HEIGHT, myTestModuleGuys)) {
+        system = new Exchange(new Container(myTestModuleGuys)) {
             @Override
             public Vector mousePosition() {
                 return windowMousePosition();

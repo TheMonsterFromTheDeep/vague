@@ -17,6 +17,36 @@ public class Container extends Module {
     Module[] children; //Stores the child Modules of the container
     Module activeChild; //Stores a reference to the active child
     int activeIndex; //Stores the index of the active child: equal to -1 if there is no active child
+          
+    public Container(Module[] children) {
+        if(children.length < 1) {
+            children = new Module[0]; //If there are no children, then there are no children
+            clearActiveChild(); //Clear the active child because there can't be an active child
+            resize(0,0); //If there is no child modules, there is no reason for this to have any size
+            locate(0,0);
+        }
+        else {
+            this.children = children;
+            setActiveChild(0); //Set an active child so that nothing weird happens
+            int width = 0;
+            int height = 0;
+            for(int i = 0; i < children.length; i++) { //This calculates the smallest size  needed to hold the child modules
+                if(children[i].right() > width) { //It checks to see if a child module does not fit inside the current size
+                    width = children[i].right();  //If a child does not fit, the size needs to be expanded to fit that child
+                }
+                if(children[i].bottom() > height) {
+                    height = children[i].bottom();
+                }
+            }
+            resize(width,height);
+            locate(0,0);
+        }
+        for(int i = 0; i < children.length; i++) {
+            children[i].setParent(this);
+            children[i].sizedata.update(children[i].width(), width(), children[i].height(), height());
+            children[i].posdata.update(children[i].x(), width(), children[i].y(), height());
+        }
+    }
     
     public Container(int width, int height, Module[] children) {
         super(width, height);
@@ -82,6 +112,12 @@ public class Container extends Module {
         activeChild = children[index];
     }
     
+    /*
+    When the Container is resized it needs to reposition and resize its children.
+    
+    This is done using the percentages stored inside the child module, which are then used to update their
+    size with the most accurate possible information.
+    */
     @Override
     public void onResize(Vector newSize) {
         for(int i = 0; i < children.length; i++) {
