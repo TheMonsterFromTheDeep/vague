@@ -126,6 +126,14 @@ public class Module extends ModuleBase {
     protected final void readyForRendering() { doRenderCalc(); } 
     
     /**
+     * Fills the background with 'bgColor'. Can be called during the draw() method.
+     */
+    protected final void fillBackground() {
+        graphics.setColor(bgColor);
+        graphics.fillRect(0, 0, size.x, size.y);
+    }
+    
+    /**
      * Contains all the drawing code for the Module. Drawing code should be implemented
      * using the 'graphics' member of the Module class. The 'graphics' object draws 
      * to the 'buffer' BufferedImage, which can be accessed by parent classes to be rendered

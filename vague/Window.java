@@ -20,6 +20,7 @@ import vague.module.TestModule;
 import vague.module.container.Container;
 import vague.util.MouseTracker;
 import vague.util.Vector;
+import vague.workspace.Workspace;
 
 /**
  * The Window class is a graphical window presented to the user. It is the base for all user interaction.
@@ -86,7 +87,9 @@ public class Window extends JFrame {
         
         this.setLocationRelativeTo(null); //Center the window
         
-        system = new Exchange(new TestModule(DEFAULT_WIDTH, DEFAULT_HEIGHT)) {
+        TestModule[] testChildMods = new TestModule[] { new TestModule(1, 1) };
+        
+        system = new Exchange(new Workspace(DEFAULT_WIDTH,DEFAULT_HEIGHT,testChildMods)) {
             @Override
             public Vector mousePosition() {
                 return windowMousePosition();
@@ -184,22 +187,5 @@ public class Window extends JFrame {
                 MouseInfo.getPointerInfo().getLocation().x - this.getX() - this.getInsets().left,
                 MouseInfo.getPointerInfo().getLocation().y - this.getY() - this.getInsets().top
         );
-    }
-    
-    /**
-     * Does all the drawing for the program.
-     * 
-     * The draw method takes a Graphics object as a parameter and uses it to draw all
-     * the graphics of the program.
-     * 
-     * The graphics are rendered from child classes and then drawn onto the top parent
-     * window (this class) in order to present them to the end user.
-     * 
-     * Only specific graphics are necessarily drawn because rendering time needs to be
-     * kept to a minimum.
-     * @param g 
-     */
-    private void draw(Graphics g) {
-        
     }
 }

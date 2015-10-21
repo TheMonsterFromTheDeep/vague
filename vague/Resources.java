@@ -14,7 +14,8 @@ import vague.util.Cursor;
  */
 public class Resources {
     ////General
-    public BufferedImage ICON; //The app's icon TODO: Make icon
+    public BufferedImage ICON; //The app's icon
+    public BufferedImage BACKGROUND; //The background of the Workspace
     
     ////Cursors
     public Cursor TEST_CURSOR;
@@ -33,6 +34,7 @@ public class Resources {
         ////LOAD GENERAL IMAGES
         popup.updateLoadingMessage("images"); //Update the loading message
         ICON = loadImageRelative("/img/icon.png"); //Load images
+        BACKGROUND = loadImageRelative("/img/background.png");
         
         ////LOAD CURSORS       
         popup.updateLoadingMessage("images/cursors"); //Update the loading message
