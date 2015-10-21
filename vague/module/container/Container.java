@@ -22,8 +22,7 @@ public class Container extends Module {
         if(children.length < 1) {
             children = new Module[0]; //If there are no children, then there are no children
             clearActiveChild(); //Clear the active child because there can't be an active child
-            resize(0,0); //If there is no child modules, there is no reason for this to have any size
-            locate(0,0);
+            initialize(new Vector(),new Vector()); //If there is no child modules, there is no reason for this to have any size
         }
         else {
             this.children = children;
@@ -38,13 +37,13 @@ public class Container extends Module {
                     height = children[i].bottom();
                 }
             }
-            resize(width,height);
-            locate(0,0);
+            //Initialize the module to zero,zero with the calculate size
+            initialize(new Vector(),new Vector(width,height));
         }
-        for(int i = 0; i < children.length; i++) {
-            children[i].setParent(this);
-            children[i].sizedata.update(children[i].width(), width(), children[i].height(), height());
-            children[i].posdata.update(children[i].x(), width(), children[i].y(), height());
+        for(int i = 0; i < this.children.length; i++) {
+            this.children[i].setParent(this);
+            this.children[i].sizedata.update(children[i].width(), width(), children[i].height(), height());
+            this.children[i].posdata.update(children[i].x(), width(), children[i].y(), height());
         }
     }
     
@@ -58,10 +57,10 @@ public class Container extends Module {
             this.children = children;
             setActiveChild(0); //Set an active child so that nothing weird happens
         }
-        for(int i = 0; i < children.length; i++) {
-            children[i].setParent(this);
-            children[i].sizedata.update(children[i].width(), width(), children[i].height(), height());
-            children[i].posdata.update(children[i].x(), width(), children[i].y(), height());
+        for(int i = 0; i < this.children.length; i++) {
+            this.children[i].setParent(this);
+            this.children[i].sizedata.update(children[i].width(), width(), children[i].height(), height());
+            this.children[i].posdata.update(children[i].x(), width(), children[i].y(), height());
         }
     }
     

@@ -50,6 +50,23 @@ public class Module extends ModuleBase {
     */
     public boolean retainFocus;
     
+    /**
+     * Initializes a Module to the specified position and size.
+     * 
+     * This should ONLY be called by the constructor, but won't necessarily break things
+     * if not.
+     * 
+     * Foreseen problem: Might a child Module calling this break it's percents for the parent
+     * Module?
+     * @param position The position to initialize with.
+     * @param size The size to initialize with.
+     */
+    protected final void initialize(Vector position, Vector size) {
+        this.position = position;
+        this.size = size;
+        doRenderCalc();
+    }
+    
     public Module() {
         /**
          * Default position and size of the Module.
@@ -216,6 +233,8 @@ public class Module extends ModuleBase {
      * @param height The new height of the module.
      */
     public final void resize(int width, int height) {
+        width = width < 0 ? 0 : width;
+        height = height < 0 ? 0 : height;
         onResize(new Vector(width, height));
         size = new Vector(width, height);
         doRenderCalc();
@@ -230,6 +249,8 @@ public class Module extends ModuleBase {
      * @param v The Vector to resize to.
      */
     public final void resize(Vector v) {
+        v.x = v.x < 0 ? 0 : v.x;
+        v.y = v.y < 0 ? 0 : v.y;
         onResize(v);
         size = new Vector(v); //The Vector is copied so that nothing has a reference to size through a refererence
         doRenderCalc();
