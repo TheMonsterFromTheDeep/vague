@@ -12,7 +12,7 @@ import vague.util.Cursor;
  * However, it also contains the  methods needed to load said images.
  * @author TheMonsterFromTheDeep
  */
-public class ImageLoader {
+public class Resources {
     ////General
     public BufferedImage ICON; //The app's icon TODO: Make icon
     
@@ -20,10 +20,23 @@ public class ImageLoader {
     public Cursor TEST_CURSOR;
     
     //Easy name for easy access
-    public static ImageLoader IMG;
+    public static Resources bank;
     
-    public ImageLoader() {
-        TEST_CURSOR = new Cursor(loadRel("/img/test_cursor.png"),-8,-8);
+    public Resources() { }
+    
+    /**
+     * Loads all the resources for the application. The WaitPopup communicates what is being loaded
+     * at the current time.
+     * @param popup The WaitPopup to display loading messages to the user.
+     */
+    public void loadResources(WaitPopup popup) {
+        ////LOAD GENERAL IMAGES
+        popup.updateLoadingMessage("images"); //Update the loading message
+        ICON = loadImageRelative("/img/icon.png"); //Load images
+        
+        ////LOAD CURSORS       
+        popup.updateLoadingMessage("images/cursors"); //Update the loading message
+        TEST_CURSOR = new Cursor(loadImageRelative("/img/test_cursor.png"),-8,-8); //Load cursors
     }
     
     /**
@@ -34,9 +47,9 @@ public class ImageLoader {
      * @param path The relative path to an image.
      * @return The image loaded from the relative path, or null if there was no image.
      */
-    public static BufferedImage loadRel(String path) {
+    public static BufferedImage loadImageRelative(String path) {
         try {
-            return ImageIO.read(ImageLoader.class.getResource(path));
+            return ImageIO.read(Resources.class.getResource(path));
         }
         catch(IOException e) {
             System.err.println("There was an error loading an image from " + path + ". There may be consequences.");

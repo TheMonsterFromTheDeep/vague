@@ -10,16 +10,16 @@ public class Program {
      * The entry point for the application.
      * @param args Command line arguments.
      */
-    public static void main(String[] args) {
-        //Create a new ImageLoader and load images before the application is run.
-        ImageLoader.IMG = new ImageLoader();
+    public static void main(String[] args) { 
+        Resources.bank = new Resources(); //Initialize the Resources bank so that resources can be loaded       
+        WaitPopup p = new WaitPopup(); //Create the popup to be displayed while loading
         
-        /*
-        In the future, a temporary window will be used that is displayed while all resources are loading,
-        if that amount of resources ever exists.
-        */
+        Resources.bank.loadResources(p); //Load the resources and pass the WaitPopup so messages will be displayed
         
-        //Creates a new Window object and makes it useable for interaction with the user.
+        p.close(); //Close the loading popup
+        p.dispose();
+        
+        //Create a Window so that the user can use the actual application
         new Window().run();
     }
 }

@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import vague.ImageLoader;
+import vague.Resources;
 import vague.util.Cursor;
 import vague.util.Vector;
 
@@ -104,7 +104,7 @@ public class TestModule extends Module {
         graphics.fillRect(0, 0, width(), height());
         graphics.drawImage(canvas, 0, 0, null);
         if(drawing) {
-            Cursor s = ImageLoader.IMG.TEST_CURSOR;
+            Cursor s = Resources.bank.TEST_CURSOR;
             graphics.drawImage(s.image,s.getDrawX(mousePosition().x),s.getDrawY(mousePosition().y),null);
         }
     }

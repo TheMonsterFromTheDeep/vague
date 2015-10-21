@@ -65,7 +65,7 @@ public class Window extends JFrame {
         //The format for the title is "$Filename | Vague".
         super("Untitled | Vague"); //Set the title of the window. The default file is "Untitled".
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //When the window is closed, the program should exit.
-
+        this.setIconImage(Resources.bank.ICON);  
         
         /*
         A JPanel object will be used for all graphical presentation.
@@ -83,6 +83,8 @@ public class Window extends JFrame {
         panel.setPreferredSize(new java.awt.Dimension(DEFAULT_WIDTH,DEFAULT_HEIGHT));
         this.add(panel); //Add the JPanel so that its rendering will be reflected on the shown window
         this.pack(); //Pack the JFrame
+        
+        this.setLocationRelativeTo(null); //Center the window
         
         system = new Exchange(new TestModule(DEFAULT_WIDTH, DEFAULT_HEIGHT)) {
             @Override
