@@ -23,7 +23,7 @@ public class ImageLoader {
     public static ImageLoader IMG;
     
     public ImageLoader() {
-        TEST_CURSOR = new Cursor(loadRel("/img/test_cursor.png"),-16,-16);
+        TEST_CURSOR = new Cursor(loadRel("/img/test_cursor.png"),-8,-8);
     }
     
     /**
