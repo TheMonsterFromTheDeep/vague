@@ -27,18 +27,16 @@ public class TestModule extends Module {
     public void onFocus() {
         this.bgColor = Color.ORANGE;
         redraw();
-        drawParent();
     }
     
     @Override
     public void onUnfocus() {
         this.bgColor = colors[id];
         redraw();
-        drawParent();
     }
     
     @Override
-    public void redraw() {
+    public void draw() {
         graphics.setColor(bgColor);
         graphics.fillRect(0,0,width(),height());
     }

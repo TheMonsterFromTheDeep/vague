@@ -167,10 +167,10 @@ public class Container extends Module {
     public void keyType(KeyEvent e) { activeChild.keyType(e); }
     
     @Override
-    public void redraw() {
+    public void draw() {
         for(int i = 0; i < children.length; i++) {
             if(children[i].visible()) {
-                children[i].redraw();
+                children[i].draw();
                 graphics.drawImage(children[i].render(), children[i].x(), children[i].y(), null);
             }
         }

@@ -123,18 +123,33 @@ public class Module extends ModuleBase {
      * For example, it can be called in a constructor if a module must start with
      * a certain graphical state.
      */  
-    protected final void readyForRendering() { doRenderCalc(); }
+    protected final void readyForRendering() { doRenderCalc(); } 
     
     /**
-     * Causes the Module to re-draw itself, saving all changes to the
-     * 'buffer' BufferedImage. The buffer is accessed by other classes through
-     * the render() method.
+     * Contains all the drawing code for the Module. Drawing code should be implemented
+     * using the 'graphics' member of the Module class. The 'graphics' object draws 
+     * to the 'buffer' BufferedImage, which can be accessed by parent classes to be rendered
+     * higher in the Module hierarchy.
      * 
-     * IMPORTANT: redraw is only ever called if it is also called in the parent.
-     * ergo, it is not necessary to call the drawParent() method within the redraw()
-     * method.
+     * This method should NOT call drawParent(). If a Module needs to draw itself and its parent,
+     * it should call the redraw() method from inside its body. The draw() method may be called by
+     * parent modules and it could possibly cause an infinite loop of parent calling child calling parent
+     * calling child.
      */
-    public void redraw() { }
+    public void draw() { }
+    
+    /**
+     * Causes the Module to re-draw itself and reflect all changes higher in the object hierarchy. This 
+     * method should be called whenever the Module modifies it's graphical state so that the top-level
+     * Window can reflect the modified state as quickly as possible. 
+     * 
+     * This method simply calls the draw() method of the Module, causing it to draw all things, and then
+     * the drawParent() method, so that changes will be reflected higher in the hierarchy.
+     */
+    public final void redraw() {
+        draw();
+        drawParent();
+    }
     
     /**
      * Causes the Module to draw one of its child nodes.
@@ -238,7 +253,7 @@ public class Module extends ModuleBase {
         onResize(new Vector(width, height));
         size = new Vector(width, height);
         doRenderCalc();
-        redraw(); //Redraw in case it needs to be re-drawn
+        draw(); //Redraw in case it needs to be re-drawn
     }
     
     /**
@@ -254,7 +269,7 @@ public class Module extends ModuleBase {
         onResize(v);
         size = new Vector(v); //The Vector is copied so that nothing has a reference to size through a refererence
         doRenderCalc();
-        redraw();
+        draw();
     }
     
     /**
