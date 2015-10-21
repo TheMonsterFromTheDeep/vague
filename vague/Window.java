@@ -84,13 +84,7 @@ public class Window extends JFrame {
         this.add(panel); //Add the JPanel so that its rendering will be reflected on the shown window
         this.pack(); //Pack the JFrame
         
-        TestModule left = new TestModule(DEFAULT_WIDTH / 2, DEFAULT_HEIGHT / 2, 1);
-        TestModule right = new TestModule(DEFAULT_WIDTH / 2, DEFAULT_HEIGHT / 2, 2);
-        TestModule bottom = new TestModule(DEFAULT_WIDTH, DEFAULT_HEIGHT / 2, 3);
-        right.locate(DEFAULT_WIDTH / 2, 0);
-        bottom.locate(0, DEFAULT_HEIGHT / 2);
-        Module[] myTestModuleGuys = new Module[] { left, right, bottom };
-        system = new Exchange(new Container(myTestModuleGuys)) {
+        system = new Exchange(new TestModule(DEFAULT_WIDTH, DEFAULT_HEIGHT)) {
             @Override
             public Vector mousePosition() {
                 return windowMousePosition();

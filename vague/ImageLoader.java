@@ -3,6 +3,7 @@ package vague;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import vague.util.Cursor;
 
 /**
  * The ImageLoader class is almost a Singleton container that contains all the image resources for the
@@ -12,13 +13,17 @@ import javax.imageio.ImageIO;
  * @author TheMonsterFromTheDeep
  */
 public class ImageLoader {
-    public BufferedImage ICON; //The app's icon
+    ////General
+    public BufferedImage ICON; //The app's icon TODO: Make icon
+    
+    ////Cursors
+    public Cursor TEST_CURSOR;
     
     //Easy name for easy access
     public static ImageLoader IMG;
     
     public ImageLoader() {
-        
+        TEST_CURSOR = new Cursor(loadRel("/img/test_cursor.png"),-16,-16);
     }
     
     /**
