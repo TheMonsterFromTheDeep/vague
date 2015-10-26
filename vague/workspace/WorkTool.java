@@ -1,7 +1,9 @@
 package vague.workspace;
 
 import java.awt.Color;
+import java.awt.event.MouseEvent;
 import vague.module.Module;
+import vague.module.container.Container;
 import vague.util.Vector;
 
 /**
@@ -54,6 +56,13 @@ public class WorkTool extends Module {
     public void onUnfocus() {
         bgColor = BG_COLOR;
         redraw();
+    }
+    
+    @Override
+    public void mouseDown(MouseEvent e) {
+        if(parent instanceof Container) {
+            ((Container)parent).removeChild(this);
+        }
     }
     
     @Override

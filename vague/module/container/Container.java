@@ -124,6 +124,30 @@ public class Container extends Module {
         children[tmp.length] = m;    
     }
     
+    /**
+     * Removes the specified child module from the Container. Should ONLY be called by child modules / the
+     * container itself in order to remove themselves / children.
+     * @param m The Module to remove.
+     */
+    public final void removeChild(Module m) {
+        Module[] tmp = new Module[children.length - 1];
+        int i = 0;
+        while(children[i] != m && i < children.length) {
+            tmp[i] = children[i];
+            i++;
+        }
+        if(i == activeIndex) { clearActiveChild(); } //If the removed child was active, then the child needs to be cleared, because
+        //no child should then be active
+        i++;
+        while(i < children.length) {
+            tmp[i - 1] = children[i];
+            i++;
+        }
+        children = tmp;
+        
+        redraw(); //The container will likely have a changed graphical state
+    }
+    
     /*
     When the Container is resized it needs to reposition and resize its children.
     
