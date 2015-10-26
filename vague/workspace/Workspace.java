@@ -128,20 +128,21 @@ public class Workspace extends Container {
     
     @Override
     public void mouseMove(Vector pos, Vector dif) {
-        if(createTool) {
-            toolEnd = pos;
-            drawTool();
-        }
-        else if(activeIndex > -1) {
+        if(activeIndex > -1) {
             if(!activeChild.retainFocus) {
                 if (!activeChild.containsPoint(pos) || !activeChild.visible()) {
                     activeChild.onUnfocus();
                     updateActiveChild(pos);
                 }
             }
+            else { retainFocus = true; } //If the child is retaining focus, this needs to retain focus too
             //Pass mouse coordinates onto child module but where the coordinates passed will have an origin
             //at the top left corner of the child module
             activeChild.mouseMove(pos.getDif(activeChild.position()),dif.getDif(activeChild.position())); 
+        }
+        else if(createTool) {
+            toolEnd = pos;
+            drawTool();
         }
         else {
             updateActiveChild(pos);

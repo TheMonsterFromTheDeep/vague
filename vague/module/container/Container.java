@@ -182,6 +182,7 @@ public class Container extends Module {
                 }
             }
         }
+        else { retainFocus = true; } //If the child is retaining focus, this needs to retain focus too
         //Pass mouse coordinates onto child module but where the coordinates passed will have an origin
         //at the top left corner of the child module
         activeChild.mouseMove(mousePos.getDif(activeChild.position()),mouseDif.getDif(activeChild.position())); 

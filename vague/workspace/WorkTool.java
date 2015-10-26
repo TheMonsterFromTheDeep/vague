@@ -1,7 +1,9 @@
 package vague.workspace;
 
 import java.awt.Color;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import vague.module.Module;
 import vague.module.TestModule;
 import vague.module.container.Container;
@@ -90,23 +92,25 @@ public class WorkTool extends Module {
     public void mouseMove(Vector pos, Vector dif) {
         if(!child.retainFocus) {
             active = child.containsPoint(pos); //Update whether child Module is active
-        }
-        if(active) {
-            child.mouseMove(pos.getDif(child.position()), dif.getDif(child.position()));
-        }
-        else { //If the child is not active, check for the various controls of the WorkTool
-            //Check if the WorkTool is closable using so-called "magic numbers" - this checks
-            //to see if the mouse is in the top-right corner (within 20 pixels of it)
-            if(pos.x > width() - BORDER_WIDTH && pos.x < width() && pos.y > 0 && pos.y < BORDER_WIDTH) {
-                closable = true;
-                redraw();
-            }
-            else {
-                if(closable) {
-                    closable = false;
+            
+            if(!active) { //If the child is not active, check for the various controls of the WorkTool
+                //Check if the WorkTool is closable using so-called "magic numbers" - this checks
+                //to see if the mouse is in the top-right corner (within 20 pixels of it)
+                if(pos.x > width() - BORDER_WIDTH && pos.x < width() && pos.y > 0 && pos.y < BORDER_WIDTH) {
+                    closable = true;
                     redraw();
                 }
+                else {
+                    if(closable) {
+                        closable = false;
+                        redraw();
+                    }
+                }
             }
+        }
+        else { retainFocus = true; } //If the child is retaining focus, this needs to retain focus too
+        if(active) { //If the child is active, it should be updated no matter what
+            child.mouseMove(pos.getDif(child.position()), dif.getDif(child.position()));
         }
     }
     
@@ -128,6 +132,18 @@ public class WorkTool extends Module {
             child.mouseUp(e);
         }
     }
+    
+    @Override
+    public void mouseClick(MouseEvent e) { child.mouseClick(e); }
+    @Override
+    public void mouseScroll(MouseWheelEvent e) { child.mouseScroll(e); }
+    
+    @Override
+    public void keyDown(KeyEvent e) { child.keyDown(e); }
+    @Override
+    public void keyUp(KeyEvent e) { child.keyUp(e); }
+    @Override
+    public void keyType(KeyEvent e) { child.keyType(e); }
     
     @Override
     public void draw() {     
