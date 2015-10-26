@@ -17,6 +17,8 @@ public class Workspace extends Container {
     public static Color TOOL_BORDER_COLOR = new Color(0xbbbbdd); //Colors used when drawing the WorkTools
     public static Color TOOL_FILL_COLOR = new Color(0xc3c3dd);
     
+    public static int MIN_SIZE = 60; //Stores the minimum creatable size of WorkTool
+    
     private static final int BG_WIDTH = 800; //Width/height of bgimage
     private static final int BG_HEIGHT = 600;
     
@@ -61,11 +63,13 @@ public class Workspace extends Container {
             if(createTool) {
                 createTool = false;
                 WorkTool newTool = new WorkTool(toolStart,toolEnd);
-                boolean create = true;
-                for(Module m : children) {
-                    if(newTool.intersects(m)) { create = false; }
+                if(newTool.width() > MIN_SIZE && newTool.height() > MIN_SIZE) {
+                    boolean create = true;
+                    for(Module m : children) {
+                        if(newTool.intersects(m)) { create = false; }
+                    }
+                    if(create) { addChild(newTool); }
                 }
-                if(create) { addChild(newTool); }
                 
                 children[children.length - 1].draw();
                 redraw();
