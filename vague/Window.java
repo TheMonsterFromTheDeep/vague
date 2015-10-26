@@ -11,6 +11,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -152,6 +155,14 @@ public class Window extends JFrame {
 
             @Override
             public void mouseExited(MouseEvent me) {}
+        });
+        
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowStateChanged(WindowEvent e) {
+                system.resize(Window.this.getSize().width,Window.this.getSize().height);
+                System.err.println("Window state changed!");
+            }
         });
         
         mouseTracker = new MouseTracker();

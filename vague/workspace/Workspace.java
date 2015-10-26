@@ -1,9 +1,12 @@
 package vague.workspace;
 
 import java.awt.Color;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import vague.Resources;
 import vague.module.Module;
 import vague.module.container.Container;
+import vague.util.Vector;
 
 /**
  * The Workspace defines a container in which the user can create and move small containers which
@@ -11,13 +14,111 @@ import vague.module.container.Container;
  * @author TheMonsterFromTheDeep
  */
 public class Workspace extends Container {
-    private static int BG_WIDTH = 800; //Width/height of bgimage
-    private static int BG_HEIGHT = 600;
+    public static Color TOOL_BORDER_COLOR = new Color(0xbbbbdd); //Colors used when drawing the WorkTools
+    public static Color TOOL_FILL_COLOR = new Color(0xc3c3dd);
+    
+    private static final int BG_WIDTH = 800; //Width/height of bgimage
+    private static final int BG_HEIGHT = 600;
+    
+    private Vector toolStart; //Used when the Workspace is creating a tool - toolStart is anchored and toolEnd
+    private Vector toolEnd;   //moves to match the mouse
+    
+    private boolean createTool; //Stores whether the Workspace is currently being used to create a tool
+    //NOTE: May be changed in the future to a integer which stores the function that the Container is
+    //currently performing.
+    
+    private BufferedImage workspace; //Stores a secondary buffer of the current workspace
+    //such that it does not have to be re-drawn every time new tools are created
     
     public Workspace(int width, int height, Module[] children) {
         super(width,height,children);
         
+        workspace = getValidBuffer(size());
+        
         this.bgColor = new Color(0xcfcfcf);
+    }
+    
+    @Override
+    public void onResize(Vector newSize) {
+        workspace = getValidBuffer(newSize);
+    }
+    
+    @Override
+    public void mouseDown(MouseEvent e) {
+        createTool = true;
+        toolStart = new Vector(mousePosition()); //Copy the mousePosition into both the toolStart and toolEnd
+        toolEnd = new Vector(toolStart);
+    }
+    
+    @Override
+    public void mouseUp(MouseEvent e) {
+        if(createTool) {
+            createTool = false;
+            addChild(new WorkTool(toolStart,toolEnd));
+            children[children.length - 1].draw();
+            redraw();
+        }
+    }
+    
+    private void drawTool() {
+        graphics.drawImage(workspace,0,0,null); //Draw the current buffer of the workspace
+        
+        Vector start = new Vector(), size = new Vector();
+        if(toolStart.x < toolEnd.x) {
+            start.x = toolStart.x;
+            size.x = toolEnd.x - toolStart.x;
+        }
+        else {
+            start.x = toolEnd.x;
+            size.x = toolStart.x - toolEnd.x;
+        }
+        
+        if(toolStart.y < toolEnd.y) {
+            start.y = toolStart.y;
+            size.y = toolEnd.y - toolStart.y;
+        }
+        else {
+            start.y = toolEnd.y;
+            size.y = toolStart.y - toolEnd.y;
+        }
+        
+        graphics.setColor(TOOL_FILL_COLOR);
+        graphics.fillRect(start.x + 1,start.y + 1,size.x - 1,size.y - 1);
+        graphics.setColor(TOOL_BORDER_COLOR);
+        graphics.drawRect(start.x, start.y, size.x, size.y);
+        
+        drawParent(); //Draw the parent because it SHOULD NOT be implicitly called by any other method when drawTool() is called
+    }
+    
+    @Override
+    public void mouseMove(Vector pos, Vector dif) {
+        if(createTool) {
+            toolEnd = pos;
+            drawTool();
+        }
+        else {
+                if(!activeChild.retainFocus) {
+                if (!activeChild.containsPoint(pos) || !activeChild.visible()) {
+                    activeChild.onUnfocus();
+                    boolean updated = false; //Stores whether a new active Module was discovered
+                    int i = 0;
+                    while(!updated && i < children.length) { //Iterate through child Modules to see if any are active
+                        if(children[i].containsPoint(pos)) { //If the Module contains the mouse, it should be active
+                            updated = true; //A Module has been made active
+                            setActiveChild(i); //Set the active child
+                            children[i].onFocus();
+                        }                
+                        i++;
+                    }
+                    if(!updated) { //If the active child hasn't been updated, then it should be cleared
+                        clearActiveChild();
+                    }
+                }
+            }
+            //Pass mouse coordinates onto child module but where the coordinates passed will have an origin
+            //at the top left corner of the child module
+            activeChild.mouseMove(pos.getDif(position()),dif.getDif(position())); 
+        }
     }
     
     @Override
@@ -28,5 +129,8 @@ public class Workspace extends Container {
                 graphics.drawImage(Resources.bank.BACKGROUND, x, y, null);
             }
         }
+        drawChildren();
+        
+        workspace.createGraphics().drawImage(buffer, 0, 0, null);
     }
 }

@@ -14,9 +14,9 @@ import vague.util.Vector;
  * @author TheMonsterFromTheDeep
  */
 public class Container extends Module {
-    Module[] children; //Stores the child Modules of the container
-    Module activeChild; //Stores a reference to the active child
-    int activeIndex; //Stores the index of the active child: equal to -1 if there is no active child
+    protected Module[] children; //Stores the child Modules of the container
+    protected Module activeChild; //Stores a reference to the active child
+    protected int activeIndex; //Stores the index of the active child: equal to -1 if there is no active child
           
     public Container(Module[] children) {
         if(children.length < 1) {
@@ -111,6 +111,19 @@ public class Container extends Module {
         activeChild = children[index];
     }
     
+    /**
+     * Adds a new child to the Container.
+     * @param m The child to add to the Container.
+     */
+    protected final void addChild(Module m) {
+        m.setParent(this); //Set the parent of the child
+        
+        Module[] tmp = children;
+        children = new Module[children.length + 1];
+        System.arraycopy(tmp, 0, children, 0, tmp.length);
+        children[tmp.length] = m;    
+    }
+    
     /*
     When the Container is resized it needs to reposition and resize its children.
     
@@ -165,6 +178,18 @@ public class Container extends Module {
     public void keyUp(KeyEvent e) { activeChild.keyUp(e); }
     @Override
     public void keyType(KeyEvent e) { activeChild.keyType(e); }
+    
+    /**
+     * Draws all the child Modules of the container. To be used in the draw() method by subclasses.
+     */
+    protected final void drawChildren() {
+        for(int i = 0; i < children.length; i++) {
+            if(children[i].visible()) {
+                children[i].draw();
+                graphics.drawImage(children[i].render(), children[i].x(), children[i].y(), null);
+            }
+        }
+    }
     
     @Override
     public void draw() {

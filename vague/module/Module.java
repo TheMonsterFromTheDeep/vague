@@ -92,24 +92,14 @@ public class Module extends ModuleBase {
      * width and height.
      */
     private void doRenderCalc() {
-        BufferedImage old; //Declare a BufferedImage object to hold the current data of the buffer
-                           //so that it can be drawn back to the new buffer
-        if(size.similar(Vector.ZERO)) {
-            //if the size is zero, the old BufferedImage needs to be created with a size of 1,1
-            //so that it can be created correctly
-            old = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-            old.createGraphics().drawImage(buffer, 0, 0, null);
-            //If the size is zero, the buffer needs to have some sort of size
-            //so it is created as an image with a width of 1 and height of 1.
-            buffer = new BufferedImage(1,1,BufferedImage.TYPE_INT_ARGB);
-        }
-        else {
-            //If the size is not zero, the old buffer can simply have the new size 
-            old = new BufferedImage(size.x, size.y, BufferedImage.TYPE_INT_ARGB);
-            old.createGraphics().drawImage(buffer, 0, 0, null);
-            //Simply create the buffer with the width and height of the module.
-            buffer = new BufferedImage(size.x,size.y,BufferedImage.TYPE_INT_ARGB);
-        }
+        int width = (size.x < 1) ? 1 : size.x; //Get a valid size for the BufferedImages
+        int height = (size.y < 1) ? 1 : size.y;
+        
+        //Declare a BufferedImage object to hold the current data of the buffer
+        //so that it can be drawn back to the new buffer
+        BufferedImage old = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        old.createGraphics().drawImage(buffer, 0, 0, null);
+        buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         //Allow graphics to be used.
         graphics = buffer.createGraphics();
         graphics.setColor(bgColor);
@@ -124,6 +114,19 @@ public class Module extends ModuleBase {
      * a certain graphical state.
      */  
     protected final void readyForRendering() { doRenderCalc(); } 
+    
+    /**
+     * Constructs a BufferedImage with the width and height of the Module that is valid:
+     * if the width or height of the Module is less than zero than the width / height of the
+     * Buffer is set as 1.
+     * @param bufferSize The size of the buffer to construct.
+     * @return The constructed BufferedImage.
+     */
+    protected final BufferedImage getValidBuffer(Vector bufferSize) {
+        int width = (bufferSize.x < 1) ? 1 : bufferSize.x;
+        int height = (bufferSize.y < 1) ? 1 : bufferSize.y;
+        return new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB);
+    }
     
     /**
      * Fills the background with 'bgColor'. Can be called during the draw() method.
