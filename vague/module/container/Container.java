@@ -184,7 +184,7 @@ public class Container extends Module {
         }
         //Pass mouse coordinates onto child module but where the coordinates passed will have an origin
         //at the top left corner of the child module
-        activeChild.mouseMove(mousePos.getDif(position()),mouseDif.getDif(position())); 
+        activeChild.mouseMove(mousePos.getDif(activeChild.position()),mouseDif.getDif(activeChild.position())); 
     }
 
     @Override

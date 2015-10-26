@@ -25,7 +25,7 @@ public class TestModule extends Module {
     public TestModule(int width, int height) {
         super(width, height);
         bgColor = background;
-        canvas = new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB);
+        canvas = getValidBuffer(new Vector(width,height));
         
         drawing = false;
     }
@@ -69,6 +69,7 @@ public class TestModule extends Module {
     @Override
     public void mouseDown(MouseEvent e) {
         drawing = true;
+        retainFocus = true;
         oldx = mousePosition().x;
         oldy = mousePosition().y;
         drawPoint(mousePosition().x,mousePosition().y);
@@ -77,6 +78,7 @@ public class TestModule extends Module {
     @Override
     public void mouseUp(MouseEvent e) {
         drawing = false;
+        retainFocus = false;
         redraw();
     }
     
@@ -86,7 +88,7 @@ public class TestModule extends Module {
         int cheight = v.y < canvas.getHeight() ? canvas.getHeight() : v.y;
         BufferedImage old = new BufferedImage(canvas.getWidth(),canvas.getHeight(),BufferedImage.TYPE_INT_ARGB);
         old.createGraphics().drawImage(canvas,0,0,null);
-        canvas = new BufferedImage(cwidth,cheight,BufferedImage.TYPE_INT_ARGB);
+        canvas = getValidBuffer(new Vector(cwidth,cheight));
         canvas.createGraphics().drawImage(old, 0, 0, null);
     }
     

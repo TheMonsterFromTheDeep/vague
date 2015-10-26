@@ -141,7 +141,7 @@ public class Workspace extends Container {
             }
             //Pass mouse coordinates onto child module but where the coordinates passed will have an origin
             //at the top left corner of the child module
-            activeChild.mouseMove(pos.getDif(position()),dif.getDif(position())); 
+            activeChild.mouseMove(pos.getDif(activeChild.position()),dif.getDif(activeChild.position())); 
         }
         else {
             updateActiveChild(pos);
