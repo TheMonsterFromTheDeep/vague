@@ -352,6 +352,24 @@ public class Module extends ModuleBase {
     //Returns the position of the bottom right corner of the module. Useful for various application. 
     public final Vector bottomRight() { return new Vector(position.getSum(size)); }
     
+    private boolean inRange(int i, int min, int max) {
+        return(i > min && i < max);
+    }
+    
+    public final boolean intersects(Module m) {
+        if(inRange(x(),m.x(),m.right()) || inRange(right(),m.x(),m.right())) {
+            if(inRange(y(),m.y(),m.bottom()) || inRange(bottom(),m.y(),m.bottom())) {
+                return true;
+            }
+        }
+        if(inRange(m.x(),x(),right()) || inRange(m.right(),x(),right())) {
+            if(inRange(m.y(),y(),bottom()) || inRange(m.bottom(),y(),bottom())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     /**
      * This method returns the rendered version of the Module.
      * 

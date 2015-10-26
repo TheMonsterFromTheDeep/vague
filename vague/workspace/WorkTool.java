@@ -14,15 +14,13 @@ import vague.util.Vector;
  */
 public class WorkTool extends Module {
     static final Color BG_COLOR = new Color(0xbcbcdd); //The color of the WorkTool when it is not active
-    static final Color BORDER_COLOR = new Color(0xb4b4dd);
     static final Color BG_COLOR_HIGH = new Color(0xbfbfdd); //The color of the WorkTool when it is active
-    static final Color BORDER_COLOR_HIGH = new Color(0xb7b7dd);
+    static final Color BORDER_COLOR = new Color(0);
     
-    private Color borderColor; //Stores the current border color of the WorkTool
+    private Module child; //The WorkTool contains a single Module child which does what it needs to do
     
     public WorkTool(Vector start, Vector end) {
         bgColor = BG_COLOR;
-        borderColor = BORDER_COLOR;
         
         Vector pos = new Vector(), size = new Vector();
         if(start.x < end.x) {
@@ -49,24 +47,20 @@ public class WorkTool extends Module {
     @Override
     public void onFocus() {
         bgColor = BG_COLOR_HIGH;
-        borderColor = BORDER_COLOR_HIGH;
-        
         redraw();
     }
     
     @Override
     public void onUnfocus() {
         bgColor = BG_COLOR;
-        borderColor = BORDER_COLOR;
-        
         redraw();
     }
     
     @Override
-    public void draw() {
-        graphics.setColor(BORDER_COLOR);
-        graphics.drawRect(0,0,width(),height());
+    public void draw() {        
         graphics.setColor(bgColor);
-        graphics.fillRect(1,1,width()-1,height()-1);
+        graphics.fillRect(1, 1, width() - 2, height() - 2);
+        graphics.setColor(BORDER_COLOR);
+        graphics.drawRect(0,0,width() - 1,height() - 1);
     }
 }

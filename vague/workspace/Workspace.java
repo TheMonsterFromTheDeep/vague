@@ -45,19 +45,35 @@ public class Workspace extends Container {
     
     @Override
     public void mouseDown(MouseEvent e) {
-        createTool = true;
-        toolStart = new Vector(mousePosition()); //Copy the mousePosition into both the toolStart and toolEnd
-        toolEnd = new Vector(toolStart);
+        if(activeIndex == -1) {
+            createTool = true;
+            toolStart = new Vector(mousePosition()); //Copy the mousePosition into both the toolStart and toolEnd
+            toolEnd = new Vector(toolStart);
+        }
+        else {
+            activeChild.mouseDown(e);
+        }
     }
     
     @Override
     public void mouseUp(MouseEvent e) {
-        if(createTool) {
-            createTool = false;
-            addChild(new WorkTool(toolStart,toolEnd));
-            children[children.length - 1].draw();
-            redraw();
+        if(activeIndex == -1) {
+            if(createTool) {
+                createTool = false;
+                WorkTool newTool = new WorkTool(toolStart,toolEnd);
+                boolean create = true;
+                for(Module m : children) {
+                    if(newTool.intersects(m)) { create = false; }
+                }
+                if(create) { addChild(newTool); }
+                
+                children[children.length - 1].draw();
+                redraw();
+            }
         }
+        else {
+            activeChild.mouseUp(e);
+        }      
     }
     
     private void drawTool() {
@@ -90,34 +106,41 @@ public class Workspace extends Container {
         drawParent(); //Draw the parent because it SHOULD NOT be implicitly called by any other method when drawTool() is called
     }
     
+    private void updateActiveChild(Vector mousePosition) {
+        boolean updated = false; //Stores whether a new active Module was discovered
+        int i = 0;
+        while(!updated && i < children.length) { //Iterate through child Modules to see if any are active
+            if(children[i].containsPoint(mousePosition)) { //If the Module contains the mouse, it should be active
+                updated = true; //A Module has been made active
+                setActiveChild(i); //Set the active child
+                children[i].onFocus();
+            }                
+            i++;
+        }
+        if(!updated) { //If the active child hasn't been updated, then it should be cleared
+            clearActiveChild();
+        }
+    }
+    
     @Override
     public void mouseMove(Vector pos, Vector dif) {
         if(createTool) {
             toolEnd = pos;
             drawTool();
         }
-        else {
-                if(!activeChild.retainFocus) {
+        else if(activeIndex > -1) {
+            if(!activeChild.retainFocus) {
                 if (!activeChild.containsPoint(pos) || !activeChild.visible()) {
                     activeChild.onUnfocus();
-                    boolean updated = false; //Stores whether a new active Module was discovered
-                    int i = 0;
-                    while(!updated && i < children.length) { //Iterate through child Modules to see if any are active
-                        if(children[i].containsPoint(pos)) { //If the Module contains the mouse, it should be active
-                            updated = true; //A Module has been made active
-                            setActiveChild(i); //Set the active child
-                            children[i].onFocus();
-                        }                
-                        i++;
-                    }
-                    if(!updated) { //If the active child hasn't been updated, then it should be cleared
-                        clearActiveChild();
-                    }
+                    updateActiveChild(pos);
                 }
             }
             //Pass mouse coordinates onto child module but where the coordinates passed will have an origin
             //at the top left corner of the child module
             activeChild.mouseMove(pos.getDif(position()),dif.getDif(position())); 
+        }
+        else {
+            updateActiveChild(pos);
         }
     }
     
