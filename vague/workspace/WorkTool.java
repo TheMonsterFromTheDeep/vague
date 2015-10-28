@@ -27,11 +27,13 @@ public class WorkTool extends Module {
     
     static final int BORDER_WIDTH = 20;
     
-    private boolean closable; //Stores whether the WorkTool should dismiss on mouse down
-    //(meaning that the mouse must be located in the dismiss button)
+    static final byte ACTION_NONE = 0; //The WorkTool is taking no particular action
+    static final byte ACTION_CHILD = 1; //The WorkTool is communicating events to the child
+    static final byte ACTION_CLOSE = 2; //The WorkTool will close
+    static final byte ACTION_MOVE = 3; //The WorkTool is moving
     
-    private boolean moveable;
-    private boolean moving;
+    private byte nextAction = ACTION_NONE; //Stores the next action that the WorkTool *can* take, based on mouse position
+    private byte action = ACTION_NONE; //Stores the action that the WorkTool is currently taking
     
     private Vector movePos; //Stores the mouse position when the mouse starts moving
     private Vector startPos; //Stores the position to jump back to if a move fails
@@ -93,8 +95,8 @@ public class WorkTool extends Module {
     @Override
     public void onUnfocus() {
         bgColor = BG_COLOR;
-        if(closable) {
-            closable = false;
+        if(nextAction == ACTION_CLOSE) {
+            nextAction = ACTION_NONE;
         }
         redraw();
     }
@@ -110,7 +112,7 @@ public class WorkTool extends Module {
     
     @Override
     public void mouseMove(Vector pos, Vector dif) {
-        if(moving) {
+        if(action == ACTION_MOVE) {
             locate(position().getSum(pos.getDif(movePos)));
             drawParent();
         }
@@ -118,7 +120,7 @@ public class WorkTool extends Module {
             boolean previous = active; //Stores the previous active state of the child
             active = child.containsPoint(pos); //Update whether child Module is active
             if(previous != active) {
-                if(active) { child.onFocus(); } //Update the focus if it changed
+                if(active) { nextAction = ACTION_CHILD; child.onFocus(); } //Update the focus if it changed
                 else { child.onUnfocus(); }
             }
             
@@ -126,23 +128,15 @@ public class WorkTool extends Module {
                 //Check if the WorkTool is closable using so-called "magic numbers" - this checks
                 //to see if the mouse is in the top-right corner (within 20 pixels of it)
                 if(pos.x > width() - BORDER_WIDTH && pos.x < width() && pos.y > 0 && pos.y < BORDER_WIDTH) {
-                    closable = true;
+                    nextAction = ACTION_CLOSE;
                     redraw();
+                }               
+                else if((pos.x > BORDER_WIDTH && pos.x < width() - BORDER_WIDTH) || (pos.y > BORDER_WIDTH && pos.y < height() - BORDER_WIDTH)) {
+                    nextAction = ACTION_MOVE;
                 }
                 else {
-                    if(closable) {
-                        closable = false;
-                        redraw();
-                    }
-                }
-                
-                if((pos.x > BORDER_WIDTH && pos.x < width() - BORDER_WIDTH) || (pos.y > BORDER_WIDTH && pos.y < height() - BORDER_WIDTH)) {
-                    moveable = true;
-                }
-                else {
-                    if(moveable) {
-                        moveable = false;
-                        redraw();
+                    if(nextAction != ACTION_NONE) {
+                        nextAction = ACTION_NONE;
                     }
                 }
             }
@@ -158,12 +152,12 @@ public class WorkTool extends Module {
         if(active) {
             child.mouseDown(e);
         }
-        else if(closable) {
+        else if(nextAction == ACTION_CLOSE) {
             workspace.removeChild(this);
         }
-        else if(moveable) {
+        else if(nextAction == ACTION_MOVE) {
             workspace.beginMoving(this);
-            moving = true;
+            action = ACTION_MOVE;
             keepFocus();
             movePos = mousePosition();
             startPos = position();
@@ -175,9 +169,9 @@ public class WorkTool extends Module {
         if(active) {
             child.mouseUp(e);
         }
-        if(moving) {
+        if(action == ACTION_MOVE) {
             workspace.stopMoving();
-            moving = false;
+            action = ACTION_NONE;
             releaseFocus();
         }
     }
@@ -205,7 +199,7 @@ public class WorkTool extends Module {
         graphics.fillRect(1, 1, width() - 2, height() - 2);
         graphics.setColor(BORDER_COLOR);
         graphics.drawRect(0,0,width() - 1,height() - 1);
-        graphics.setColor(closable ? DISMISS_COLOR_HIGH : DISMISS_COLOR); //Set the dismiss color based on whether the Module is closable
+        graphics.setColor((nextAction == ACTION_CLOSE) ? DISMISS_COLOR_HIGH : DISMISS_COLOR); //Set the dismiss color based on whether the Module is closable
         graphics.fillRect(width() - BORDER_WIDTH, 0, BORDER_WIDTH, BORDER_WIDTH);
         
         graphics.drawImage(child.render(), BORDER_WIDTH, BORDER_WIDTH, null);
