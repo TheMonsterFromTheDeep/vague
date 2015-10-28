@@ -45,6 +45,23 @@ public class Workspace extends Container {
         this.bgColor = new Color(0xcfcfcf);
     }
     
+    public void createTool() {
+        WorkTool newTool = new WorkTool(toolStart,toolEnd);
+        if(newTool.width() > MIN_SIZE && newTool.height() > MIN_SIZE) {
+            boolean create = true;
+            for(Module m : children) {
+                if(newTool.intersects(m)) { create = false; }
+            }
+            if(create) {
+                newTool.setWorkspace(this); //Allow the new WorkTool to use move and resize functions
+                addChild(newTool); 
+                children[children.length - 1].draw(); //if a child was added, it needs to be drawn
+            }
+        }
+        redraw(); //If createTool, the Workspace always needs to be re-drawn because even if a tool
+                  //wasn't created, the red square needs to be un-drawn
+    }
+    
     @Override
     public void onResize(Vector newSize) {
         workspace = getValidBuffer(newSize);
@@ -67,20 +84,7 @@ public class Workspace extends Container {
         if(activeIndex == -1) {
             if(createTool) {
                 createTool = false;
-                WorkTool newTool = new WorkTool(toolStart,toolEnd);
-                if(newTool.width() > MIN_SIZE && newTool.height() > MIN_SIZE) {
-                    boolean create = true;
-                    for(Module m : children) {
-                        if(newTool.intersects(m)) { create = false; }
-                    }
-                    if(create) { 
-                        addChild(newTool); 
-                        children[children.length - 1].draw(); //if a child was added, it needs to be drawn
-                        
-                    }
-                }
-                redraw(); //If createTool, the Workspace always needs to be re-drawn because even if a tool
-                          //wasn't created, the red square needs to be un-drawn
+                createTool();
             }
         }
         else {
@@ -177,13 +181,12 @@ public class Workspace extends Container {
     @Override
     public void mouseMove(Vector pos, Vector dif) {
         if(activeIndex > -1) {
-            if(!activeChild.retainFocus) {
+            if(!activeChild.retainFocus()) {
                 if (!activeChild.containsPoint(pos) || !activeChild.visible()) {
                     activeChild.onUnfocus();
                     updateActiveChild(pos);
                 }
             }
-            else { retainFocus = true; } //If the child is retaining focus, this needs to retain focus too
             //Pass mouse coordinates onto child module but where the coordinates passed will have an origin
             //at the top left corner of the child module
             activeChild.mouseMove(pos.getDif(activeChild.position()),dif.getDif(activeChild.position())); 

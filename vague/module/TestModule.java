@@ -72,7 +72,7 @@ public class TestModule extends Module {
     @Override
     public void mouseDown(MouseEvent e) {
         drawing = true;
-        retainFocus = true;
+        keepFocus();
         oldx = mousePosition().x;
         oldy = mousePosition().y;
         drawPoint(mousePosition().x,mousePosition().y);
@@ -81,7 +81,7 @@ public class TestModule extends Module {
     @Override
     public void mouseUp(MouseEvent e) {
         drawing = false;
-        retainFocus = false;
+        releaseFocus();
         redraw();
     }
     

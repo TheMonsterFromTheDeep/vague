@@ -42,16 +42,8 @@ public class Module extends ModuleBase {
     public Percents posdata = new Percents(); //Stores percents of this Module's position offset.
                                                //Used by container classes.
     
-    /*
-    This boolean stores whether the Module should retain focus. Vague is designed such that
-    moving the mouse into a different module should change the focus to that module. However,
-    sometimes a Module needs to make sure that focus won't change - for example, if the user
-    is panning the editor, they should be able to continue panning even if the mouse leaves
-    the Module where they are panning the mouse. 
     
-    Container Modules should check this value before changing focus.
-    */
-    public boolean retainFocus;
+    protected boolean retaining = false;
     
     /**
      * Initializes a Module to the specified position and size.
@@ -215,12 +207,7 @@ public class Module extends ModuleBase {
      * @return Whether the point is within the Module's bounds.
      */
     public final boolean containsPoint(Vector point) {
-        return (
-                point.x >= bounds.position.x &&
-                point.y >= bounds.position.y &&
-                point.x < bounds.position.x + bounds.size.x &&
-                point.y < bounds.position.y + bounds.size.y
-        );
+        return bounds.contains(point);
     }
     
     //Called when the mouse is moved - container classes pass mouse offset as well
@@ -234,6 +221,25 @@ public class Module extends ModuleBase {
     */
     public void onFocus() { }
     public void onUnfocus() { }
+    
+    /*
+    Called by Modules when they want to retain or stop retaining focus. Overloaded by Container
+    classes such that they can differentiate between keeping their own focus and keeping focus
+    such that child focus will not be lost.
+    */
+    protected final void keepFocus() { retaining = true; }
+    protected final void releaseFocus() { retaining = false; }
+    
+    /*
+    This boolean returns whether the Module should retain focus. Vague is designed such that
+    moving the mouse into a different module should change the focus to that module. However,
+    sometimes a Module needs to make sure that focus won't change - for example, if the user
+    is panning the editor, they should be able to continue panning even if the mouse leaves
+    the Module where they are panning the mouse. 
+    
+    Container Modules should check this value before changing focus.
+    */
+    public boolean retainFocus() { return retaining; }
     
     /*
     Mouse event methods to be overloaded in subclasses.

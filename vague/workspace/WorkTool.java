@@ -39,7 +39,7 @@ public class WorkTool extends Module {
     private Module child; //The WorkTool contains a single Module child which does what it needs to do
     private boolean active; //Stores whether the child Module is being controlled by the user
     
-    private boolean thisFocused = false; //Stores whether this WorkTool is keeping focus itself - used such that it can *also* retain focus when its child retains focus
+    private Workspace workspace;
     
     public WorkTool(Vector start, Vector end) {
         bgColor = BG_COLOR;
@@ -97,14 +97,21 @@ public class WorkTool extends Module {
     }
     
     @Override
+    public boolean retainFocus() { return retaining || child.retainFocus(); }
+    
+    /**
+     * Sets the Workspace parent of the WorkTool for more efficient code.
+     * @param w The new Workspace object to reference
+     */
+    public void setWorkspace(Workspace w) { this.workspace = w; }
+    
+    @Override
     public void mouseMove(Vector pos, Vector dif) {
         if(moving) {
             locate(position().getSum(pos.getDif(movePos)));
             drawParent();
         }
-        if(!child.retainFocus) {
-            if(!thisFocused) { retainFocus = false; }
-            
+        if(!child.retainFocus()) {
             boolean previous = active; //Stores the previous active state of the child
             active = child.containsPoint(pos); //Update whether child Module is active
             if(previous != active) {
@@ -137,7 +144,6 @@ public class WorkTool extends Module {
                 }
             }
         }
-        else { retainFocus = true; } //If the child is retaining focus, this needs to retain focus too
         if(active) { //If the child is active, it should be updated no matter what
             child.mouseMove(pos.getDif(child.position()), dif.getDif(child.position()));
         }
@@ -150,19 +156,14 @@ public class WorkTool extends Module {
             child.mouseDown(e);
         }
         else if(closable) {
-            if(parent instanceof Container) {
-                ((Container)parent).removeChild(this);
-            }
+            workspace.removeChild(this);
         }
         else if(moveable) {
-            if(parent instanceof Workspace) {
-                ((Workspace)parent).beginMoving(this);
-                moving = true;
-                retainFocus = true;
-                thisFocused = true;
-                movePos = mousePosition();
-                startPos = position();
-            }
+            workspace.beginMoving(this);
+            moving = true;
+            keepFocus();
+            movePos = mousePosition();
+            startPos = position();
         }
     }
     
@@ -172,12 +173,9 @@ public class WorkTool extends Module {
             child.mouseUp(e);
         }
         if(moving) {
-            if(parent instanceof Workspace) {
-                ((Workspace)parent).stopMoving();
-            }
+            workspace.stopMoving();
             moving = false;
-            retainFocus = false;
-            thisFocused = false;
+            releaseFocus();
         }
     }
     

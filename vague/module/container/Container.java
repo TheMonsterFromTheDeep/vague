@@ -17,7 +17,7 @@ public class Container extends Module {
     protected Module[] children; //Stores the child Modules of the container
     protected Module activeChild; //Stores a reference to the active child
     protected int activeIndex; //Stores the index of the active child: equal to -1 if there is no active child
-          
+    
     public Container(Module[] children) {
         if(children.length < 1) {
             this.children = new Module[0]; //If there are no children, then there are no children
@@ -148,6 +148,9 @@ public class Container extends Module {
         redraw(); //The container will likely have a changed graphical state
     }
     
+    @Override
+    public boolean retainFocus() { return retaining || activeChild.retainFocus(); }
+    
     /*
     When the Container is resized it needs to reposition and resize its children.
     
@@ -164,7 +167,7 @@ public class Container extends Module {
     
     @Override
     public void mouseMove(Vector mousePos, Vector mouseDif) {
-        if(!activeChild.retainFocus) {
+        if(!activeChild.retainFocus()) {
             if (!activeChild.containsPoint(mousePos) || !activeChild.visible()) {
                 activeChild.onUnfocus();
                 boolean updated = false; //Stores whether a new active Module was discovered
@@ -182,7 +185,6 @@ public class Container extends Module {
                 }
             }
         }
-        else { retainFocus = true; } //If the child is retaining focus, this needs to retain focus too
         //Pass mouse coordinates onto child module but where the coordinates passed will have an origin
         //at the top left corner of the child module
         activeChild.mouseMove(mousePos.getDif(activeChild.position()),mouseDif.getDif(activeChild.position())); 
