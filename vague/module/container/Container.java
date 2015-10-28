@@ -20,7 +20,7 @@ public class Container extends Module {
           
     public Container(Module[] children) {
         if(children.length < 1) {
-            children = new Module[0]; //If there are no children, then there are no children
+            this.children = new Module[0]; //If there are no children, then there are no children
             clearActiveChild(); //Clear the active child because there can't be an active child
             initialize(new Vector(),new Vector()); //If there is no child modules, there is no reason for this to have any size
         }
@@ -50,7 +50,7 @@ public class Container extends Module {
     public Container(int width, int height, Module[] children) {
         super(width, height);
         if(children.length < 1) {
-            children = new Module[0]; //If there are no children, then there are no children
+            this.children = new Module[0]; //If there are no children, then there are no children
             clearActiveChild(); //Clear the active child because there can't be an active child
         }
         else {

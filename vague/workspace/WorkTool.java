@@ -91,7 +91,14 @@ public class WorkTool extends Module {
     @Override
     public void mouseMove(Vector pos, Vector dif) {
         if(!child.retainFocus) {
+            retainFocus = false;
+            
+            boolean previous = active; //Stores the previous active state of the child
             active = child.containsPoint(pos); //Update whether child Module is active
+            if(previous != active) {
+                if(active) { child.onFocus(); } //Update the focus if it changed
+                else { child.onUnfocus(); }
+            }
             
             if(!active) { //If the child is not active, check for the various controls of the WorkTool
                 //Check if the WorkTool is closable using so-called "magic numbers" - this checks

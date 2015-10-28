@@ -90,9 +90,9 @@ public class Window extends JFrame {
         
         this.setLocationRelativeTo(null); //Center the window
         
-        TestModule[] testChildMods = new TestModule[] { new TestModule(1, 1) };
+        //TestModule[] testChildMods = new TestModule[] { new TestModule(1, 1) };
         
-        system = new Exchange(new Workspace(DEFAULT_WIDTH,DEFAULT_HEIGHT,testChildMods)) {
+        system = new Exchange(new Workspace(DEFAULT_WIDTH,DEFAULT_HEIGHT,new Module[]{})) {
             @Override
             public Vector mousePosition() {
                 return windowMousePosition();
