@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import vague.Resources;
+import vague.geom.Rectangle;
 import vague.module.Module;
 import vague.module.container.Container;
 import vague.util.Vector;
@@ -16,6 +17,8 @@ import vague.util.Vector;
 public class Workspace extends Container {
     public static Color TOOL_BORDER_COLOR = new Color(0xbbbbdd); //Colors used when drawing the WorkTools
     public static Color TOOL_FILL_COLOR = new Color(0xc3c3dd);
+    public static Color BAD_TOOL_BORDER_COLOR = new Color(0xff5858);
+    public static Color BAD_TOOL_FILL_COLOR = new Color(0xef7d7d);
     
     public static int MIN_SIZE = 60; //Stores the minimum creatable size of WorkTool
     
@@ -101,10 +104,17 @@ public class Workspace extends Container {
             start.y = toolEnd.y;
             size.y = toolStart.y - toolEnd.y;
         }
+        Rectangle validator = new Rectangle(start,size);
+        boolean valid = (size.x > MIN_SIZE && size.y > MIN_SIZE);
+        for(Module m : children) {
+            if(m.intersects(validator)) {
+                valid = false;
+            }
+        }
         
-        graphics.setColor(TOOL_FILL_COLOR);
+        graphics.setColor(valid ? TOOL_FILL_COLOR : BAD_TOOL_FILL_COLOR);
         graphics.fillRect(start.x + 1,start.y + 1,size.x - 1,size.y - 1);
-        graphics.setColor(TOOL_BORDER_COLOR);
+        graphics.setColor(valid ? TOOL_BORDER_COLOR : BAD_TOOL_BORDER_COLOR);
         graphics.drawRect(start.x, start.y, size.x, size.y);
         
         drawParent(); //Draw the parent because it SHOULD NOT be implicitly called by any other method when drawTool() is called
@@ -142,6 +152,7 @@ public class Workspace extends Container {
         }
         else if(createTool) {
             toolEnd = pos;
+
             drawTool();
         }
         else {

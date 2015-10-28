@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
+import vague.geom.Rectangle;
 import vague.util.Percents;
 import vague.util.Vector;
 
@@ -28,8 +29,10 @@ public class Module extends ModuleBase {
      * This way resizes and positions can be handled with all the relevant changes to rendering
      * logic.
      */
-    private Vector position; //Stores the position of the Module.
-    private Vector size; //Stores the size of the module.
+    //private Vector position; //Stores the position of the Module.
+    //private Vector size; //Stores the size of the module.
+    
+    private Rectangle bounds; //Stores the position and size of the Module
     
     protected Color bgColor; //Stores the color that is put in the background whenever applicable
     
@@ -62,8 +65,7 @@ public class Module extends ModuleBase {
      * @param size The size to initialize with.
      */
     protected final void initialize(Vector position, Vector size) {
-        this.position = position;
-        this.size = size;
+        bounds = new Rectangle(position, size);
         doRenderCalc();
     }
     
@@ -74,14 +76,12 @@ public class Module extends ModuleBase {
          * 
          * With the default size, it is impossible to render anything.
          */
-        position = new Vector(0,0);
-        size = new Vector(0,0);
+        bounds = new Rectangle(0,0,0,0);
         doRenderCalc();
     }
     
     public Module(int width, int height) {
-        position = new Vector(0, 0);
-        size = new Vector(width, height);
+        bounds = new Rectangle(0,0,width,height);
         doRenderCalc();
     }
     
@@ -92,8 +92,8 @@ public class Module extends ModuleBase {
      * width and height.
      */
     private void doRenderCalc() {
-        int width = (size.x < 1) ? 1 : size.x; //Get a valid size for the BufferedImages
-        int height = (size.y < 1) ? 1 : size.y;
+        int width = (bounds.size.x < 1) ? 1 : bounds.size.x; //Get a valid size for the BufferedImages
+        int height = (bounds.size.y < 1) ? 1 : bounds.size.y;
         
         //Declare a BufferedImage object to hold the current data of the buffer
         //so that it can be drawn back to the new buffer
@@ -133,7 +133,7 @@ public class Module extends ModuleBase {
      */
     protected final void fillBackground() {
         graphics.setColor(bgColor);
-        graphics.fillRect(0, 0, size.x, size.y);
+        graphics.fillRect(0, 0, bounds.size.x, bounds.size.y);
     }
     
     /**
@@ -203,7 +203,7 @@ public class Module extends ModuleBase {
      */
     @Override
     public Vector mousePosition() {
-        return parent.mousePosition().getDif(position);
+        return parent.mousePosition().getDif(bounds.position);
     }
     
     /**
@@ -216,10 +216,10 @@ public class Module extends ModuleBase {
      */
     public final boolean containsPoint(Vector point) {
         return (
-                point.x >= position.x &&
-                point.y >= position.y &&
-                point.x < position.x + size.x &&
-                point.y < position.y + size.y
+                point.x >= bounds.position.x &&
+                point.y >= bounds.position.y &&
+                point.x < bounds.position.x + bounds.size.x &&
+                point.y < bounds.position.y + bounds.size.y
         );
     }
     
@@ -262,7 +262,7 @@ public class Module extends ModuleBase {
         width = width < 0 ? 0 : width;
         height = height < 0 ? 0 : height;
         onResize(new Vector(width, height));
-        size = new Vector(width, height);
+        bounds.size = new Vector(width, height);
         doRenderCalc();
         draw(); //Redraw in case it needs to be re-drawn
     }
@@ -278,7 +278,7 @@ public class Module extends ModuleBase {
         v.x = v.x < 0 ? 0 : v.x;
         v.y = v.y < 0 ? 0 : v.y;
         onResize(v);
-        size = new Vector(v); //The Vector is copied so that nothing has a reference to size through a refererence
+        bounds.size = new Vector(v); //The Vector is copied so that nothing has a reference to size through a refererence
         doRenderCalc();
         draw();
     }
@@ -293,7 +293,7 @@ public class Module extends ModuleBase {
      */
     public final void locate(int x, int y) {
         onLocate(new Vector(x, y));
-        position = new Vector(x, y);
+        bounds.position = new Vector(x, y);
     }
     
     /**
@@ -305,7 +305,7 @@ public class Module extends ModuleBase {
      */
     public final void locate(Vector v) {
         onLocate(v);
-        position = new Vector(v); //The Vector is copied so that nothing has a reference to position through a refererence
+        bounds.position = new Vector(v); //The Vector is copied so that nothing has a reference to position through a refererence
     }
     
     /*
@@ -318,27 +318,29 @@ public class Module extends ModuleBase {
     public void onResize(Vector v) { }
     public void onLocate(Vector v) { }
     
+    public final Rectangle bounds() { return new Rectangle(bounds); }
+    
     /*
     width() and height() return the width and height of the module, respectively.
     
     The values of the module, however, cannot be modified.
     */
-    public final int width() { return size.x; }
-    public final int height() { return size.y; }
+    public final int width() { return bounds.size.x; }
+    public final int height() { return bounds.size.y; }
     
     //Returns a copy of the size Vector so it can be used without being changed.
-    public final Vector size() { return new Vector(size); }
+    public final Vector size() { return new Vector(bounds.size); }
     
     /*
     x() and y() return the x and y position of the module, respectively.
     
     The values of the module, however, cannot be modified.
     */
-    public final int x() { return position.x; }
-    public final int y() { return position.y; }
+    public final int x() { return bounds.position.x; }
+    public final int y() { return bounds.position.y; }
     
     //Returns a copy of the position Vector so it can be used without being changed.
-    public final Vector position() { return new Vector(position); }
+    public final Vector position() { return new Vector(bounds.position); }
     
     /*
     right() and bottom() return the x and y values of the right of the Module and thhe bottom of the Module,
@@ -346,28 +348,18 @@ public class Module extends ModuleBase {
     
     These cannot be modified.
     */
-    public final int right() { return position.x + size.x; }
-    public final int bottom() { return position.y + size.y; }
+    public final int right() { return bounds.right(); }
+    public final int bottom() { return bounds.bottom(); }
     
     //Returns the position of the bottom right corner of the module. Useful for various application. 
-    public final Vector bottomRight() { return new Vector(position.getSum(size)); }
-    
-    private boolean inRange(int i, int min, int max) {
-        return(i > min && i < max);
-    }
+    public final Vector bottomRight() { return new Vector(bounds.position.getSum(bounds.size)); }
     
     public final boolean intersects(Module m) {
-        if(inRange(x(),m.x(),m.right()) || inRange(right(),m.x(),m.right())) {
-            if(inRange(y(),m.y(),m.bottom()) || inRange(bottom(),m.y(),m.bottom())) {
-                return true;
-            }
-        }
-        if(inRange(m.x(),x(),right()) || inRange(m.right(),x(),right())) {
-            if(inRange(m.y(),y(),bottom()) || inRange(m.bottom(),y(),bottom())) {
-                return true;
-            }
-        }
-        return false;
+        return(bounds.intersects(m.bounds));
+    }
+    
+    public final boolean intersects(Rectangle r) {
+        return(bounds.intersects(r));
     }
     
     /**
@@ -407,6 +399,6 @@ public class Module extends ModuleBase {
      * @return A boolean value indicating whether parent classes should draw the module.
      */
     public final boolean visible() {
-        return !size.similar(Vector.ZERO);
+        return !bounds.size.similar(Vector.ZERO);
     }
 }
