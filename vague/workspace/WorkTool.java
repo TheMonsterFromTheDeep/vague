@@ -26,12 +26,20 @@ public class WorkTool extends Module {
     static final Color DISMISS_COLOR_HIGH = new Color(0xf96666);
     
     static final int BORDER_WIDTH = 20;
-   
+    
     private boolean closable; //Stores whether the WorkTool should dismiss on mouse down
     //(meaning that the mouse must be located in the dismiss button)
     
+    private boolean moveable;
+    private boolean moving;
+    
+    private Vector movePos; //Stores the mouse position when the mouse starts moving
+    private Vector startPos; //Stores the position to jump back to if a move fails
+    
     private Module child; //The WorkTool contains a single Module child which does what it needs to do
     private boolean active; //Stores whether the child Module is being controlled by the user
+    
+    private boolean thisFocused = false; //Stores whether this WorkTool is keeping focus itself - used such that it can *also* retain focus when its child retains focus
     
     public WorkTool(Vector start, Vector end) {
         bgColor = BG_COLOR;
@@ -90,8 +98,12 @@ public class WorkTool extends Module {
     
     @Override
     public void mouseMove(Vector pos, Vector dif) {
+        if(moving) {
+            locate(position().getSum(pos.getDif(movePos)));
+            drawParent();
+        }
         if(!child.retainFocus) {
-            retainFocus = false;
+            if(!thisFocused) { retainFocus = false; }
             
             boolean previous = active; //Stores the previous active state of the child
             active = child.containsPoint(pos); //Update whether child Module is active
@@ -113,12 +125,23 @@ public class WorkTool extends Module {
                         redraw();
                     }
                 }
+                
+                if((pos.x > BORDER_WIDTH && pos.x < width() - BORDER_WIDTH) || (pos.y > BORDER_WIDTH && pos.y < height() - BORDER_WIDTH)) {
+                    moveable = true;
+                }
+                else {
+                    if(moveable) {
+                        moveable = false;
+                        redraw();
+                    }
+                }
             }
         }
         else { retainFocus = true; } //If the child is retaining focus, this needs to retain focus too
         if(active) { //If the child is active, it should be updated no matter what
             child.mouseMove(pos.getDif(child.position()), dif.getDif(child.position()));
         }
+
     }
     
     @Override
@@ -131,6 +154,16 @@ public class WorkTool extends Module {
                 ((Container)parent).removeChild(this);
             }
         }
+        else if(moveable) {
+            if(parent instanceof Workspace) {
+                ((Workspace)parent).beginMoving(this);
+                moving = true;
+                retainFocus = true;
+                thisFocused = true;
+                movePos = mousePosition();
+                startPos = position();
+            }
+        }
     }
     
     @Override
@@ -138,6 +171,19 @@ public class WorkTool extends Module {
         if(active) {
             child.mouseUp(e);
         }
+        if(moving) {
+            if(parent instanceof Workspace) {
+                ((Workspace)parent).stopMoving();
+            }
+            moving = false;
+            retainFocus = false;
+            thisFocused = false;
+        }
+    }
+    
+    //Called by the parent Workspace when it is detected that this intersects with another module
+    public void resetMovePosition() {
+        locate(startPos);
     }
     
     @Override

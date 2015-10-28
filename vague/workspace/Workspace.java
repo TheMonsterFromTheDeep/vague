@@ -32,6 +32,8 @@ public class Workspace extends Container {
     //NOTE: May be changed in the future to a integer which stores the function that the Container is
     //currently performing.
     
+    private Module moveTool; //Stores any child Module that is being moved. Used in order to draw them specially.
+    
     private BufferedImage workspace; //Stores a secondary buffer of the current workspace
     //such that it does not have to be re-drawn every time new tools are created
     
@@ -71,16 +73,52 @@ public class Workspace extends Container {
                     for(Module m : children) {
                         if(newTool.intersects(m)) { create = false; }
                     }
-                    if(create) { addChild(newTool); }
+                    if(create) { 
+                        addChild(newTool); 
+                        children[children.length - 1].draw(); //if a child was added, it needs to be drawn
+                        
+                    }
                 }
-                
-                children[children.length - 1].draw();
-                redraw();
+                redraw(); //If createTool, the Workspace always needs to be re-drawn because even if a tool
+                          //wasn't created, the red square needs to be un-drawn
             }
         }
         else {
             activeChild.mouseUp(e);
         }      
+    }
+    
+    @Override
+    public void drawChild(Module m) {
+        if(m == moveTool) { //If a tool has been moved, it needs to be re-drawn
+            graphics.drawImage(workspace,0,0,null);
+        }
+        graphics.drawImage(m.render(),m.x(),m.y(),null);
+        drawParent();
+    }
+    
+    /**
+     * Called by child modules when they are being moved. Alerts the Workspace to draw them differently
+     * than other modules.
+     * @param m 
+     */
+    public void beginMoving(Module m) {
+        moveTool = m;
+        redraw(); //The module needs to be re-drawn so that the 'workspace' buffer is updated
+    }
+    
+    public void stopMoving() {
+        for(Module m : children) { //Reset the position of the moved tool if it intersects any other tools
+            if(m != moveTool) {
+                if(m.intersects(moveTool)) {
+                    if(moveTool instanceof WorkTool) {
+                        ((WorkTool)moveTool).resetMovePosition();
+                    }
+                }
+            }
+        }
+        moveTool = null;
+        redraw();
     }
     
     private void drawTool() {
@@ -168,8 +206,16 @@ public class Workspace extends Container {
                 graphics.drawImage(Resources.bank.BACKGROUND, x, y, null);
             }
         }
-        drawChildren();
+        for(Module m : children) {
+            if(m != moveTool) {
+                graphics.drawImage(m.render(),m.x(),m.y(),null);
+            }
+        }
         
         workspace.createGraphics().drawImage(buffer, 0, 0, null);
+        
+        if(moveTool != null) { //If a tool is being moved, it should not be drawn to the static buffer
+            graphics.drawImage(moveTool.render(),moveTool.x(),moveTool.y(),null);
+        }
     }
 }
