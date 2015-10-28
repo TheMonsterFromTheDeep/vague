@@ -93,6 +93,9 @@ public class WorkTool extends Module {
     @Override
     public void onUnfocus() {
         bgColor = BG_COLOR;
+        if(closable) {
+            closable = false;
+        }
         redraw();
     }
     
