@@ -133,10 +133,12 @@ public class WorkTool extends Module {
                 }               
                 else if((pos.x > BORDER_WIDTH && pos.x < width() - BORDER_WIDTH) || (pos.y > BORDER_WIDTH && pos.y < height() - BORDER_WIDTH)) {
                     nextAction = ACTION_MOVE;
+                    redraw();
                 }
                 else {
                     if(nextAction != ACTION_NONE) {
                         nextAction = ACTION_NONE;
+                        redraw();
                     }
                 }
             }
