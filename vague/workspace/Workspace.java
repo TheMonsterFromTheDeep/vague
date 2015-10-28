@@ -1,6 +1,7 @@
 package vague.workspace;
 
 import java.awt.Color;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import vague.Resources;
@@ -31,6 +32,7 @@ public class Workspace extends Container {
     private boolean createTool; //Stores whether the Workspace is currently being used to create a tool
     //NOTE: May be changed in the future to a integer which stores the function that the Container is
     //currently performing.
+    private boolean squareTool; //Stores whether the tool being created is square
     
     private Module moveTool; //Stores any child Module that is being moved. Used in order to draw them specially.
     
@@ -43,23 +45,6 @@ public class Workspace extends Container {
         workspace = getValidBuffer(size());
         
         this.bgColor = new Color(0xcfcfcf);
-    }
-    
-    public void createTool() {
-        WorkTool newTool = new WorkTool(toolStart,toolEnd);
-        if(newTool.width() > MIN_SIZE && newTool.height() > MIN_SIZE) {
-            boolean create = true;
-            for(Module m : children) {
-                if(newTool.intersects(m)) { create = false; }
-            }
-            if(create) {
-                newTool.setWorkspace(this); //Allow the new WorkTool to use move and resize functions
-                addChild(newTool); 
-                children[children.length - 1].draw(); //if a child was added, it needs to be drawn
-            }
-        }
-        redraw(); //If createTool, the Workspace always needs to be re-drawn because even if a tool
-                  //wasn't created, the red square needs to be un-drawn
     }
     
     @Override
@@ -93,6 +78,30 @@ public class Workspace extends Container {
     }
     
     @Override
+    public void keyDown(KeyEvent e) {
+        if(activeIndex == -1) {
+            if(createTool) {
+                if(e.isShiftDown()) { squareTool = true; }
+            }
+        }
+        else {
+            activeChild.keyDown(e);
+        }
+    }
+    
+    @Override
+    public void keyUp(KeyEvent e) {
+        if(activeIndex == -1) {
+            if(createTool) {
+                if(e.isShiftDown()) { squareTool = false; }
+            }
+        }
+        else {
+            activeChild.keyUp(e);
+        }
+    }
+    
+    @Override
     public void drawChild(Module m) {
         if(m == moveTool) { //If a tool has been moved, it needs to be re-drawn
             graphics.drawImage(workspace,0,0,null);
@@ -123,6 +132,23 @@ public class Workspace extends Container {
         }
         moveTool = null;
         redraw();
+    }
+           
+    public void createTool() {
+        WorkTool newTool = new WorkTool(toolStart,toolEnd);
+        if(newTool.width() > MIN_SIZE && newTool.height() > MIN_SIZE) {
+            boolean create = true;
+            for(Module m : children) {
+                if(newTool.intersects(m)) { create = false; }
+            }
+            if(create) {
+                newTool.setWorkspace(this); //Allow the new WorkTool to use move and resize functions
+                addChild(newTool); 
+                children[children.length - 1].draw(); //if a child was added, it needs to be drawn
+            }
+        }
+        redraw(); //If createTool, the Workspace always needs to be re-drawn because even if a tool
+                  //wasn't created, the red square needs to be un-drawn
     }
     
     private void drawTool() {
@@ -192,7 +218,12 @@ public class Workspace extends Container {
             activeChild.mouseMove(pos.getDif(activeChild.position()),dif.getDif(activeChild.position())); 
         }
         else if(createTool) {
-            toolEnd = pos;
+            if(squareTool) {
+                toolEnd = new Vector(pos.x,pos.x + (toolStart.y - toolStart.x));
+            }
+            else {
+                toolEnd = pos;
+            }
 
             drawTool();
         }
