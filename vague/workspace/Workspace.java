@@ -113,9 +113,9 @@ public class Workspace extends Container {
         }
         
         graphics.setColor(valid ? TOOL_FILL_COLOR : BAD_TOOL_FILL_COLOR);
-        graphics.fillRect(start.x + 1,start.y + 1,size.x - 1,size.y - 1);
+        graphics.fillRect(start.x + 1,start.y + 1,size.x - 2,size.y - 2);
         graphics.setColor(valid ? TOOL_BORDER_COLOR : BAD_TOOL_BORDER_COLOR);
-        graphics.drawRect(start.x, start.y, size.x, size.y);
+        graphics.drawRect(start.x, start.y, size.x - 1, size.y - 1);
         
         drawParent(); //Draw the parent because it SHOULD NOT be implicitly called by any other method when drawTool() is called
     }
