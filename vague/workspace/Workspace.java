@@ -92,9 +92,7 @@ public class Workspace extends Container {
     @Override
     public void keyUp(KeyEvent e) {
         if(activeIndex == -1) {
-            if(createTool) {
-                if(e.isShiftDown()) { squareTool = false; }
-            }
+            if(!e.isShiftDown()) { squareTool = false; }
         }
         else {
             activeChild.keyUp(e);
