@@ -81,7 +81,7 @@ public class Workspace extends Container {
     public void keyDown(KeyEvent e) {
         if(activeIndex == -1) {
             if(createTool) {
-                if(e.isShiftDown()) { squareTool = true; }
+                if(e.getKeyCode() == KeyEvent.VK_SHIFT) { squareTool = true; }
             }
         }
         else {
@@ -92,7 +92,7 @@ public class Workspace extends Container {
     @Override
     public void keyUp(KeyEvent e) {
         if(activeIndex == -1) {
-            if(!e.isShiftDown()) { squareTool = false; }
+            if(e.getKeyCode() == KeyEvent.VK_SHIFT) { squareTool = false; }
         }
         else {
             activeChild.keyUp(e);
@@ -147,6 +147,8 @@ public class Workspace extends Container {
         }
         redraw(); //If createTool, the Workspace always needs to be re-drawn because even if a tool
                   //wasn't created, the red square needs to be un-drawn
+        
+        squareTool = false; //In case squareTool wasn't updated, make sure it is updated here
     }
     
     private void drawTool() {
