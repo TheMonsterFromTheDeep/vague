@@ -43,6 +43,8 @@ public class WorkTool extends Module {
     
     private Workspace workspace;
     
+    private boolean ctrlDown; //If ctrl is down while this is being moved it should snap to grid
+    
     private WorkTool(Vector start, Vector end) {
         bgColor = BG_COLOR;
         
@@ -117,7 +119,12 @@ public class WorkTool extends Module {
     @Override
     public void mouseMove(Vector pos, Vector dif) {
         if(action == ACTION_MOVE) {
-            locate(position().getSum(pos.getDif(movePos)));
+            Vector newPos = position().getSum(pos.getDif(movePos));
+            if(ctrlDown) {
+                newPos.x = (newPos.x / Workspace.GRID_SIZE) * Workspace.GRID_SIZE; //If ctrl is down, snap to increments of Workspace.GRID_SIZE
+                newPos.y = (newPos.y / Workspace.GRID_SIZE) * Workspace.GRID_SIZE;
+            }
+            locate(newPos);
             drawParent();
         }
         if(!child.retainFocus()) {
@@ -193,9 +200,19 @@ public class WorkTool extends Module {
     public void mouseScroll(MouseWheelEvent e) { child.mouseScroll(e); }
     
     @Override
-    public void keyDown(KeyEvent e) { child.keyDown(e); }
+    public void keyDown(KeyEvent e) {
+        if(e.getKeyCode() == KeyEvent.VK_CONTROL) {
+            ctrlDown = true;
+        }
+        child.keyDown(e); 
+    }
     @Override
-    public void keyUp(KeyEvent e) { child.keyUp(e); }
+    public void keyUp(KeyEvent e) {
+        if(e.getKeyCode() == KeyEvent.VK_CONTROL) {
+            ctrlDown = false;
+        }
+        child.keyUp(e); 
+    }
     @Override
     public void keyType(KeyEvent e) { child.keyType(e); }
     

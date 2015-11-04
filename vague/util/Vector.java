@@ -97,4 +97,13 @@ public class Vector {
     public boolean similar(Vector v) {
         return (this.x == v.x) || (this.y == v.y);
     }
+    
+    /**
+     * Snaps the Vector to a grid of a specific size.
+     * @param size The increments in size to snap to.
+     */
+    public void snap(int size) {
+        this.x = (this.x / size) * size;
+        this.y = (this.y / size) * size;
+    }
 }
