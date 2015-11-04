@@ -66,8 +66,8 @@ public class Rectangle {
      * @return Whether the Rectangle contains the specified point.
      */
     public boolean contains(int x, int y) {
-        return (x >= position.x && x < position.x + size.x) && 
-               (y >= position.y && y < position.y + size.y);
+        return (x > position.x && x < position.x + size.x) && 
+               (y > position.y && y < position.y + size.y);
     }
     
     /**
@@ -76,8 +76,8 @@ public class Rectangle {
      * @return Whether the Rectangle contains the specified point.
      */
     public boolean contains(Vector point) {
-        return (point.x >= position.x && point.x < position.x + size.x) && 
-               (point.y >= position.y && point.y < position.y + size.y);
+        return (point.x > position.x && point.x < position.x + size.x) && 
+               (point.y > position.y && point.y < position.y + size.y);
     }
     
     /**
