@@ -17,6 +17,8 @@ import java.awt.event.WindowListener;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import vague.input.Control;
+import vague.input.Controls;
 import vague.module.Exchange;
 import vague.module.Module;
 import vague.module.TestModule;
@@ -130,10 +132,16 @@ public class Window extends JFrame {
             public void keyTyped(KeyEvent ke) { system.keyType(ke); }
 
             @Override
-            public void keyPressed(KeyEvent ke) { system.keyDown(ke); }
+            public void keyPressed(KeyEvent ke) {
+                Controls.bank.update(ke.getKeyCode(),true);
+                system.keyDown(ke); 
+            }
 
             @Override
-            public void keyReleased(KeyEvent ke) { system.keyUp(ke); }
+            public void keyReleased(KeyEvent ke) {
+                Controls.bank.update(ke.getKeyCode(),false);
+                system.keyUp(ke); 
+            }
         });
         
         /*

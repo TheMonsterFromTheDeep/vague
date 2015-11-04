@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import vague.input.Controls;
 import vague.module.Module;
 import vague.module.TestModule;
 import vague.module.container.Container;
@@ -42,8 +43,6 @@ public class WorkTool extends Module {
     private boolean active; //Stores whether the child Module is being controlled by the user
     
     private Workspace workspace;
-    
-    private boolean ctrlDown; //If ctrl is down while this is being moved it should snap to grid
     
     private WorkTool(Vector start, Vector end) {
         bgColor = BG_COLOR;
@@ -120,7 +119,7 @@ public class WorkTool extends Module {
     public void mouseMove(Vector pos, Vector dif) {
         if(action == ACTION_MOVE) {
             Vector newPos = position().getSum(pos.getDif(movePos));
-            if(ctrlDown) {
+            if(Controls.bank.status(Controls.WORKSPACE_GRID_SNAP)) {
                 newPos.x = (newPos.x / Workspace.GRID_SIZE) * Workspace.GRID_SIZE; //If ctrl is down, snap to increments of Workspace.GRID_SIZE
                 newPos.y = (newPos.y / Workspace.GRID_SIZE) * Workspace.GRID_SIZE;
             }
@@ -201,16 +200,10 @@ public class WorkTool extends Module {
     
     @Override
     public void keyDown(KeyEvent e) {
-        if(e.getKeyCode() == KeyEvent.VK_CONTROL) {
-            ctrlDown = true;
-        }
         child.keyDown(e); 
     }
     @Override
     public void keyUp(KeyEvent e) {
-        if(e.getKeyCode() == KeyEvent.VK_CONTROL) {
-            ctrlDown = false;
-        }
         child.keyUp(e); 
     }
     @Override

@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import vague.Resources;
 import vague.geom.Rectangle;
+import vague.input.Controls;
 import vague.module.Module;
 import vague.module.container.Container;
 import vague.util.Vector;
@@ -32,7 +33,6 @@ public final class Workspace extends Container {
     private boolean createTool; //Stores whether the Workspace is currently being used to create a tool
     //NOTE: May be changed in the future to a integer which stores the function that the Container is
     //currently performing.
-    private boolean shiftDown; //Stores whether the tool being created is square
     
     private Module moveTool; //Stores any child Module that is being moved. Used in order to draw them specially.
     
@@ -41,8 +41,6 @@ public final class Workspace extends Container {
     
     public static final int GRID_SIZE = 40; //This size of the grid that WorkTools shoudl snap to when snapping them to grid
                                             //(may be dynamic in future)
-    
-    private boolean ctrlDown; //Stores whether control is down; used to snap to grid
     
     private Workspace(int width, int height, Module[] children) {
         super(width,height,children);
@@ -88,8 +86,6 @@ public final class Workspace extends Container {
     
     @Override
     public void keyDown(KeyEvent e) {
-        if(e.getKeyCode() == KeyEvent.VK_SHIFT) { shiftDown = true; }
-        if(e.getKeyCode() == KeyEvent.VK_CONTROL) { ctrlDown = true; }
         if(activeIndex != -1) {
             activeChild.keyDown(e);
         }
@@ -97,8 +93,6 @@ public final class Workspace extends Container {
     
     @Override
     public void keyUp(KeyEvent e) {
-        if(e.getKeyCode() == KeyEvent.VK_SHIFT) { shiftDown = false; }
-        if(e.getKeyCode() == KeyEvent.VK_CONTROL) { ctrlDown = false; }
         if(activeIndex != -1) {
             activeChild.keyUp(e);
         }
@@ -138,7 +132,7 @@ public final class Workspace extends Container {
     }
            
     public void createTool() {
-        if(ctrlDown) {
+        if(Controls.bank.status(Controls.WORKSPACE_GRID_SNAP)) {
             toolStart.snap(GRID_SIZE);
             toolEnd.snap(GRID_SIZE);
         }
@@ -156,8 +150,6 @@ public final class Workspace extends Container {
         }
         redraw(); //If createTool, the Workspace always needs to be re-drawn because even if a tool
                   //wasn't created, the red square needs to be un-drawn
-        
-        shiftDown = false; //In case squareTool wasn't updated, make sure it is updated here
     }
     
     private void drawTool() {
@@ -181,7 +173,7 @@ public final class Workspace extends Container {
             start.y = toolEnd.y;
             size.y = toolStart.y - toolEnd.y;
         }
-        if(ctrlDown) {
+        if(Controls.bank.status(Controls.WORKSPACE_GRID_SNAP)) {
             start.snap(GRID_SIZE);
             size.snap(GRID_SIZE);
         }
@@ -231,7 +223,7 @@ public final class Workspace extends Container {
             activeChild.mouseMove(pos.getDif(activeChild.position()),dif.getDif(activeChild.position())); 
         }
         else if(createTool) {
-            if(shiftDown) {
+            if(Controls.bank.status(Controls.WORKSPACE_SQUARE_TOOL)) {
                 toolEnd = new Vector(pos.x,pos.x + (toolStart.y - toolStart.x));
             }
             else {
