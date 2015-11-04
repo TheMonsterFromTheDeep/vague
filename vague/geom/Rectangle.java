@@ -60,14 +60,13 @@ public class Rectangle {
     /**
      * This returns whether the Rectangle contains the specified point.
      * 
-     * 
      * @param x The x position of the point to check.
      * @param y The y position of the point to check.
      * @return Whether the Rectangle contains the specified point.
      */
     public boolean contains(int x, int y) {
-        return (x > position.x && x < position.x + size.x) && 
-               (y > position.y && y < position.y + size.y);
+        return (x >= position.x && x <= position.x + size.x) && 
+               (y >= position.y && y <= position.y + size.y);
     }
     
     /**
@@ -76,6 +75,31 @@ public class Rectangle {
      * @return Whether the Rectangle contains the specified point.
      */
     public boolean contains(Vector point) {
+        return (point.x >= position.x && point.x <= position.x + size.x) && 
+               (point.y >= position.y && point.y <= position.y + size.y);
+    }
+    
+    /**
+     * Returns whether the Rectangle contains the specified point inside it's borders.
+     * 
+     * This will not return true if the point is on the border.
+     * @param x The x position of the point to check.
+     * @param y The y position of the point to check.
+     * @return Whether the Rectangle contains the specified point.
+     */
+    public boolean encloses(int x, int y) {
+        return (x > position.x && x < position.x + size.x) && 
+               (y > position.y && y < position.y + size.y);
+    }
+    
+    /**
+     * Returns whether the Rectangle contains the specified point inside it's borders.
+     * 
+     * This will not return true if the point is on the border.
+     * @param point The point to check.
+     * @return Whether the Rectangle contains the specified point.
+     */
+    public boolean encloses(Vector point) {
         return (point.x > position.x && point.x < position.x + size.x) && 
                (point.y > position.y && point.y < position.y + size.y);
     }
@@ -86,6 +110,6 @@ public class Rectangle {
      * @return Whether the two Rectangles intersect.
      */
     public boolean intersects(Rectangle r) {
-        return r.contains(this.topLeft()) || r.contains(this.bottomRight()) || this.contains(r.topRight()) || this.contains(r.bottomLeft());
+        return r.encloses(this.topLeft()) || r.encloses(this.bottomRight()) || this.encloses(r.topRight()) || this.encloses(r.bottomLeft());
     }
 }
