@@ -61,7 +61,7 @@ public class Module extends ModuleBase {
         doRenderCalc();
     }
     
-    public Module() {
+    protected Module() {
         /**
          * Default position and size of the Module.
          * The default position is 0, 0 and the default size is also 0, 0.
@@ -72,9 +72,8 @@ public class Module extends ModuleBase {
         doRenderCalc();
     }
     
-    public Module(int width, int height) {
-        bounds = new Rectangle(0,0,width,height);
-        doRenderCalc();
+    public static Module create() {
+        return new Module();
     }
     
     /**

@@ -25,12 +25,16 @@ public class TestModule extends Module {
     int oldx;
     int oldy;
     
-    public TestModule(int width, int height) {
-        super(width, height);
+    private TestModule(int width, int height) {
+        initialize(new Vector(0,0), new Vector(width, height));
         bgColor = background;
         canvas = getValidBuffer(new Vector(width,height));
         
         drawing = false;
+    }
+    
+    public static TestModule create(int width, int height) {
+        return new TestModule(width,height);
     }
     
     private void drawPoint(int x, int y) {

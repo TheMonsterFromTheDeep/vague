@@ -92,7 +92,7 @@ public class Window extends JFrame {
         
         //TestModule[] testChildMods = new TestModule[] { new TestModule(1, 1) };
         
-        system = new Exchange(new Workspace(DEFAULT_WIDTH,DEFAULT_HEIGHT,new Module[]{})) {
+        system = new Exchange(Workspace.create(DEFAULT_WIDTH,DEFAULT_HEIGHT,new Module[]{})) {
             @Override
             public Vector mousePosition() {
                 return windowMousePosition();

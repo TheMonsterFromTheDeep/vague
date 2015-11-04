@@ -18,7 +18,7 @@ public class Container extends Module {
     protected Module activeChild; //Stores a reference to the active child
     protected int activeIndex; //Stores the index of the active child: equal to -1 if there is no active child
     
-    public Container(Module[] children) {
+    protected Container(Module[] children) {
         if(children.length < 1) {
             this.children = new Module[0]; //If there are no children, then there are no children
             clearActiveChild(); //Clear the active child because there can't be an active child
@@ -40,15 +40,10 @@ public class Container extends Module {
             //Initialize the module to zero,zero with the calculate size
             initialize(new Vector(),new Vector(width,height));
         }
-        for(int i = 0; i < this.children.length; i++) {
-            this.children[i].setParent(this);
-            this.children[i].sizedata.update(children[i].width(), width(), children[i].height(), height());
-            this.children[i].posdata.update(children[i].x(), width(), children[i].y(), height());
-        }
     }
     
-    public Container(int width, int height, Module[] children) {
-        super(width, height);
+    protected Container(int width, int height, Module[] children) {
+        initialize(new Vector(0,0), new Vector(width,height));
         if(children.length < 1) {
             this.children = new Module[0]; //If there are no children, then there are no children
             clearActiveChild(); //Clear the active child because there can't be an active child
@@ -57,11 +52,30 @@ public class Container extends Module {
             this.children = children;
             setActiveChild(0); //Set an active child so that nothing weird happens
         }
-        for(int i = 0; i < this.children.length; i++) {
-            this.children[i].setParent(this);
-            this.children[i].sizedata.update(children[i].width(), width(), children[i].height(), height());
-            this.children[i].posdata.update(children[i].x(), width(), children[i].y(), height());
+    }
+    
+    public static Container create(Module[] children) {
+        Container c = new Container(children);
+        
+        for(int i = 0; i < c.children.length; i++) {
+            c.children[i].setParent(c);
+            c.children[i].sizedata.update(c.children[i].width(), c.width(), c.children[i].height(), c.height());
+            c.children[i].posdata.update(c.children[i].x(), c.width(), c.children[i].y(), c.height());
         }
+        
+        return c;
+    }
+    
+    public static Container create(int width, int height, Module[] children) {
+        Container c = new Container(width,height,children);
+        
+        for(int i = 0; i < c.children.length; i++) {
+            c.children[i].setParent(c);
+            c.children[i].sizedata.update(c.children[i].width(), c.width(), c.children[i].height(), c.height());
+            c.children[i].posdata.update(c.children[i].x(), c.width(), c.children[i].y(), c.height());
+        }
+        
+        return c;
     }
     
     /**
@@ -103,7 +117,7 @@ public class Container extends Module {
     
     protected final void clearActiveChild() {
         activeIndex = -1;
-        activeChild = new Module();
+        activeChild = Module.create();
     }
     
     protected final void setActiveChild(int index) {

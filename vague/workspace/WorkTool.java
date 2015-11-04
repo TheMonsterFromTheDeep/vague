@@ -43,7 +43,7 @@ public class WorkTool extends Module {
     
     private Workspace workspace;
     
-    public WorkTool(Vector start, Vector end) {
+    private WorkTool(Vector start, Vector end) {
         bgColor = BG_COLOR;
         
         Vector pos = new Vector(), size = new Vector();
@@ -65,10 +65,10 @@ public class WorkTool extends Module {
             size.y = start.y - end.y;
         }
                
-        child = new Module();
+        child = Module.create();
         
         //TEST PURPOSES ONLY:
-        child = new TestModule(0,0);
+        child = TestModule.create(0,0);
         //END TEST
         
         child.setParent(this); //Make sure there are no NullPointerExceptions thrown because of a loss of a parent     
@@ -79,7 +79,11 @@ public class WorkTool extends Module {
         
         resize(size); //Resize this module last because it requires references to the child in onResize()
         locate(pos);
-    }  
+    }
+    
+    public static WorkTool create(Vector start, Vector end) {
+        return new WorkTool(start,end);
+    }
     
     @Override
     public void onResize(Vector newSize) {

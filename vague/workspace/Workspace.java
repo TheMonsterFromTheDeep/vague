@@ -15,7 +15,7 @@ import vague.util.Vector;
  * contain Modules.
  * @author TheMonsterFromTheDeep
  */
-public class Workspace extends Container {
+public final class Workspace extends Container {
     public static Color TOOL_BORDER_COLOR = new Color(0xbbbbdd); //Colors used when drawing the WorkTools
     public static Color TOOL_FILL_COLOR = new Color(0xc3c3dd);
     public static Color BAD_TOOL_BORDER_COLOR = new Color(0xff5858);
@@ -39,12 +39,16 @@ public class Workspace extends Container {
     private BufferedImage workspace; //Stores a secondary buffer of the current workspace
     //such that it does not have to be re-drawn every time new tools are created
     
-    public Workspace(int width, int height, Module[] children) {
+    private Workspace(int width, int height, Module[] children) {
         super(width,height,children);
         
         workspace = getValidBuffer(size());
         
         this.bgColor = new Color(0xcfcfcf);
+    }
+    
+    public static Workspace create(int width, int height, Module[] children) {
+        return new Workspace(width,height,children);
     }
     
     @Override
@@ -133,7 +137,7 @@ public class Workspace extends Container {
     }
            
     public void createTool() {
-        WorkTool newTool = new WorkTool(toolStart,toolEnd);
+        WorkTool newTool = WorkTool.create(toolStart,toolEnd);
         if(newTool.width() > MIN_SIZE && newTool.height() > MIN_SIZE) {
             boolean create = true;
             for(Module m : children) {
