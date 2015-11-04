@@ -21,17 +21,30 @@ import vague.util.Vector;
 public class WorkTool extends Module {
     static final Color BG_COLOR = new Color(0xbcbcdd); //The color of the WorkTool when it is not active
     static final Color BG_COLOR_HIGH = new Color(0xbfbfdd); //The color of the WorkTool when it is active
-    static final Color BORDER_COLOR = new Color(0);
+    static final Color BORDER_COLOR = new Color(0); //The color of the actual border
     
     static final Color DISMISS_COLOR = new Color(0xe74f4f); //Stores the colors of the button which dismisses a WorkTool
-    static final Color DISMISS_COLOR_HIGH = new Color(0xf96666);
+    static final Color DISMISS_COLOR_HIGH = new Color(0xf96666); //The dismiss button when the mouse is over it
     
-    static final int BORDER_WIDTH = 20;
+    static final int INSET_WIDTH = 20; //Stores the width of the insets between the black border and the child module
     
+    /*
+    The action integers are used so that the WorkTool can keep track of the actions it is taking and the
+      actions it is going to take without much difficulty. nextAction stores the next action the WorkTool
+      is going to take; so, for example, if its nextAction is ACTION_CLOSE, then if the mouse is pressed,
+      the WorkTool should be dismissed. action stores the action that the WorkTool *is* taking; so, for
+      example, if action is ACTION_MOVE, then the WorkTool is being moved around the Workspace and should
+      not be updating its child or anything.
+    */   
     static final byte ACTION_NONE = 0; //The WorkTool is taking no particular action
     static final byte ACTION_CHILD = 1; //The WorkTool is communicating events to the child
     static final byte ACTION_CLOSE = 2; //The WorkTool will close
-    static final byte ACTION_MOVE = 3; //The WorkTool is moving
+    static final byte ACTION_MOVE = 3; //The WorkTool is moving   
+    /*
+    NOTE: In the future, there may also be ACTION_CHILD, meaning simply that the child is active (the mouse is INSIDE
+      the child / the child is retaining focus). This would replace the active boolean, making things slightly less
+      cluttered.
+    */
     
     private byte nextAction = ACTION_NONE; //Stores the next action that the WorkTool *can* take, based on mouse position
     private byte action = ACTION_NONE; //Stores the action that the WorkTool is currently taking
@@ -42,10 +55,12 @@ public class WorkTool extends Module {
     private Module child; //The WorkTool contains a single Module child which does what it needs to do
     private boolean active; //Stores whether the child Module is being controlled by the user
     
-    private Workspace workspace;
+    private Workspace workspace; //Stores a class reference to the Workspace that this WorkTool is a child of.
+    //This is so the child can reference special methods of the Workspace (such as beginMoving()) without casting
+    //its parent to a Workspace.
     
     private WorkTool(Vector start, Vector end) {
-        bgColor = BG_COLOR;
+        bgColor = BG_COLOR; //Set the Module background color to the static background color
         
         Vector pos = new Vector(), size = new Vector();
         if(start.x < end.x) {
@@ -74,8 +89,8 @@ public class WorkTool extends Module {
         
         child.setParent(this); //Make sure there are no NullPointerExceptions thrown because of a loss of a parent     
         
-        child.resize(size.x - 2 * BORDER_WIDTH, size.y - 2 * BORDER_WIDTH); //The borders around the child module are 20 px thick
-        child.locate(BORDER_WIDTH,BORDER_WIDTH); //The child is located at 20,20
+        child.resize(size.x - 2 * INSET_WIDTH, size.y - 2 * INSET_WIDTH); //The borders around the child module are 20 px thick
+        child.locate(INSET_WIDTH,INSET_WIDTH); //The child is located at 20,20
         child.draw();
         
         resize(size); //Resize this module last because it requires references to the child in onResize()
@@ -88,7 +103,7 @@ public class WorkTool extends Module {
     
     @Override
     public void onResize(Vector newSize) {
-        child.resize(newSize.x - 2 * BORDER_WIDTH, newSize.y - 2 * BORDER_WIDTH);
+        child.resize(newSize.x - 2 * INSET_WIDTH, newSize.y - 2 * INSET_WIDTH);
     }
     
     @Override
@@ -137,11 +152,11 @@ public class WorkTool extends Module {
             if(!active) { //If the child is not active, check for the various controls of the WorkTool
                 //Check if the WorkTool is closable using so-called "magic numbers" - this checks
                 //to see if the mouse is in the top-right corner (within 20 pixels of it)
-                if(pos.x > width() - BORDER_WIDTH && pos.x < width() && pos.y > 0 && pos.y < BORDER_WIDTH) {
+                if(pos.x > width() - INSET_WIDTH && pos.x < width() && pos.y > 0 && pos.y < INSET_WIDTH) {
                     nextAction = ACTION_CLOSE;
                     redraw();
                 }               
-                else if((pos.x > BORDER_WIDTH && pos.x < width() - BORDER_WIDTH) || (pos.y > BORDER_WIDTH && pos.y < height() - BORDER_WIDTH)) {
+                else if((pos.x > INSET_WIDTH && pos.x < width() - INSET_WIDTH) || (pos.y > INSET_WIDTH && pos.y < height() - INSET_WIDTH)) {
                     nextAction = ACTION_MOVE;
                     redraw();
                 }
@@ -216,8 +231,8 @@ public class WorkTool extends Module {
         graphics.setColor(BORDER_COLOR);
         graphics.drawRect(0,0,width() - 1,height() - 1);
         graphics.setColor((nextAction == ACTION_CLOSE) ? DISMISS_COLOR_HIGH : DISMISS_COLOR); //Set the dismiss color based on whether the Module is closable
-        graphics.fillRect(width() - BORDER_WIDTH, 0, BORDER_WIDTH, BORDER_WIDTH);
+        graphics.fillRect(width() - INSET_WIDTH, 0, INSET_WIDTH, INSET_WIDTH);
         
-        graphics.drawImage(child.render(), BORDER_WIDTH, BORDER_WIDTH, null);
+        graphics.drawImage(child.render(), INSET_WIDTH, INSET_WIDTH, null);
     }
 }
