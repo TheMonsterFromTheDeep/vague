@@ -62,6 +62,12 @@ public class WorkTool extends Module {
     private WorkTool(Vector start, Vector end) {
         bgColor = BG_COLOR; //Set the Module background color to the static background color
         
+        /*
+        This caluclates the position and size of the WorkTool similarly to how 'start' and
+          'size' are calculated at Workspace/WORKTOOL VECTOR ORGANIZATION. The position ('pos')
+          consists of the smallest x and y passed through the 'start' and 'end' Vectors. The 
+          size is then calculated by subtracting the smaller x / y from the larger x / y.
+        */
         Vector pos = new Vector(), size = new Vector();
         if(start.x < end.x) {
             pos.x = start.x;
@@ -80,29 +86,33 @@ public class WorkTool extends Module {
             pos.y = end.y;
             size.y = start.y - end.y;
         }
-               
-        child = Module.create();
         
-        //TEST PURPOSES ONLY:
-        child = TestModule.create(0,0);
-        //END TEST
-        
-        child.setParent(this); //Make sure there are no NullPointerExceptions thrown because of a loss of a parent     
-        
-        child.resize(size.x - 2 * INSET_WIDTH, size.y - 2 * INSET_WIDTH); //The borders around the child module are 20 px thick
-        child.locate(INSET_WIDTH,INSET_WIDTH); //The child is located at 20,20
-        child.draw();
-        
-        resize(size); //Resize this module last because it requires references to the child in onResize()
-        locate(pos);
+        initialize(pos,size); //Initialize the size and position of the WorkTool
     }
     
     public static WorkTool create(Vector start, Vector end) {
-        return new WorkTool(start,end);
+        WorkTool w = new WorkTool(start,end); //Create the WorkTool based on the start and end Vectors
+        
+        w.child = Module.create(); //This makes sure that the child module is initialized.
+        
+        //TEST PURPOSES ONLY:
+        w.child = TestModule.create(0,0); //THIS IS USED TO TEST THE WorkTool AND IN THE FUTURE WILL NOT BE THERE
+        //IN THE FUTURE, PLANS ARE TO HAVE A MENU APPEAR TO SELECT WHAT TYPE OF MODULE THIS WorkTool SHOULD REPRESENT
+        //END TEST
+        
+        w.child.setParent(w); //Make sure there are no NullPointerExceptions thrown because of a loss of a parent     
+        
+        w.child.resize(w.width() - 2 * INSET_WIDTH, w.height() - 2 * INSET_WIDTH); //The borders around the child module are 20 px thick
+        w.child.locate(INSET_WIDTH,INSET_WIDTH); //The child is located past the insets
+        w.child.draw(); //Make sure to draw the child module
+        return w;
     }
     
     @Override
     public void onResize(Vector newSize) {
+        //When the WorkTool is resized, the child needs to be resized to match:
+        //the child Module is resized to the size of the WorkTool minus the insets
+        //on both sides, therefore 2 * the inset width is subtracted from each dimension.
         child.resize(newSize.x - 2 * INSET_WIDTH, newSize.y - 2 * INSET_WIDTH);
     }
     

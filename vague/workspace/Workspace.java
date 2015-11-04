@@ -168,7 +168,7 @@ public final class Workspace extends Container {
         graphics.drawImage(workspace,0,0,null); //Draw the current buffer of the workspace
         
         Vector start = new Vector(), size = new Vector(); //Store where the being created tool should be drawn
-        /*
+        /* WORKTOOL VECTOR ORGANIZATION
         Vector start - stores the start draw position of the tool
         Vector size - stores the size of the tool being draw
         
