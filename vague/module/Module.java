@@ -251,8 +251,8 @@ public class Module extends ModuleBase {
     /*
     Key Event methods to be overloaded in subclasses.
     */
-    public void keyDown(KeyEvent e) { }
-    public void keyUp(KeyEvent e) { }
+    public void keyDown() { }
+    public void keyUp() { }
     public void keyType(KeyEvent e) { }
     
     /**

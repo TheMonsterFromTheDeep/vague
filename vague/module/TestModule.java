@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import vague.Resources;
+import vague.input.Controls;
 import vague.util.Cursor;
 import vague.util.Vector;
 
@@ -19,8 +20,6 @@ public class TestModule extends Module {
     private BufferedImage canvas;
     
     boolean drawing;
-    
-    boolean bow; //"BLACK OR WHITE", stores whether to draw in black or white (true for white, false for black)
     
     int oldx;
     int oldy;
@@ -39,7 +38,8 @@ public class TestModule extends Module {
     
     private void drawPoint(int x, int y) {
         Graphics g = canvas.createGraphics();
-        g.setColor(bow ? Color.WHITE : Color.BLACK);
+        //If space is down, draw white, otherwise draw black
+        g.setColor(Controls.bank.status(Controls.TEST_COLOR) ? Color.WHITE : Color.BLACK);
         g.fillRect(x - 1, y - 1, 2, 2);
         drawPoints(oldx,oldy,x,y);
         oldx = x;
@@ -48,7 +48,7 @@ public class TestModule extends Module {
     
     private void drawPoints(int sx, int sy, int ex, int ey) {
         Graphics g = canvas.createGraphics();
-        g.setColor(bow ? Color.WHITE : Color.BLACK);
+        g.setColor(Controls.bank.status(Controls.TEST_COLOR) ? Color.WHITE : Color.BLACK);
         
         double angle = Math.atan2(ey-sy,ex-sx);
         double changex = Math.cos(angle);
@@ -88,21 +88,7 @@ public class TestModule extends Module {
         releaseFocus();
         redraw();
     }
-    
-    @Override
-    public void keyDown(KeyEvent e) {
-        if(e.getKeyCode() == KeyEvent.VK_SPACE) {
-            bow = true;
-        }
-    }
-    
-    @Override
-    public void keyUp(KeyEvent e) {
-        if(e.getKeyCode() == KeyEvent.VK_SPACE) {
-            bow = false;
-        }
-    }
-    
+
     @Override
     public void onResize(Vector v) {
         int cwidth = v.x < canvas.getWidth() ? canvas.getWidth() : v.x;

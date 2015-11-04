@@ -134,13 +134,13 @@ public class Window extends JFrame {
             @Override
             public void keyPressed(KeyEvent ke) {
                 Controls.bank.update(ke.getKeyCode(),true);
-                system.keyDown(ke); 
+                system.keyDown(); 
             }
 
             @Override
             public void keyReleased(KeyEvent ke) {
                 Controls.bank.update(ke.getKeyCode(),false);
-                system.keyUp(ke); 
+                system.keyUp(); 
             }
         });
         

@@ -199,12 +199,12 @@ public class WorkTool extends Module {
     public void mouseScroll(MouseWheelEvent e) { child.mouseScroll(e); }
     
     @Override
-    public void keyDown(KeyEvent e) {
-        child.keyDown(e); 
+    public void keyDown() {
+        child.keyDown(); 
     }
     @Override
-    public void keyUp(KeyEvent e) {
-        child.keyUp(e); 
+    public void keyUp() {
+        child.keyUp(); 
     }
     @Override
     public void keyType(KeyEvent e) { child.keyType(e); }

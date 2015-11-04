@@ -9,10 +9,12 @@ import java.awt.event.KeyEvent;
 public class Controls {
     public static final int WORKSPACE_SQUARE_TOOL = 0;
     public static final int WORKSPACE_GRID_SNAP = 1;
+    public static final int TEST_COLOR = 900;
     
     public static final Control[] DEFAULT = new Control[] {
         new Control(WORKSPACE_SQUARE_TOOL,KeyEvent.VK_SHIFT),
-        new Control(WORKSPACE_GRID_SNAP,KeyEvent.VK_CONTROL)
+        new Control(WORKSPACE_GRID_SNAP,KeyEvent.VK_CONTROL),
+        new Control(TEST_COLOR,KeyEvent.VK_SPACE)
     };
     
     public static Controls bank;

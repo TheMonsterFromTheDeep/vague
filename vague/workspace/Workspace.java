@@ -85,16 +85,16 @@ public final class Workspace extends Container {
     }
     
     @Override
-    public void keyDown(KeyEvent e) {
+    public void keyDown() {
         if(activeIndex != -1) {
-            activeChild.keyDown(e);
+            activeChild.keyDown();
         }
     }
     
     @Override
-    public void keyUp(KeyEvent e) {
+    public void keyUp() {
         if(activeIndex != -1) {
-            activeChild.keyUp(e);
+            activeChild.keyUp();
         }
     }
     

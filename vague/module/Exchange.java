@@ -90,7 +90,7 @@ public abstract class Exchange extends ModuleBase {
     public final void mouseUp(MouseEvent e) { child.mouseUp(e); }
     public final void mouseClick(MouseEvent e) { child.mouseClick(e); }
     public final void mouseScroll(MouseWheelEvent e) { child.mouseScroll(e); } 
-    public final void keyDown(KeyEvent e) { child.keyDown(e); }
-    public final void keyUp(KeyEvent e) { child.keyUp(e); }
+    public final void keyDown() { child.keyDown(); }
+    public final void keyUp() { child.keyUp(); }
     public final void keyType(KeyEvent e) { child.keyType(e); }
 }

@@ -214,9 +214,9 @@ public class Container extends Module {
     public void mouseScroll(MouseWheelEvent e) { activeChild.mouseScroll(e); }
 
     @Override
-    public void keyDown(KeyEvent e) { activeChild.keyDown(e); }
+    public void keyDown() { activeChild.keyDown(); }
     @Override
-    public void keyUp(KeyEvent e) { activeChild.keyUp(e); }
+    public void keyUp() { activeChild.keyUp(); }
     @Override
     public void keyType(KeyEvent e) { activeChild.keyType(e); }
     
