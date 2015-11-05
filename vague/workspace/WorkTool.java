@@ -7,7 +7,6 @@ import java.awt.event.MouseWheelEvent;
 import vague.input.Controls;
 import vague.module.Module;
 import vague.module.TestModule;
-import vague.module.container.Container;
 import vague.util.Vector;
 
 /**
@@ -35,6 +34,10 @@ public class WorkTool extends Module {
       the WorkTool should be dismissed. action stores the action that the WorkTool *is* taking; so, for
       example, if action is ACTION_MOVE, then the WorkTool is being moved around the Workspace and should
       not be updating its child or anything.
+    
+    In general, nextAction stores the action that will take place *once the mouse is clicked.* 'action' will
+      then take the value of nextAction once the mouse is clicked. For ACTION_CLOSE, however, 'action' has
+      no need to be updated, becauase the Module needs to be closed anyways.
     */   
     static final byte ACTION_NONE = 0; //The WorkTool is taking no particular action
     static final byte ACTION_CHILD = 1; //The WorkTool is communicating events to the child
@@ -118,19 +121,28 @@ public class WorkTool extends Module {
     
     @Override
     public void onFocus() {
+        //When the Module is focused, it's background color is updated
         bgColor = BG_COLOR_HIGH;
-        redraw();
+        redraw(); //The WorkTool is re-drawn to show the updated background color
+        //TODO: Only re-draw the insets
     }
     
     @Override
     public void onUnfocus() {
+        //When the Module is unfocused, it's background / inset color is updated
         bgColor = BG_COLOR;
-        if(nextAction == ACTION_CLOSE) {
-            nextAction = ACTION_NONE;
+        if(nextAction == ACTION_CLOSE) { //If the Module's next action is ACTION_CLOSE, the close
+                                         //button is currently highlighted
+            nextAction = ACTION_NONE; //Change the nextAction to none because if the Module is not
+                                      //focused then it cannot possibly have its next action as closing
+            
+            //Changing nextAction will also cause the redraw() method to change the color of the dismiss button
         }
-        redraw();
+        redraw(); //Re-draw the WorkTool because it has changed graphical state
     }
     
+    //Needs to be overridden to also includle whether the child is retaining focus
+    //If the child is retaining focus, then this WorkTool needs to retain focus as well
     @Override
     public boolean retainFocus() { return retaining || child.retainFocus(); }
     
@@ -142,107 +154,145 @@ public class WorkTool extends Module {
     
     @Override
     public void mouseMove(Vector pos, Vector dif) {
-        if(action == ACTION_MOVE) {
+        if(action == ACTION_MOVE) { //If the action is ACTION_MOVE, the Module needs to move
+            //Gets the new position that the Module is moving to:
+            //it adds the difference of the mouse position and the starting mouse position to
+            //the current position
             Vector newPos = position().getSum(pos.getDif(movePos));
+            
+            //If the snapping control is active, then the move position should be snapped (increments of Workspace.GRID_SIZE)
             if(Controls.bank.status(Controls.WORKSPACE_GRID_SNAP)) {
-                newPos.x = (newPos.x / Workspace.GRID_SIZE) * Workspace.GRID_SIZE; //If ctrl is down, snap to increments of Workspace.GRID_SIZE
+                newPos.x = (newPos.x / Workspace.GRID_SIZE) * Workspace.GRID_SIZE;
                 newPos.y = (newPos.y / Workspace.GRID_SIZE) * Workspace.GRID_SIZE;
             }
-            locate(newPos);
-            drawParent();
+            
+            locate(newPos); //Locates the WorkTool at the new location
+            drawParent(); //Re-draws its parent (if it's parent is a Workspace, then it will know to draw this Module specially using a buffer for all the others alone)
         }
-        if(!child.retainFocus()) {
+        if(!child.retainFocus()) { //If the child is not retaining focus, check for various updates in the child's state
             boolean previous = active; //Stores the previous active state of the child
             active = child.containsPoint(pos); //Update whether child Module is active
             if(previous != active) {
                 if(active) { nextAction = ACTION_CHILD; child.onFocus(); } //Update the focus if it changed
-                else { child.onUnfocus(); }
+                else { child.onUnfocus(); } //If the child is no longer active, it's focus is lost
             }
             
             if(!active) { //If the child is not active, check for the various controls of the WorkTool
-                //Check if the WorkTool is closable using so-called "magic numbers" - this checks
-                //to see if the mouse is in the top-right corner (within 20 pixels of it)
+                /*
+                In order to check for the actions of the WorkTool, multiple positions are considered:
+                - Within the top-right corner of the insets, with the same width and height as INSET_WIDTH, lies
+                  the dismiss button. Therefore, if the mouse is located here, the module becomes dismissable (ACTION_CLOSE).
+                - The areas between the corners, when clicked, allow the user to drag the WorkTool around. Therefore,
+                  if the mouse is in one of these areas, the next action becomes ACTION_MOVE, and once the mouse is
+                  clicked, 'action' itself will become ACTION_MOVE.
+                - IN THE FUTURE, the mouse located in other corners will allow the user to resize the WorkTool. (This may
+                  also have it's own Cursor image.)
+                - Right now, and as a fallback, if nothing is happening, nextAction becomes ACTION_NONE. If nextAction used
+                  to be something else, the WorkTool will be re-drawn, as its graphical state likely changed. If nextAction
+                  was already ACTION_NONE, nothing will happen, because nothing has changed.
+                */
                 if(pos.x > width() - INSET_WIDTH && pos.x < width() && pos.y > 0 && pos.y < INSET_WIDTH) {
-                    nextAction = ACTION_CLOSE;
-                    redraw();
+                    nextAction = ACTION_CLOSE; //If the mouse is over the dismiss button, nextAction becomes ACTION_CLOSE
+                                               //so that when the mouse is pressed, the WorkTool will be dismissed
+                    redraw(); //nextAction becoming ACTION_CLOSE changes the graphical state, so re-draw the module.
                 }               
                 else if((pos.x > INSET_WIDTH && pos.x < width() - INSET_WIDTH) || (pos.y > INSET_WIDTH && pos.y < height() - INSET_WIDTH)) {
-                    nextAction = ACTION_MOVE;
-                    redraw();
+                    nextAction = ACTION_MOVE; //If the mouse is over one of the insets not in the corners, the WorkTool is moveable,
+                                              //so nextAction becomes ACTION_MOVE. Once the mouse is pressed, 'action' will become ACTION_MOVE
+                                              //and the WorkTool will start moving.
+                    redraw(); //Re-draw the tool in case the graphical state of the dismiss button was changed (as the mouse moved out of
+                              //it and into the insets) or in case the graphical state of the child was changed (as the mouse moved out
+                              //of the child Module and into the insets)
                 }
                 else {
-                    if(nextAction != ACTION_NONE) {
-                        nextAction = ACTION_NONE;
+                    if(nextAction != ACTION_NONE) { //if the old action was not ACTION_NONE, the Module almost
+                        nextAction = ACTION_NONE;   //certainly needs to be-redrawn
                         redraw();
                     }
+                    //If the old nextAction already was ACTION_NONE, nothing probably changed.
                 }
             }
         }
         if(active) { //If the child is active, it should be updated no matter what
+            //Pass the mouseMove method onto the child with the updated position
             child.mouseMove(pos.getDif(child.position()), dif.getDif(child.position()));
         }
-
     }
     
     @Override
     public void mouseDown(MouseEvent e) {
-        if(active) {
+        if(active) { //if the child is active, it's mouseDown event should be called
             child.mouseDown(e);
         }
         else if(nextAction == ACTION_CLOSE) {
-            workspace.removeChild(this);
+            workspace.removeChild(this); //If the nextAction was ACTION_CLOSE, this WorkTool needs to be dismissed
         }
-        else if(nextAction == ACTION_MOVE) {
-            workspace.beginMoving(this);
-            action = ACTION_MOVE;
-            keepFocus();
-            movePos = mousePosition();
-            startPos = position();
+        else if(nextAction == ACTION_MOVE) { //If the nextAction is ACTION_MOVE, start moving the WorkTool
+            workspace.beginMoving(this); //Tell the Workspace parent to begin moving so this Module's graphical
+                                         //state will be updated correctly
+            action = ACTION_MOVE; //Set the action to ACTION_MOVE so that mouseMove() will work correctly
+            keepFocus(); //Start keeping focus, because the mouse is going to leave the WorkTool but it needs
+                         //to continue moving
+            movePos = mousePosition(); //The move position (the position that stores FROM WHERE the module is being dragged
+                                       //needs to be initalized so that the WorkTool will move logically to the user)
+            startPos = position(); //The start position, used to reset the WorkTool's position if it is moved invalidly,
+                                   //needs to be set so that it can be reset if necessary
         }
     }
     
     @Override
     public void mouseUp(MouseEvent e) {
-        if(active) {
+        if(active) { //If the child is active, the mouseUp event needs to be passed on down
             child.mouseUp(e);
         }
-        if(action == ACTION_MOVE) {
-            workspace.stopMoving();
-            action = ACTION_NONE;
-            releaseFocus();
+        if(action == ACTION_MOVE) { //If the WorkTool is currently moving (*action* is ACTION_MOVE),
+                                    //then when the mouse is lifted it needs to stop moving
+            workspace.stopMoving(); //Tell the parent to stop treating this WorkTool specially because it no longer
+                                    //needs special treatment for movement
+            action = ACTION_NONE; //The action is ACTION_NONE, as although it is *possible* for the WorkTool to move,
+                                  //it is not *actually happening*.
+            releaseFocus(); //Stop retaining focus because it is no longer necessary
+            
+            /*
+            NOTE: releaseFocus() will not cause problems, because although something else *could* need to retain focus,
+            it couldn't have possibly been updated while this finished executing.
+            */
         }
     }
     
     //Called by the parent Workspace when it is detected that this intersects with another module
     public void resetMovePosition() {
-        locate(startPos);
+        locate(startPos); //Change the position back to the position stored before the Module began moving
     }
     
+    /*
+    These mouse events, not used by WorkTool, need to be passed on down the event chain
+    */
     @Override
     public void mouseClick(MouseEvent e) { child.mouseClick(e); }
     @Override
     public void mouseScroll(MouseWheelEvent e) { child.mouseScroll(e); }
     
+    /*
+    Key methods, not used by this tool through these methods (rather through the Control bank), need to
+      be passed down the event chain
+    */
     @Override
-    public void keyDown() {
-        child.keyDown(); 
-    }
+    public void keyDown() { child.keyDown(); }
     @Override
-    public void keyUp() {
-        child.keyUp(); 
-    }
+    public void keyUp() { child.keyUp(); }
     @Override
     public void keyType(KeyEvent e) { child.keyType(e); }
     
     @Override
     public void draw() {     
-        graphics.setColor(bgColor);
+        graphics.setColor(bgColor);  //Fill the background color of the WorkTool; mostly used for insets
         graphics.fillRect(1, 1, width() - 2, height() - 2);
-        graphics.setColor(BORDER_COLOR);
+        graphics.setColor(BORDER_COLOR); //Draw the black border around the WorkTool
         graphics.drawRect(0,0,width() - 1,height() - 1);
         graphics.setColor((nextAction == ACTION_CLOSE) ? DISMISS_COLOR_HIGH : DISMISS_COLOR); //Set the dismiss color based on whether the Module is closable
         graphics.fillRect(width() - INSET_WIDTH, 0, INSET_WIDTH, INSET_WIDTH);
         
-        graphics.drawImage(child.render(), INSET_WIDTH, INSET_WIDTH, null);
+        graphics.drawImage(child.render(), INSET_WIDTH, INSET_WIDTH, null); //Draw the child module at its position (right inside the insets)
     }
 }
