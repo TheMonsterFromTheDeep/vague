@@ -269,7 +269,7 @@ public class Module extends ModuleBase {
         onResize(new Vector(width, height)); //Call the onResize() method in case a subclass cares when it is resized
         bounds.size = new Vector(width, height); //Update the size of the bounds
         doRenderCalc(); //Re-do render calculations because this now has a different buffer size
-        redraw(); //Redraw in case it needs to be re-drawn
+        draw(); //Redraw in case it needs to be re-drawn
     }
     
     /**
@@ -285,7 +285,7 @@ public class Module extends ModuleBase {
         onResize(v);
         bounds.size = new Vector(v); //The Vector is copied so that nothing has a reference to size through a refererence
         doRenderCalc();
-        redraw();
+        draw();
     }
     
     /**
