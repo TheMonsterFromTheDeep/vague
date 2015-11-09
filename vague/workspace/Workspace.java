@@ -114,11 +114,11 @@ public final class Workspace extends Container {
     }
     
     /**
-     * Called by child modules when they are being moved. Alerts the Workspace to draw them differently
+     * Called by child modules when they are being moved or resized. Alerts the Workspace to draw them differently
      * than other modules.
      * @param m 
      */
-    public void beginMoving(Module m) {
+    public void beginChanging(Module m) {
         moveTool = m; //If a Module is moving, it needs to be treated specially - special treatment
                       //is given to the module stored within moveTool
         redraw(); //The module needs to be re-drawn so that the 'workspace' buffer is updated
@@ -136,6 +136,15 @@ public final class Workspace extends Container {
         }
         moveTool = null; //Nullify the move tool so no tool will be given special graphical / other treatment
         redraw(); //Redraw the module because tools have been updated; also will reset buffers / things
+    }
+    
+    public void stopResizing() {
+        if(moveTool.width() < MIN_SIZE || moveTool.height() < MIN_SIZE) {
+            if(moveTool instanceof WorkTool) {
+                ((WorkTool)moveTool).resetResize();
+            }
+        }
+        stopMoving(); //The same checks for stopMoving() also apply to stopResizing()
     }
            
     public void createTool() {
