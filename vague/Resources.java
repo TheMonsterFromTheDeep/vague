@@ -15,7 +15,14 @@ import vague.util.Cursor;
 public class Resources {
     ////General
     public BufferedImage ICON; //The app's icon
-    public BufferedImage BACKGROUND; //The background of the Workspace
+    public BufferedImage BACKGROUND; //The background of the Workspace   
+    //--Class WorkTool
+    public BufferedImage WORKTOOL_RESIZE_TL; //Images used to draw resize controls
+    public BufferedImage WORKTOOL_RESIZE_TL_HIGH; //HIGH = mouse is over control
+    public BufferedImage WORKTOOL_RESIZE_BL; //TL = top left, BL = bottom left, BR = bottom right
+    public BufferedImage WORKTOOL_RESIZE_BL_HIGH;
+    public BufferedImage WORKTOOL_RESIZE_BR;
+    public BufferedImage WORKTOOL_RESIZE_BR_HIGH;
     
     ////Cursors
     public Cursor TEST_CURSOR;
@@ -35,6 +42,13 @@ public class Resources {
         popup.updateLoadingMessage("images"); //Update the loading message
         ICON = loadImageRelative("/img/icon.png"); //Load images
         BACKGROUND = loadImageRelative("/img/background.png");
+        
+        WORKTOOL_RESIZE_TL = loadImageRelative("/img/worktool/resize_tl.png");
+        WORKTOOL_RESIZE_TL_HIGH = loadImageRelative("/img/worktool/resize_tl_high.png");
+        WORKTOOL_RESIZE_BL = loadImageRelative("/img/worktool/resize_bl.png");
+        WORKTOOL_RESIZE_BL_HIGH = loadImageRelative("/img/worktool/resize_bl_high.png");
+        WORKTOOL_RESIZE_BR = loadImageRelative("/img/worktool/resize_br.png");
+        WORKTOOL_RESIZE_BR_HIGH = loadImageRelative("/img/worktool/resize_br_high.png");
         
         ////LOAD CURSORS       
         popup.updateLoadingMessage("images/cursors"); //Update the loading message
