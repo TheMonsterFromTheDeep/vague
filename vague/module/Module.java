@@ -264,12 +264,12 @@ public class Module extends ModuleBase {
      * @param height The new height of the module.
      */
     public final void resize(int width, int height) {
-        width = width < 0 ? 0 : width;
+        width = width < 0 ? 0 : width; //The Module should not be resizable to less than zero
         height = height < 0 ? 0 : height;
-        onResize(new Vector(width, height));
-        bounds.size = new Vector(width, height);
-        doRenderCalc();
-        draw(); //Redraw in case it needs to be re-drawn
+        onResize(new Vector(width, height)); //Call the onResize() method in case a subclass cares when it is resized
+        bounds.size = new Vector(width, height); //Update the size of the bounds
+        doRenderCalc(); //Re-do render calculations because this now has a different buffer size
+        redraw(); //Redraw in case it needs to be re-drawn
     }
     
     /**
@@ -285,7 +285,7 @@ public class Module extends ModuleBase {
         onResize(v);
         bounds.size = new Vector(v); //The Vector is copied so that nothing has a reference to size through a refererence
         doRenderCalc();
-        draw();
+        redraw();
     }
     
     /**
@@ -297,8 +297,8 @@ public class Module extends ModuleBase {
      * @param y The new y position of the module.
      */
     public final void locate(int x, int y) {
-        onLocate(new Vector(x, y));
-        bounds.position = new Vector(x, y);
+        onLocate(new Vector(x, y)); //Call the onLocate() method in case a subclass wants to know when it is re-located
+        bounds.position = new Vector(x, y); //The position has changed, so update the bounds position
     }
     
     /**

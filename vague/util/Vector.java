@@ -103,7 +103,7 @@ public class Vector {
      * @param size The increments in size to snap to.
      */
     public void snap(int size) {
-        this.x = (this.x / size) * size;
+        this.x = (this.x / size) * size; //Integer divides the size and re-multiplies it, causing the sizes to be snapped
         this.y = (this.y / size) * size;
     }
 }
