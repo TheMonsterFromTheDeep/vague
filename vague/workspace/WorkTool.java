@@ -59,6 +59,8 @@ public class WorkTool extends Module {
     
     private boolean retainAction = false; //Stores whether the WorkTool should avoid changing lastAction / action
     
+    private boolean valid = true; //Used to store whether the WorkTool should display as invalid (when being resized / moved)
+    
     private Vector anchorVec; //Stores the anchor mouse position for when the WorkTool is moved / resized
     private Vector startPos; //Stores the position to jump to if a move / resize fails
     private Vector startSize; //Stores the size to reset to if a resize fails
@@ -171,6 +173,9 @@ public class WorkTool extends Module {
             }
             
             locate(newPos); //Locates the WorkTool at the new location
+            
+            valid = workspace.validPosition(this);
+            
             drawParent(); //Re-draws its parent (if it's parent is a Workspace, then it will know to draw this Module specially using a buffer for all the others alone)
         }
         if(action == ACTION_RESIZE_TL) {
@@ -188,6 +193,9 @@ public class WorkTool extends Module {
             
             locate(newCorner);
             resize(newSize);
+            
+            valid = workspace.validSize(this);
+            
             drawParent();
         }
         if(action == ACTION_RESIZE_BL) {
@@ -207,6 +215,9 @@ public class WorkTool extends Module {
             
             locate(newPosition);
             resize(newSize);
+            
+            valid = workspace.validSize(this);
+            
             drawParent();
         }
         if(action == ACTION_RESIZE_BR) {
@@ -221,6 +232,9 @@ public class WorkTool extends Module {
             
             locate(newPosition);
             resize(newSize);
+            
+            valid = workspace.validSize(this);
+            
             drawParent();
         }
         if(!child.retainFocus()) { //If the child is not retaining focus, check for various updates in the child's state
@@ -231,6 +245,7 @@ public class WorkTool extends Module {
                     if(!retainAction) {
                         nextAction = ACTION_CHILD; 
                         child.onFocus();
+                        redraw();  //Re-draw in case the graphical state of another control changed
                     }
                 } //Update the focus if it changed
                 else { child.onUnfocus(); } //If the child is no longer active, it's focus is lost
@@ -302,6 +317,8 @@ public class WorkTool extends Module {
             workspace.removeChild(this); //If the nextAction was ACTION_CLOSE, this WorkTool needs to be dismissed
         }
         else if(nextAction == ACTION_MOVE) { //If the nextAction is ACTION_MOVE, start moving the WorkTool
+            startPos = position(); //The start position, used to reset the WorkTool's position if it is moved invalidly,
+                                   //needs to be set so that it can be reset if necessary
             workspace.beginChanging(this); //Tell the Workspace parent to begin moving so this Module's graphical
                                          //state will be updated correctly
             action = ACTION_MOVE; //Set the action to ACTION_MOVE so that mouseMove() will work correctly
@@ -309,10 +326,12 @@ public class WorkTool extends Module {
                          //to continue moving
             anchorVec = mousePosition(); //The move position (the position that stores FROM WHERE the module is being dragged
                                        //needs to be initalized so that the WorkTool will move logically to the user)
-            startPos = position(); //The start position, used to reset the WorkTool's position if it is moved invalidly,
-                                   //needs to be set so that it can be reset if necessary
+            
         }
         else if(nextAction == ACTION_RESIZE_TL || nextAction == ACTION_RESIZE_BL || nextAction == ACTION_RESIZE_BR) {
+            startPos = position();
+            startSize = size();
+            
             workspace.beginChanging(this);
             
             action = nextAction;
@@ -320,9 +339,6 @@ public class WorkTool extends Module {
             retainAction = true;
             
             anchorVec = mousePosition();
-            
-            startPos = position();
-            startSize = size();
         }
     }
     
@@ -338,11 +354,13 @@ public class WorkTool extends Module {
             action = ACTION_NONE; //The action is ACTION_NONE, as although it is *possible* for the WorkTool to move,
                                   //it is not *actually happening*.
             releaseFocus(); //Stop retaining focus because it is no longer necessary
-            
             /*
             NOTE: releaseFocus() will not cause problems, because although something else *could* need to retain focus,
             it couldn't have possibly been updated while this finished executing.
             */
+            
+            valid = true;          
+            redraw();
         }
         if(nextAction == ACTION_RESIZE_TL || nextAction == ACTION_RESIZE_BL || nextAction == ACTION_RESIZE_BR) {        
             workspace.stopResizing();
@@ -350,6 +368,10 @@ public class WorkTool extends Module {
             
             releaseFocus();
             retainAction = false;
+            
+            valid = true;
+            
+            redraw();
         }
     }
     
@@ -388,7 +410,9 @@ public class WorkTool extends Module {
     public void draw() {     
         graphics.setColor(bgColor);  //Fill the background color of the WorkTool; mostly used for insets
         graphics.fillRect(1, 1, width() - 2, height() - 2);
-        graphics.setColor((action != ACTION_NONE) ? BORDER_COLOR_CHANGING : BORDER_COLOR); //Draw the black border around the WorkTool
+        graphics.setColor((action != ACTION_NONE) 
+                ? (valid ? BORDER_COLOR_CHANGING : Workspace.BAD_TOOL_BORDER_COLOR) 
+                : BORDER_COLOR);
         graphics.drawRect(0,0,width() - 1,height() - 1);
         graphics.setColor((nextAction == ACTION_CLOSE) ? DISMISS_COLOR_HIGH : DISMISS_COLOR); //Set the dismiss color based on whether the Module is closable
         graphics.fillRect(width() - INSET_WIDTH, 0, INSET_WIDTH, INSET_WIDTH);

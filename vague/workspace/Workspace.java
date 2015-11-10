@@ -16,10 +16,10 @@ import vague.util.Vector;
  * @author TheMonsterFromTheDeep
  */
 public final class Workspace extends Container {
-    public static Color TOOL_BORDER_COLOR = new Color(0xbbbbdd); //Colors used when drawing the WorkTools
-    public static Color TOOL_FILL_COLOR = new Color(0xc3c3dd);
-    public static Color BAD_TOOL_BORDER_COLOR = new Color(0xff5858);
-    public static Color BAD_TOOL_FILL_COLOR = new Color(0xef7d7d);
+    public static final Color TOOL_BORDER_COLOR = new Color(0xbbbbdd); //Colors used when drawing the WorkTools
+    public static final Color TOOL_FILL_COLOR = new Color(0xc3c3dd);
+    public static final Color BAD_TOOL_BORDER_COLOR = new Color(0xff5858);
+    public static final Color BAD_TOOL_FILL_COLOR = new Color(0xef7d7d);
     
     public static int MIN_SIZE = 60; //Stores the minimum creatable size of WorkTool
     
@@ -71,6 +71,8 @@ public final class Workspace extends Container {
             createTool = true; //Set the tool creation flag so that the mouseMove() method will do tool creation
             toolStart = new Vector(mousePosition()); //Copy the mousePosition into both the toolStart and toolEnd
             toolEnd = new Vector(toolStart); //both are equal to mousePosition because there is no other info yet
+            
+            draw(); //Draw to update the workspace buffer
         }
         else { //If there is an active tool (activeIndex > -1), then it should be updated
             activeChild.mouseDown(e);
@@ -139,12 +141,27 @@ public final class Workspace extends Container {
     }
     
     public void stopResizing() {
-        if(moveTool.width() < MIN_SIZE || moveTool.height() < MIN_SIZE) {
-            if(moveTool instanceof WorkTool) {
+        if(moveTool instanceof WorkTool) {
+            if(!validSize((WorkTool)moveTool)) {
                 ((WorkTool)moveTool).resetResize();
             }
         }
-        stopMoving(); //The same checks for stopMoving() also apply to stopResizing()
+        moveTool = null;
+        redraw();
+    }
+    
+    public boolean validPosition(WorkTool t) {
+        boolean valid = true;
+        for(Module m : children) {
+            if(m != t) {
+                if(m.intersects(t)) { valid = false; }
+            }
+        }
+        return valid;
+    }
+    
+    public boolean validSize(WorkTool t) {
+        return t.width() >= MIN_SIZE && t.height() >= MIN_SIZE && validPosition(t);
     }
            
     public void createTool() {
