@@ -9,6 +9,7 @@ import vague.input.Controls;
 import vague.module.Module;
 import vague.module.TestModule;
 import vague.util.Vector;
+import vague.workspace.menu.SmartMenu;
 
 /**
  * The WorkTool class defines a Module that can be created through the Workspace. It is fundamentally
@@ -109,9 +110,11 @@ public class WorkTool extends Module {
         w.child = Module.create(); //This makes sure that the child module is initialized.
         
         //TEST PURPOSES ONLY:
-        w.child = TestModule.create(0,0); //THIS IS USED TO TEST THE WorkTool AND IN THE FUTURE WILL NOT BE THERE
+        //w.child = TestModule.create(0,0); //THIS IS USED TO TEST THE WorkTool AND IN THE FUTURE WILL NOT BE THERE
         //IN THE FUTURE, PLANS ARE TO HAVE A MENU APPEAR TO SELECT WHAT TYPE OF MODULE THIS WorkTool SHOULD REPRESENT
         //END TEST
+        
+        w.child = SmartMenu.create(w);
         
         w.child.setParent(w); //Make sure there are no NullPointerExceptions thrown because of a loss of a parent     
         
@@ -389,6 +392,16 @@ public class WorkTool extends Module {
         resize(startSize);
     }
     
+    /**
+     * Changes the child of the WorkTool to the specified Module. Should be called by SmartMenu
+     * when the user is specifying what this WorkTool should represent.
+     * @param m The new Module to become the child.
+     */
+    public void fill(Module m) {
+        this.child = m;
+        child.draw(); //Set initial graphical state of child
+        redraw(); //Update WorkTool's graphical state to include that of the new child
+    }
     
     /*
     These mouse events, not used by WorkTool, need to be passed on down the event chain

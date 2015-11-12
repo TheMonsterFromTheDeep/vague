@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
+import vague.Resources;
 import vague.geom.Rectangle;
 import vague.util.Percents;
 import vague.util.Vector;
@@ -125,6 +126,17 @@ public class Module extends ModuleBase {
     protected final void fillBackground() {
         graphics.setColor(bgColor);
         graphics.fillRect(0, 0, bounds.size.x, bounds.size.y);
+    }
+    
+    /**
+     * Helper method to draw text to the Module.
+     * @param text The String of text to draw.
+     * @param size The size multiplier of the text to draw.
+     * @param x The x position of the top-left corner of the text.
+     * @param y The y position of the top-left corner of the text.
+     */
+    protected final void drawText(String text, int size, int x, int y) {
+        graphics.drawImage(Resources.bank.text.draw(text, size), x, y, null);
     }
     
     /**
