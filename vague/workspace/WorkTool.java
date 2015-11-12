@@ -410,7 +410,7 @@ public class WorkTool extends Module {
     public void keyType(KeyEvent e) { child.keyType(e); }
        
     //Draws the border of the Module; called to update graphical state in move / resize classes
-    private void drawBorder() {        
+    private void drawBorder() {           
         graphics.setColor((action != ACTION_NONE) 
                 ? (valid ? BORDER_COLOR_CHANGING : Workspace.BAD_TOOL_BORDER_COLOR) 
                 : BORDER_COLOR);
