@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import vague.util.Cursor;
+import vague.util.TextDrawer;
 
 /**
  * The ImageLoader class is almost a Singleton container that contains all the image resources for the
@@ -23,6 +24,9 @@ public class Resources {
     public BufferedImage WORKTOOL_RESIZE_BL_HIGH;
     public BufferedImage WORKTOOL_RESIZE_BR;
     public BufferedImage WORKTOOL_RESIZE_BR_HIGH;
+    
+    //Text
+    public TextDrawer text;
     
     ////Cursors
     public Cursor TEST_CURSOR;
@@ -53,6 +57,10 @@ public class Resources {
         ////LOAD CURSORS       
         popup.updateLoadingMessage("images/cursors"); //Update the loading message
         TEST_CURSOR = new Cursor(loadImageRelative("/img/test_cursor.png"),-8,-8); //Load cursors
+        
+        ////LOAD TEXT
+        popup.updateLoadingMessage("text");
+        text = new TextDrawer(loadImageRelative("/img/text/char.png"));
     }
     
     /**

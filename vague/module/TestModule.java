@@ -116,5 +116,7 @@ public class TestModule extends Module {
             Cursor s = Resources.bank.TEST_CURSOR;
             graphics.drawImage(s.image,s.getDrawX(mousePosition().x),s.getDrawY(mousePosition().y),null);
         }
+        
+        graphics.drawImage(Resources.bank.text.draw("The quick brown fox jumped over the lazy dog.", 3), 3, 3, null);
     }
 }
