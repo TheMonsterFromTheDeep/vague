@@ -154,7 +154,7 @@ public final class Workspace extends Container {
         boolean valid = true;
         for(Module m : children) {
             if(m != t) {
-                if(m.intersects(t)) { valid = false; }
+                if(t.intersects(m)) { valid = false; }
             }
         }
         return valid;

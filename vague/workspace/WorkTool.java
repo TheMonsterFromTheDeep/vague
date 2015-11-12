@@ -168,13 +168,13 @@ public class WorkTool extends Module {
             
             //If the snapping control is active, then the move position should be snapped (increments of Workspace.GRID_SIZE)
             if(Controls.bank.status(Controls.WORKSPACE_GRID_SNAP)) {
-                newPos.x = (newPos.x / Workspace.GRID_SIZE) * Workspace.GRID_SIZE;
-                newPos.y = (newPos.y / Workspace.GRID_SIZE) * Workspace.GRID_SIZE;
+                newPos.snap(Workspace.GRID_SIZE);
             }
             
             locate(newPos); //Locates the WorkTool at the new location
             
             valid = workspace.validPosition(this);
+            drawBorder(); //Draw the border in case it's graphical state has changed
             
             drawParent(); //Re-draws its parent (if it's parent is a Workspace, then it will know to draw this Module specially using a buffer for all the others alone)
         }
@@ -195,6 +195,7 @@ public class WorkTool extends Module {
             resize(newSize);
             
             valid = workspace.validSize(this);
+            drawBorder(); //Draw the border in case it's graphical state has changed
             
             drawParent();
         }
@@ -217,6 +218,7 @@ public class WorkTool extends Module {
             resize(newSize);
             
             valid = workspace.validSize(this);
+            drawBorder(); //Draw the border in case it's graphical state has changed
             
             drawParent();
         }
@@ -234,6 +236,7 @@ public class WorkTool extends Module {
             resize(newSize);
             
             valid = workspace.validSize(this);
+            drawBorder(); //Draw the border in case it's graphical state has changed
             
             drawParent();
         }
@@ -405,15 +408,20 @@ public class WorkTool extends Module {
     public void keyUp() { child.keyUp(); }
     @Override
     public void keyType(KeyEvent e) { child.keyType(e); }
+       
+    //Draws the border of the Module; called to update graphical state in move / resize classes
+    private void drawBorder() {        
+        graphics.setColor((action != ACTION_NONE) 
+                ? (valid ? BORDER_COLOR_CHANGING : Workspace.BAD_TOOL_BORDER_COLOR) 
+                : BORDER_COLOR);
+        graphics.drawRect(0,0,width() - 1,height() - 1);
+    }
     
     @Override
     public void draw() {     
         graphics.setColor(bgColor);  //Fill the background color of the WorkTool; mostly used for insets
         graphics.fillRect(1, 1, width() - 2, height() - 2);
-        graphics.setColor((action != ACTION_NONE) 
-                ? (valid ? BORDER_COLOR_CHANGING : Workspace.BAD_TOOL_BORDER_COLOR) 
-                : BORDER_COLOR);
-        graphics.drawRect(0,0,width() - 1,height() - 1);
+        drawBorder();
         graphics.setColor((nextAction == ACTION_CLOSE) ? DISMISS_COLOR_HIGH : DISMISS_COLOR); //Set the dismiss color based on whether the Module is closable
         graphics.fillRect(width() - INSET_WIDTH, 0, INSET_WIDTH, INSET_WIDTH);
         
