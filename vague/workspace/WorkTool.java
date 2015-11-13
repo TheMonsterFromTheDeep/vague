@@ -399,6 +399,10 @@ public class WorkTool extends Module {
      */
     public void fill(Module m) {
         this.child = m;
+        child.setParent(this); //Set the parent of the child so it can call drawParent() and other methods
+        //Resize the new child Module to fill the WorkTool
+        child.resize(width() - 2 * INSET_WIDTH, height() - 2 * INSET_WIDTH);
+        child.locate(INSET_WIDTH, INSET_WIDTH); //Locate the child inside the insets
         child.draw(); //Set initial graphical state of child
         redraw(); //Update WorkTool's graphical state to include that of the new child
     }

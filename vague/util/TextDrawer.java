@@ -6,6 +6,21 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 
 public class TextDrawer {
+    public static final int TEXT_HEIGHT = 7;
+    public static final int TEXT_WIDTH = 5;
+    
+    public static final double textHeight(double scale) {
+        return TEXT_HEIGHT * scale;
+    }
+    
+    public static final double textWidth(double scale) {
+        return TEXT_WIDTH * scale;
+    }
+    
+    public static final double stringWidth(String s, double scale) {
+        return ((s.length() * (TEXT_WIDTH + 1)) - 1) * scale;
+    }
+    
     //Chars stores images of the ascii text characters. Characters are not drawn for ascii codes < 32, so this stores no images
     //for characters < 32.
     private BufferedImage[] chars;
@@ -24,7 +39,7 @@ public class TextDrawer {
         }
     }
     
-    public BufferedImage draw(String text, int size) {
+    public BufferedImage draw(String text, double size) {
         BufferedImage render = new BufferedImage(text.length() * 6 - 1, 7, BufferedImage.TYPE_INT_ARGB);
         Graphics renderer = render.createGraphics();
         
@@ -36,7 +51,7 @@ public class TextDrawer {
             }
         }
         
-        if(size > 1) {
+        if(size > 1.0) {
             AffineTransform scale = new AffineTransform(AffineTransform.getScaleInstance(size, size));
             AffineTransformOp scaleop = new AffineTransformOp(scale, null);
             return scaleop.filter(render, null);
