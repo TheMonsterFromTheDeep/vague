@@ -24,7 +24,8 @@ public class SmartMenu extends Module {
         
         controlSelectors = new ControlSelector[] {
             //Create a dummy test module Module to test SmartMenu module module
-            new ControlSelector("Test", TestModule.create(20,20), 3, 20)
+            new ControlSelector("Test", TestModule.create(20,20), 3, 20),
+            new ControlSelector("Test 2", TestModule.create(20,20), 3, 43)
         };
     }
     
