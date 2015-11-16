@@ -8,6 +8,7 @@ import vague.Resources;
 import vague.input.Controls;
 import vague.module.Module;
 import vague.module.TestModule;
+import vague.util.Cursor;
 import vague.util.Vector;
 import vague.workspace.menu.SmartMenu;
 
@@ -20,9 +21,9 @@ import vague.workspace.menu.SmartMenu;
  * @author TheMonsterFromTheDeep
  */
 public class WorkTool extends Module {
-    static final Color BG_COLOR = new Color(0xbcbcdd); //The color of the WorkTool when it is not active
-    static final Color BG_COLOR_HIGH = new Color(0xbfbfdd); //The color of the WorkTool when it is active
+    static final Color BG_COLOR = new Color(0xbcbcdd); //The color of the WorkTool
     static final Color BORDER_COLOR = new Color(0); //The color of the actual border
+    static final Color BORDER_COLOR_INACTIVE = new Color(0x5f5f5f);
     static final Color BORDER_COLOR_CHANGING = new Color(0xffffff); //The color of the WorkTool when it is being moved / resized
     
     static final Color DISMISS_COLOR = new Color(0xe74f4f); //Stores the colors of the button which dismisses a WorkTool
@@ -73,6 +74,8 @@ public class WorkTool extends Module {
     private Workspace workspace; //Stores a class reference to the Workspace that this WorkTool is a child of.
     //This is so the child can reference special methods of the Workspace (such as beginMoving()) without casting
     //its parent to a Workspace.
+    
+    private boolean focused; //Stores whether the WorkTool has focus
     
     private WorkTool(Vector start, Vector end) {
         bgColor = BG_COLOR; //Set the Module background color to the static background color
@@ -135,16 +138,13 @@ public class WorkTool extends Module {
     
     @Override
     public void onFocus() {
-        //When the Module is focused, it's background color is updated
-        bgColor = BG_COLOR_HIGH;
-        redraw(); //The WorkTool is re-drawn to show the updated background color
-        //TODO: Only re-draw the insets
+        focused = true;
+        redraw();
     }
     
     @Override
     public void onUnfocus() {
-        //When the Module is unfocused, it's background / inset color is updated
-        bgColor = BG_COLOR;
+        focused = false;
         nextAction = ACTION_NONE; //The WorkTool is taking no actions
         action = ACTION_NONE;
         //Changing nextAction will also change how the WorkTool is drawn if the mouse was over one of the controls
@@ -315,7 +315,9 @@ public class WorkTool extends Module {
                         }
                     }
                     
-                    if(oldAction != nextAction) { redraw(); }
+                    if(oldAction != nextAction) {
+                        redraw();
+                    }
                 }
             }
         }
@@ -442,9 +444,14 @@ public class WorkTool extends Module {
        
     //Draws the border of the Module; called to update graphical state in move / resize classes
     private void drawBorder() {           
-        graphics.setColor((action != ACTION_NONE) 
-                ? (valid ? BORDER_COLOR_CHANGING : Workspace.BAD_TOOL_BORDER_COLOR) 
-                : BORDER_COLOR);
+        graphics.setColor(
+                (action != ACTION_NONE) 
+                ? (valid)
+                    ? BORDER_COLOR_CHANGING 
+                    : Workspace.BAD_TOOL_BORDER_COLOR
+                : (focused) ?
+                    BORDER_COLOR
+                    : BORDER_COLOR_INACTIVE);
         graphics.drawRect(0,0,width() - 1,height() - 1);
     }
     

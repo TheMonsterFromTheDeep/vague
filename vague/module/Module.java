@@ -252,6 +252,12 @@ public class Module extends ModuleBase {
     */
     public boolean retainFocus() { return retaining; }
     
+    @Override
+    public void hideCursor() { parent.hideCursor(); }
+    
+    @Override
+    public void showCursor() { parent.showCursor(); }
+    
     /*
     Mouse event methods to be overloaded in subclasses.
      */

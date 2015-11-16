@@ -1,8 +1,11 @@
 package vague;
 
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -14,6 +17,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.image.BufferedImage;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -42,6 +46,9 @@ public class Window extends JFrame {
     //Stores the delay between checks for mouse movement
     public final static int MOUSE_FRAMES = 25;
     //Right now it is 40 FPS
+    
+    Cursor hiddenCursor;
+    Cursor shownCursor;
     
     /*
     The 'system' member is simpy the interface between this Window class and the Module system.
@@ -94,6 +101,9 @@ public class Window extends JFrame {
         
         //TestModule[] testChildMods = new TestModule[] { new TestModule(1, 1) };
         
+        shownCursor = Cursor.getDefaultCursor();
+        hiddenCursor = Toolkit.getDefaultToolkit().createCustomCursor(new BufferedImage(1,1,BufferedImage.TYPE_INT_ARGB), new Point(0, 0), "transparent cursor");
+        
         system = new Exchange(Workspace.create(DEFAULT_WIDTH,DEFAULT_HEIGHT,new Module[]{})) {
             @Override
             public Vector mousePosition() {
@@ -103,6 +113,16 @@ public class Window extends JFrame {
             @Override
             public void drawWindow() {
                 panel.repaint();
+            }
+            
+            @Override
+            public void hideCursor() {
+                panel.setCursor(hiddenCursor);
+            }
+            
+            @Override
+            public void showCursor() {
+                panel.setCursor(shownCursor);
             }
         };
         

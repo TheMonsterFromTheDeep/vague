@@ -56,6 +56,9 @@ public class ModuleBase {
         graphics.drawImage(m.render(),m.x(),m.y(),null);
     }
     
+    public void hideCursor() { }
+    public void showCursor() { }
+    
     /**
      * Returns a vector object containing the mouse position.
      * 
