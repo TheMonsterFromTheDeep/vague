@@ -24,6 +24,8 @@ public class Resources {
     public BufferedImage WORKTOOL_RESIZE_BL_HIGH;
     public BufferedImage WORKTOOL_RESIZE_BR;
     public BufferedImage WORKTOOL_RESIZE_BR_HIGH;
+    public BufferedImage WORKTOOL_REFRESH;
+    public BufferedImage WORKTOOL_REFRESH_HIGH;
     
     //Text
     public TextDrawer text;
@@ -47,12 +49,16 @@ public class Resources {
         ICON = loadImageRelative("/img/icon.png"); //Load images
         BACKGROUND = loadImageRelative("/img/background.png");
         
+        ////LOAD CONTROLS
+        popup.updateLoadingMessage("images/buttons");
         WORKTOOL_RESIZE_TL = loadImageRelative("/img/worktool/resize_tl.png");
         WORKTOOL_RESIZE_TL_HIGH = loadImageRelative("/img/worktool/resize_tl_high.png");
         WORKTOOL_RESIZE_BL = loadImageRelative("/img/worktool/resize_bl.png");
         WORKTOOL_RESIZE_BL_HIGH = loadImageRelative("/img/worktool/resize_bl_high.png");
         WORKTOOL_RESIZE_BR = loadImageRelative("/img/worktool/resize_br.png");
         WORKTOOL_RESIZE_BR_HIGH = loadImageRelative("/img/worktool/resize_br_high.png");
+        WORKTOOL_REFRESH = loadImageRelative("/img/worktool/refresh.png");
+        WORKTOOL_REFRESH_HIGH = loadImageRelative("/img/worktool/refresh_high.png");
         
         ////LOAD CURSORS       
         popup.updateLoadingMessage("images/cursors"); //Update the loading message

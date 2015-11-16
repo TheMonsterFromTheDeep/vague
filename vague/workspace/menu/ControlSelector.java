@@ -29,6 +29,11 @@ public class ControlSelector {
         this.y = y;
     }
     
+    //Updates whether a button is pressed based on a specific boolean; mostly used for when a menu is unfocused
+    public void update(boolean value) {
+        press = value;
+    }
+    
     public void update(int mousex, int mousey) {
         press = (mousex > x) && (mousex < x + INSET_WIDTH + TextDrawer.stringWidth(text, TEXT_SCALE)) &&
                 (mousey > y) && (mousey < y + INSET_WIDTH + TextDrawer.textHeight(TEXT_SCALE));

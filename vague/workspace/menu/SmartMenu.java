@@ -50,6 +50,21 @@ public class SmartMenu extends Module {
         redraw();
     }
     
+    //When the SmartMenu is unfocused, it needs to update its buttons in case any appear as pressed
+    @Override
+    public void onUnfocus() {
+        boolean redraw = false; //Stores whether the graphical state has changed and the Menu needs to be re-drawn
+        for(ControlSelector cs : controlSelectors) {
+            if(cs.pressed()) { //If any of the buttons are pressed, unpress them and make it so this will be re-drawn
+                cs.update(false);
+                redraw = true;
+            }
+        }
+        if(redraw) { //If any of the buttons were pressed (and now unpressed), redraw to reflect changed graphical state
+            redraw();
+        }
+    }
+    
     @Override
     public void draw() {
         this.fillBackground();

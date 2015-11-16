@@ -49,6 +49,7 @@ public class WorkTool extends Module {
     static final byte ACTION_RESIZE_TL = 4; //The WorkTool is being resized (by the top-left corner)
     static final byte ACTION_RESIZE_BL = 5; //The WorkTool is being resized (by the bottom-left corner)
     static final byte ACTION_RESIZE_BR = 6; //The WorkTool is being resized (by the bottom-right corner)
+    static final byte ACTION_REFRESH = 7; //The WorkTool can be refreshed (a new control can be selected)
     /*
     NOTE: In the future, there may also be ACTION_CHILD, meaning simply that the child is active (the mouse is INSIDE
       the child / the child is retaining focus). This would replace the active boolean, making things slightly less
@@ -278,9 +279,14 @@ public class WorkTool extends Module {
                         redraw(); //nextAction becoming ACTION_CLOSE changes the graphical state, so re-draw the module.
                     }               
                     else if((pos.x > INSET_WIDTH && pos.x < width() - INSET_WIDTH) || (pos.y > INSET_WIDTH && pos.y < height() - INSET_WIDTH)) {
-                        nextAction = ACTION_MOVE; //If the mouse is over one of the insets not in the corners, the WorkTool is moveable,
-                                                  //so nextAction becomes ACTION_MOVE. Once the mouse is pressed, 'action' will become ACTION_MOVE
-                                                  //and the WorkTool will start moving.
+                        if(pos.x > width() - (INSET_WIDTH * 2) && pos.x < width() - INSET_WIDTH && pos.y < INSET_WIDTH) {
+                            nextAction = ACTION_REFRESH;
+                        }
+                        else {
+                            nextAction = ACTION_MOVE; //If the mouse is over one of the insets not in the corners, the WorkTool is moveable,
+                                                      //so nextAction becomes ACTION_MOVE. Once the mouse is pressed, 'action' will become ACTION_MOVE
+                                                      //and the WorkTool will start moving.
+                        }
                         redraw(); //Re-draw the tool in case the graphical state of the dismiss button was changed (as the mouse moved out of
                                   //it and into the insets) or in case the graphical state of the child was changed (as the mouse moved out
                                   //of the child Module and into the insets)
@@ -321,6 +327,9 @@ public class WorkTool extends Module {
         }
         else if(nextAction == ACTION_CLOSE) {
             workspace.removeChild(this); //If the nextAction was ACTION_CLOSE, this WorkTool needs to be dismissed
+        }
+        else if(nextAction == ACTION_REFRESH) {
+            this.fill(SmartMenu.create(this));
         }
         else if(nextAction == ACTION_MOVE) { //If the nextAction is ACTION_MOVE, start moving the WorkTool
             startPos = position(); //The start position, used to reset the WorkTool's position if it is moved invalidly,
@@ -461,6 +470,12 @@ public class WorkTool extends Module {
                 : Resources.bank.WORKTOOL_RESIZE_BR,
                 width() - INSET_WIDTH,
                 height() - INSET_WIDTH, null);
+        graphics.drawImage(
+                (nextAction == ACTION_REFRESH)
+                ? Resources.bank.WORKTOOL_REFRESH_HIGH
+                : Resources.bank.WORKTOOL_REFRESH,
+                width() - (2 * INSET_WIDTH),
+                0, null);
         
         graphics.drawImage(child.render(), INSET_WIDTH, INSET_WIDTH, null); //Draw the child module at its position (right inside the insets)
     }
