@@ -266,51 +266,56 @@ public class WorkTool extends Module {
                 - The areas between the corners, when clicked, allow the user to drag the WorkTool around. Therefore,
                   if the mouse is in one of these areas, the next action becomes ACTION_MOVE, and once the mouse is
                   clicked, 'action' itself will become ACTION_MOVE.
-                - IN THE FUTURE, the mouse located in other corners will allow the user to resize the WorkTool. (This may
-                  also have it's own Cursor image.)
-                - Right now, and as a fallback, if nothing is happening, nextAction becomes ACTION_NONE. If nextAction used
-                  to be something else, the WorkTool will be re-drawn, as its graphical state likely changed. If nextAction
-                  was already ACTION_NONE, nothing will happen, because nothing has changed.
+                - The INSET_WIDTH square area right next to the close button contains the refresh button, which causes
+                  the WorkTool to fill itself with a new SmartMenu so a new control can be selected.
+                - If the mouse is in any of the corners other than the close button, the WorkTool can be resized. In the future,
+                  the close / refresh buttons may be moved over and a new resize button located where the close button currently
+                  lies.
                 */
                 if(!retainAction) {
-                    if(pos.x > width() - INSET_WIDTH && pos.x < width() && pos.y > 0 && pos.y < INSET_WIDTH) {
-                        nextAction = ACTION_CLOSE; //If the mouse is over the dismiss button, nextAction becomes ACTION_CLOSE
-                                                   //so that when the mouse is pressed, the WorkTool will be dismissed
-                        redraw(); //nextAction becoming ACTION_CLOSE changes the graphical state, so re-draw the module.
-                    }               
-                    else if((pos.x > INSET_WIDTH && pos.x < width() - INSET_WIDTH) || (pos.y > INSET_WIDTH && pos.y < height() - INSET_WIDTH)) {
-                        if(pos.x > width() - (INSET_WIDTH * 2) && pos.x < width() - INSET_WIDTH && pos.y < INSET_WIDTH) {
-                            nextAction = ACTION_REFRESH;
+                    int oldAction = nextAction;
+                    
+                    if(pos.y <= INSET_WIDTH) {
+                        if(pos.x > INSET_WIDTH) {
+                            if(pos.x >= width() - (2 * INSET_WIDTH)) {
+                                if(pos.x >= width() - INSET_WIDTH) {
+                                    nextAction = ACTION_CLOSE;
+                                }
+                                else {
+                                    nextAction = ACTION_REFRESH;
+                                }
+                            }
+                            else {
+                                nextAction = ACTION_MOVE;
+                            }
                         }
                         else {
-                            nextAction = ACTION_MOVE; //If the mouse is over one of the insets not in the corners, the WorkTool is moveable,
-                                                      //so nextAction becomes ACTION_MOVE. Once the mouse is pressed, 'action' will become ACTION_MOVE
-                                                      //and the WorkTool will start moving.
+                            nextAction = ACTION_RESIZE_TL;
                         }
-                        redraw(); //Re-draw the tool in case the graphical state of the dismiss button was changed (as the mouse moved out of
-                                  //it and into the insets) or in case the graphical state of the child was changed (as the mouse moved out
-                                  //of the child Module and into the insets)
-
                     }
-                    else if((pos.x > 0 && pos.x < INSET_WIDTH) && (pos.y > 0 - INSET_WIDTH && pos.y < INSET_WIDTH)) {
-                        nextAction = ACTION_RESIZE_TL;
-                        redraw();
-                    }
-                    else if((pos.x > 0 && pos.x < INSET_WIDTH) && (pos.y > height() - INSET_WIDTH && pos.y < height())) {
-                        nextAction = ACTION_RESIZE_BL;
-                        redraw();
-                    }
-                    else if((pos.x > width() - INSET_WIDTH && pos.x < width()) && (pos.y > height() - INSET_WIDTH && pos.y < height())) {
-                        nextAction = ACTION_RESIZE_BR;
-                        redraw();
+                    else if(pos.y >= height() - INSET_WIDTH) {
+                        if(pos.x > INSET_WIDTH) {
+                            if(pos.x >= width() - INSET_WIDTH) {
+                                nextAction = ACTION_RESIZE_BR;
+                            }
+                            else {
+                                nextAction = ACTION_MOVE;
+                            }
+                        }
+                        else {
+                            nextAction = ACTION_RESIZE_BL;
+                        }
                     }
                     else {
-                        if(nextAction != ACTION_NONE) { //if the old action was not ACTION_NONE, the Module almost
-                            nextAction = ACTION_NONE;   //certainly needs to be-redrawn
-                            redraw();
+                        if(pos.x <= INSET_WIDTH || pos.x >= width() - INSET_WIDTH) {
+                            nextAction = ACTION_MOVE;
                         }
-                        //If the old nextAction already was ACTION_NONE, nothing probably changed.
+                        else {
+                            nextAction = ACTION_CHILD;
+                        }
                     }
+                    
+                    if(oldAction != nextAction) { redraw(); }
                 }
             }
         }
