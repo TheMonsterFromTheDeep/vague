@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
+import vague.util.Cursor;
 import vague.util.Vector;
 
 /**
@@ -56,8 +57,8 @@ public class ModuleBase {
         graphics.drawImage(m.render(),m.x(),m.y(),null);
     }
     
-    public void hideCursor() { }
-    public void showCursor() { }
+    public void setCursor(Cursor c) { }
+    public void clearCursor() { }
     
     /**
      * Returns a vector object containing the mouse position.

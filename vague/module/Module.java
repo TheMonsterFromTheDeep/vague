@@ -7,6 +7,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
 import vague.Resources;
 import vague.geom.Rectangle;
+import vague.util.Cursor;
 import vague.util.Percents;
 import vague.util.Vector;
 
@@ -251,12 +252,16 @@ public class Module extends ModuleBase {
     Container Modules should check this value before changing focus.
     */
     public boolean retainFocus() { return retaining; }
+
+    @Override
+    public final void setCursor(Cursor c) {
+        parent.setCursor(c);
+    }
     
     @Override
-    public void hideCursor() { parent.hideCursor(); }
-    
-    @Override
-    public void showCursor() { parent.showCursor(); }
+    public final void clearCursor() {
+        parent.clearCursor();
+    }
     
     /*
     Mouse event methods to be overloaded in subclasses.

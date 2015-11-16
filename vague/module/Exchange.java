@@ -1,9 +1,11 @@
 package vague.module;
 
+import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
+import vague.util.Cursor;
 import vague.util.Vector;
 
 /**
@@ -16,6 +18,8 @@ import vague.util.Vector;
  */
 public abstract class Exchange extends ModuleBase {
     private Module child; //Stores the child module which this class interfaces to the window
+    
+    private Cursor cursor; //Stores any cursor being drawn
     
     /**
      * Constructs the Exchange on top of the specified Module.
@@ -45,8 +49,37 @@ public abstract class Exchange extends ModuleBase {
         child.resize(size);
     }
     
+    public abstract void hideCursor();
+    public abstract void showCursor();
+    
+    @Override
+    public void setCursor(Cursor c) {
+        hideCursor();
+        cursor = c;
+    }
+    
+    @Override
+    public void clearCursor() {
+        showCursor();
+        cursor = null;
+    }
+    
     public final BufferedImage render() {
-        return child.render();
+        if(cursor == null) {
+            return child.render();
+        }
+        else {
+            BufferedImage render = new BufferedImage(child.render().getWidth(), child.render().getHeight(), BufferedImage.TYPE_INT_ARGB);
+            
+            Vector mPos = mousePosition();
+            
+            Graphics g = render.createGraphics();
+            g.drawImage(child.render(), 0, 0, null);
+            g.drawImage(cursor.image, cursor.getDrawX(mPos.x), cursor.getDrawY(mPos.y), null);
+                
+            
+            return render;
+        }
     }
     
     public abstract void drawWindow();

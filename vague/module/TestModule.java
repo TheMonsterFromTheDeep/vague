@@ -76,7 +76,7 @@ public class TestModule extends Module {
     @Override
     public void mouseDown(MouseEvent e) {
         drawing = true;
-        hideCursor();
+        setCursor(Resources.bank.TEST_CURSOR);
         keepFocus();
         oldx = mousePosition().x;
         oldy = mousePosition().y;
@@ -86,7 +86,7 @@ public class TestModule extends Module {
     @Override
     public void mouseUp(MouseEvent e) {
         drawing = false;
-        showCursor();
+        clearCursor();
         releaseFocus();
         redraw();
     }
