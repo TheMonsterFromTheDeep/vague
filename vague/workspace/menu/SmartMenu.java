@@ -2,6 +2,7 @@ package vague.workspace.menu;
 
 import java.awt.Color;
 import java.awt.event.MouseEvent;
+import vague.editor.Editor;
 import vague.module.Module;
 import vague.module.TestModule;
 import vague.util.Vector;
@@ -24,8 +25,9 @@ public class SmartMenu extends Module {
         
         controlSelectors = new ControlSelector[] {
             //Create a dummy test module Module to test SmartMenu module module
-            new ControlSelector("Test", TestModule.create(20,20), 3, 20),
-            new ControlSelector("Test 2", TestModule.create(20,20), 3, 43)
+            new ControlSelector("Editor", Editor.create(), 3, 20),
+            new ControlSelector("Test", TestModule.create(20,20), 3, 66),
+            new ControlSelector("Test 2", TestModule.create(20,20), 3, 89)
         };
     }
     
