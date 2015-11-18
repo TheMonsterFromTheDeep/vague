@@ -7,40 +7,35 @@ import vague.module.Module;
 import vague.util.Vector;
 
 /**
+ * Represents an image editor that can manipulate and draw to the Canvas. Multiple instances can be created, with different
+ * pan, zoom, and active tools.
  * @author TheMonsterFromTheDeep
  */
 public class Editor extends Module {
     static final Color BG_COLOR = new Color(0xcbcbdd);
     
-    private Canvas canvas; //The canvas that everything is drawn to - stores the data of the image being edited
-    
-    public static Editor editor; //A global reference to the single editor Module that can exist
+    private Vector canvasPosition; //Stores the position of the canvas inside this particular Editor module
     
     private boolean panning = false;
     private Vector panOffset;
     
-    private Vector getEqualCanvasPosition(Vector position) {
-        return new Vector(position.x - (width() / 2), position.y - (height() / 2));
-    }
-    
     private Editor() {
         this.bgColor = BG_COLOR;
         
-        canvas = new Canvas(80, 80);
-        canvas.draw();
+        canvasPosition = new Vector(0, 0);
     }
     
     public static Editor create() {
-        if(editor == null) {
-            editor = new Editor();
+        if(Canvas.canvas == null) {
+            Canvas.create(80, 80); //TEST SIZE ONLY
         }
-        return editor;
+        return new Editor();
     }
     
     @Override
     public void mouseMove(Vector mousePos, Vector mouseDif) {
         if(panning) {
-            //TODO: make this work
+            canvasPosition.add(mouseDif);
             redraw();
         }
     }
@@ -48,7 +43,7 @@ public class Editor extends Module {
     @Override
     public void mouseDown(MouseEvent e) {
         if(e.getButton() == MouseEvent.BUTTON2) {
-            panOffset = getEqualCanvasPosition(mousePosition());
+            panOffset = mousePosition();
             panning = true;
             keepFocus();
         }
@@ -63,11 +58,14 @@ public class Editor extends Module {
     }
     
     @Override
+    public void onResize(Vector newSize) {
+        Vector oldOffset = new Vector((width() / 2) - canvasPosition.x, (height() / 2) - canvasPosition.y);
+        canvasPosition = new Vector((newSize.x / 2) - oldOffset.x, (newSize.y / 2) - oldOffset.y);
+    }
+    
+    @Override
     public void draw() {
         this.fillBackground();
-        graphics.drawImage(canvas.render(), 
-                ((width() - canvas.width()) / 2) + canvas.x(), 
-                ((height() - canvas.height()) / 2) + canvas.y(), 
-        null);
+        graphics.drawImage(Canvas.canvas.render(), canvasPosition.x - (Canvas.canvas.width() / 2), canvasPosition.y - (Canvas.canvas.height() / 2), null);
     }
 }

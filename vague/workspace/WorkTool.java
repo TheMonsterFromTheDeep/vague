@@ -323,7 +323,7 @@ public class WorkTool extends Module {
         }
         if(active) { //If the child is active, it should be updated no matter what
             //Pass the mouseMove method onto the child with the updated position
-            child.mouseMove(pos.getDif(child.position()), dif.getDif(child.position()));
+            child.mouseMove(pos.getDif(child.position()), dif);
         }
     }
     

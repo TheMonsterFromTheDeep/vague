@@ -300,7 +300,7 @@ public final class Workspace extends Container {
             }
             //Pass mouse coordinates onto child module but where the coordinates passed will have an origin
             //at the top left corner of the child module
-            activeChild.mouseMove(pos.getDif(activeChild.position()),dif.getDif(activeChild.position())); //Pass the mouse movement on to the active child (or the new active child, if it was just updated)
+            activeChild.mouseMove(pos.getDif(activeChild.position()),dif); //Pass the mouse movement on to the active child (or the new active child, if it was just updated)
         }
         else if(createTool) { //If there is not an active child, but tools are being created, nothing other than tool creation should be happending
             if(Controls.bank.status(Controls.WORKSPACE_SQUARE_TOOL)) { //If the square tool control is active, make the tool square

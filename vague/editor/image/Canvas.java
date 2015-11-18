@@ -10,14 +10,14 @@ import vague.util.Vector;
  * @author TheMonsterFromTheDeep
  */
 public class Canvas {
-    private Vector position; //Stores where the Canvas is drawn on-screen (has no effect on image data)
-    //position represents the center of the Canvas
     private Vector size; //Stores the size of the canvas
     
     private Layer[] layers; //Stores the layers of the image
     
     private BufferedImage lastRender; //Stores the last render of the image
     private Graphics graphics;
+    
+    public static Canvas canvas;
     
     private void createDrawSystem() {
         int width = size.x > 0 ? size.x : 1;
@@ -28,24 +28,40 @@ public class Canvas {
         graphics = lastRender.createGraphics();
     }
     
-    public Canvas(Vector size) {
+    private Canvas(Vector size) {
         this.size = new Vector(size);
         layers = new Layer[1];
         layers[0] = new Layer(size);
         
         createDrawSystem();
-        
-        position = new Vector(0, 0);
     }
     
-    public Canvas(int width, int height) {
+    private Canvas(int width, int height) {
         this.size = new Vector(width, height);
         layers = new Layer[1];
         layers[0] = new Layer(width, height);
-        
+         
         createDrawSystem();
-        
-        position = new Vector(0, 0);
+    }
+    
+    public static Canvas create() {
+        return new Canvas(0, 0);
+    }
+    
+    public static Canvas create(Vector size) {
+        if(canvas == null) {
+            canvas = new Canvas(size);
+            canvas.draw();
+        }
+        return canvas;
+    }
+    
+    public static Canvas create(int width, int height) {
+        if(canvas == null) {
+            canvas = new Canvas(width, height);
+            canvas.draw();
+        }
+        return canvas;
     }
     
     public void draw() {
@@ -58,20 +74,9 @@ public class Canvas {
         }
     }
     
-    public int x() { return position.x; }
-    public int y() { return position.y; }
-    
     public int width() { return size.x; }
     public int height() { return size.y; }
-    
-    public void move(Vector posDif) {
-        position.add(posDif);
-    }
-    
-    public void locate(Vector location) {
-        position = new Vector(location);
-    }
-    
+
     public BufferedImage render() {
         return lastRender;
     }
