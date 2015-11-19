@@ -63,9 +63,7 @@ public class Canvas {
         return canvas;
     }
     
-    public void draw() {
-        graphics.setColor(Color.WHITE);
-        graphics.fillRect(0, 0, size.x, size.y);        
+    public void draw() {      
         for(Layer l : layers) {
             graphics.drawImage(l.render(), l.x(), l.y(), null);
         }

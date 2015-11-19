@@ -1,6 +1,7 @@
 package vague.editor;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
@@ -26,12 +27,21 @@ public class Editor extends Module {
     
     static final Color BG_COLOR = new Color(0xcbcbdd);
     
+    static final Color TILE_COLOR_LIGHT = new Color(0x090909);
+    static final Color TILE_COLOR_DARK = new Color(0x909090);
+    
+    //The number of pixels tall and wide each tile in a transparent image background is
+    static final int TILE_SIZE = 4;
+    
     private Vector canvasPosition; //Stores the position of the canvas inside this particular Editor module
     private int canvasZoom; //Stores the zoom level of the Editor
     
     //Stores the Editor's current buffer of the Canvas - each editor can have a different zoom, so each editor may
     //need its own buffer.
     private BufferedImage canvasRender;
+    
+    //Stores the tiled background drawn behind a transparent Canvas.
+    private BufferedImage tiledBackground;
     
     private boolean panning = false;
     
@@ -42,7 +52,7 @@ public class Editor extends Module {
         canvasZoom = DEFAULT_CANVAS_ZOOM; //The zoom is calculated based on a power; a power of zero is a scale of 1:1
         
         center(); //Set the canvas position to the center of the Editor
-        zoom(); //Initialize the graphical state of this Editor's buffer
+        prepare(); //Initialize the graphical state of this Editor's buffer
     }
     
     public static Editor create() {
@@ -52,11 +62,31 @@ public class Editor extends Module {
         return new Editor();
     }
     
+    private void createBackground() {
+        int width = canvasRender.getWidth();
+        int height = canvasRender.getHeight();
+        
+        tiledBackground = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics g = tiledBackground.createGraphics();
+        
+        for(int x = 0; x < (width / TILE_SIZE) + 1; x++) {
+            for(int y = 0; y < (height / TILE_SIZE) + 1; y++) {
+                g.setColor(x % 2 == 0 ? TILE_COLOR_LIGHT : TILE_COLOR_DARK);
+                g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            }
+        }
+    }
+    
     private void zoom() {
         double scaleMultiplier = Math.pow(2, canvasZoom);
         AffineTransform scale = new AffineTransform(AffineTransform.getScaleInstance(scaleMultiplier, scaleMultiplier));
         AffineTransformOp scaleop = new AffineTransformOp(scale, null);
         canvasRender = scaleop.filter(Canvas.canvas.render(), null);
+    }
+    
+    private void prepare() {
+        zoom();
+        createBackground();
     }
     
     private void center() {
@@ -117,7 +147,7 @@ public class Editor extends Module {
             canvasZoom -= e.getWheelRotation();
             if(canvasZoom > ZOOM_MAX) { canvasZoom = ZOOM_MAX; }
             if(canvasZoom < ZOOM_MIN) { canvasZoom = ZOOM_MIN; }
-            zoom();
+            prepare();
             redraw();
         }
     }
@@ -140,6 +170,7 @@ public class Editor extends Module {
         int canvasX = canvasPosition.x - (canvasRender.getWidth() / 2);
         int canvasY = canvasPosition.y - (canvasRender.getHeight() / 2);
         graphics.drawRect(canvasX - 1, canvasY - 1, canvasRender.getWidth() + 1, canvasRender.getHeight() + 1);
+        graphics.drawImage(tiledBackground, canvasX, canvasY, null);
         graphics.drawImage(canvasRender, canvasX, canvasY, null);
     }
 }
