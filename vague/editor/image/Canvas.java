@@ -23,8 +23,7 @@ public class Canvas {
         int width = size.x > 0 ? size.x : 1;
         int height = size.y > 0 ? size.y : 1;
         
-        //The width and height are +2 to make room for the border
-        lastRender = new BufferedImage(width + 2, height + 2, BufferedImage.TYPE_INT_ARGB);
+        lastRender = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         graphics = lastRender.createGraphics();
     }
     
@@ -65,10 +64,8 @@ public class Canvas {
     }
     
     public void draw() {
-        graphics.setColor(Color.BLACK);
-        graphics.drawRect(0, 0, size.x - 1, size.y - 1);
         graphics.setColor(Color.WHITE);
-        graphics.fillRect(1, 1, size.x - 2, size.y - 2);        
+        graphics.fillRect(0, 0, size.x, size.y);        
         for(Layer l : layers) {
             graphics.drawImage(l.render(), l.x(), l.y(), null);
         }

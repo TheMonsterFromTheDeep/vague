@@ -14,6 +14,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -183,6 +185,13 @@ public class Window extends JFrame {
 
             @Override
             public void mouseExited(MouseEvent me) {}
+        });
+        
+        this.addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent mwe) {
+                system.mouseScroll(mwe);
+            }            
         });
         
         this.addWindowListener(new WindowAdapter() {

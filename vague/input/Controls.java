@@ -7,14 +7,16 @@ import java.awt.event.KeyEvent;
  * @author TheMonsterFromTheDeep
  */
 public class Controls {
-    public static final int WORKSPACE_SQUARE_TOOL = 0; //The control for making tools square on the Workspace
-    public static final int WORKSPACE_GRID_SNAP = 1; //The control for snapping tools to grid on the Workspace
+    public static final int MODIFIER_SHIFT = 0; //The control for making tools square on the Workspace
+    public static final int MODIFIER_CONTROL = 1; //The control for snapping tools to grid on the Workspace
+    public static final int EDITOR_RESET_VIEW = 2;
     public static final int TEST_COLOR = 900; //A test control for changing drawing color on the TestModule
     
     //Initializes the default state of the controls of the application
     public static final Control[] DEFAULT = new Control[] {
-        new Control(WORKSPACE_SQUARE_TOOL,KeyEvent.VK_SHIFT),
-        new Control(WORKSPACE_GRID_SNAP,KeyEvent.VK_CONTROL),
+        new Control(MODIFIER_SHIFT,KeyEvent.VK_SHIFT),
+        new Control(MODIFIER_CONTROL,KeyEvent.VK_CONTROL),
+        new Control(EDITOR_RESET_VIEW,KeyEvent.VK_8),
         new Control(TEST_COLOR,KeyEvent.VK_SPACE)
     };
     

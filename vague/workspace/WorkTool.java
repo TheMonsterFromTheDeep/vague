@@ -171,7 +171,7 @@ public class WorkTool extends Module {
             Vector newPos = position().getSum(pos.getDif(anchorVec));
             
             //If the snapping control is active, then the move position should be snapped (increments of Workspace.GRID_SIZE)
-            if(Controls.bank.status(Controls.WORKSPACE_GRID_SNAP)) {
+            if(Controls.bank.status(Controls.MODIFIER_CONTROL)) {
                 newPos.snap(Workspace.GRID_SIZE);
             }
             
@@ -185,13 +185,13 @@ public class WorkTool extends Module {
         if(action == ACTION_RESIZE_TL) {
             Vector newCorner = position().getSum(pos.getDif(anchorVec)); //The new corner is the upper left (so, raw position)
             
-            if(Controls.bank.status(Controls.WORKSPACE_GRID_SNAP)) {
+            if(Controls.bank.status(Controls.MODIFIER_CONTROL)) {
                 newCorner.snap(Workspace.GRID_SIZE);
             }
             
             Vector newSize = bounds().bottomRight().getDif(newCorner); //This stores the new size based on that corner
             
-            if(Controls.bank.status(Controls.WORKSPACE_GRID_SNAP)) {           
+            if(Controls.bank.status(Controls.MODIFIER_CONTROL)) {           
                 newSize.snap(Workspace.GRID_SIZE);
             }
             
@@ -208,13 +208,13 @@ public class WorkTool extends Module {
             
             Vector newPosition = new Vector(newCorner.x,y());
             
-            if(Controls.bank.status(Controls.WORKSPACE_GRID_SNAP)) {
+            if(Controls.bank.status(Controls.MODIFIER_CONTROL)) {
                 newPosition.snap(Workspace.GRID_SIZE);
             }
             
             Vector newSize = new Vector(bounds().bottomRight().x - newPosition.x, pos.y);
             
-            if(Controls.bank.status(Controls.WORKSPACE_GRID_SNAP)) {           
+            if(Controls.bank.status(Controls.MODIFIER_CONTROL)) {           
                 newSize.snap(Workspace.GRID_SIZE);
             }
             
@@ -231,7 +231,7 @@ public class WorkTool extends Module {
             
             Vector newSize = new Vector(pos.x, pos.y);
             
-            if(Controls.bank.status(Controls.WORKSPACE_GRID_SNAP)) {
+            if(Controls.bank.status(Controls.MODIFIER_CONTROL)) {
                 newPosition.snap(Workspace.GRID_SIZE);
                 newSize.snap(Workspace.GRID_SIZE);
             }
