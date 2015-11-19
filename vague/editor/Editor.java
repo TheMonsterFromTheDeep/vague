@@ -73,16 +73,23 @@ public class Editor extends Module {
     
     @Override
     public void keyDown() {
-        if(Controls.bank.status(Controls.MODIFIER_SHIFT)) {
-            if(Controls.bank.status(Controls.EDITOR_RESET_VIEW)) {
-                //Reset the view
+        if(Controls.bank.status(Controls.EDITOR_RESET_VIEW)) {
+            boolean draw = false; //If the zoom / pan was updated, this thing needs to be re-drawn
+            if(Controls.bank.status(Controls.MODIFIER_CONTROL)) {                
+                //Reset the position
                 canvasPosition = new Vector(DEFAULT_CANVAS_POSITION);
-                canvasZoom = DEFAULT_CANVAS_ZOOM;
-                
                 center(); //Center the canvas in the center of the editor
                 
-                //Zoom to reset the buffer, and redraw to show updated graphical state
+                draw = true;
+            }
+            if(Controls.bank.status(Controls.MODIFIER_SHIFT)) {
+                canvasZoom = DEFAULT_CANVAS_ZOOM;
+                //Zoom to reset the buffer
                 zoom();
+                
+                draw = true;
+            }
+            if(draw) {
                 redraw();
             }
         }
