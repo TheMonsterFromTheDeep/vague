@@ -1,5 +1,6 @@
 package vague.editor.image;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import vague.util.Vector;
 
@@ -17,11 +18,15 @@ public class Layer {
     public Layer(Vector size) {
         this.size = new Vector(size);
         position = new Vector(0,0);
+        
+        data = new BufferedImage(size.x, size.y, BufferedImage.TYPE_INT_ARGB);
     }
     
     public Layer(int width, int height) {
         this.size = new Vector(width, height);
         position = new Vector(0,0);
+        
+        data = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
     }
     
     public BufferedImage render() {
@@ -30,4 +35,16 @@ public class Layer {
     
     public int x() { return position.x; }
     public int y() { return position.y; }
+    
+    public void setPixel(int x, int y, Color c) {
+        data.setRGB(x, y, c.getRGB());
+    }
+    
+    public void setRGB(int x, int y, int rgb) {
+        data.setRGB(x, y, rgb);
+    }
+    
+    public int getRGB(int x, int y) {
+        return data.getRGB(x, y);
+    }
 }

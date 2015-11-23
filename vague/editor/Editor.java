@@ -8,6 +8,9 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import vague.editor.image.Canvas;
+import vague.editor.tool.EditFilter;
+import vague.editor.tool.Pencil;
+import vague.editor.tool.Tool;
 import vague.input.Controls;
 import vague.module.Module;
 import vague.util.Vector;
@@ -49,11 +52,21 @@ public class Editor extends Module {
     
     private boolean gridLines = false;
     
+    private boolean updateTool = false;
+    
+    //If the canvas needs to be re-drawn, this will be true
+    //it will be set to false as soon as the canvas is re-drawn
+    private boolean redrawCanvas = false;
+    
+    private Tool currentTool = null;
+    
     private Editor() {
         this.bgColor = BG_COLOR;
         
         canvasPosition = new Vector(DEFAULT_CANVAS_POSITION);
         canvasZoom = DEFAULT_CANVAS_ZOOM; //The zoom is calculated based on a power; a power of zero is a scale of 1:1
+        
+        currentTool = new Pencil(filter());
         
         center(); //Set the canvas position to the center of the Editor
         prepare(); //Initialize the graphical state of this Editor's buffer
@@ -120,6 +133,16 @@ public class Editor extends Module {
     
     @Override
     public void mouseMove(Vector mousePos, Vector mouseDif) {
+        if(updateTool) {
+            if(currentTool != null) {
+                int canvasX = canvasPosition.x - (canvasRender.getWidth() / 2);
+                int canvasY = canvasPosition.y - (canvasRender.getHeight() / 2);
+                if(mousePos.x > canvasX && mousePos.x < canvasX + canvasRender.getWidth() && mousePos.y > canvasY && mousePos.y < canvasY + canvasRender.getHeight()) {
+                    double scale = getScale();
+                    currentTool.modify(new Vector((int)((mousePos.x - canvasX) / scale), (int)((mousePos.y - canvasY) / scale)));
+                }
+            }
+        }
         if(panning) {
             canvasPosition.add(mouseDif);
             redraw();
@@ -164,6 +187,10 @@ public class Editor extends Module {
     
     @Override
     public void mouseDown(MouseEvent e) {
+        if(e.getButton() == MouseEvent.BUTTON1) {
+            updateTool = true;
+            keepFocus();
+        }
         if(e.getButton() == MouseEvent.BUTTON2) {
             panning = true;
             keepFocus();
@@ -172,6 +199,10 @@ public class Editor extends Module {
     
     @Override
     public void mouseUp(MouseEvent e) {
+        if(e.getButton() == MouseEvent.BUTTON1) {
+            updateTool = false;
+            releaseFocus();
+        }
         if(e.getButton() == MouseEvent.BUTTON2) {
             panning = false;
             releaseFocus();
@@ -200,6 +231,23 @@ public class Editor extends Module {
         zoom(); //Update this buffer in case it was changed elsewhere
     }
     
+    //Updates the image of the editor that this has
+    public void updateEditor() {
+        zoom();
+    }
+    
+    public void drawPixel(int x, int y, Color c) {
+        graphics.setColor(c);
+        int scale = (int)getScale();
+        int canvasX = canvasPosition.x - (canvasRender.getWidth() / 2);
+        int canvasY = canvasPosition.y - (canvasRender.getHeight() / 2);
+        graphics.fillRect(canvasX + x * scale, canvasY + y * scale, scale, scale);
+        
+        redrawCanvas = true;
+        
+        drawParent();
+    }
+    
     @Override
     public void draw() {
         this.fillBackground();
@@ -208,6 +256,15 @@ public class Editor extends Module {
         int canvasY = canvasPosition.y - (canvasRender.getHeight() / 2);
         graphics.drawRect(canvasX - 1, canvasY - 1, canvasRender.getWidth() + 1, canvasRender.getHeight() + 1);
         graphics.drawImage(tiledBackground, canvasX, canvasY, null);
+        
+        if(redrawCanvas) {
+            updateEditor();
+        }
+        
         graphics.drawImage(canvasRender, canvasX, canvasY, null);
+    }
+    
+    public EditFilter filter() {
+        return new EditFilter(this, Canvas.canvas);
     }
 }

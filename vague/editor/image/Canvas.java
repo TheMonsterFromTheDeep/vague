@@ -14,6 +14,8 @@ public class Canvas {
     
     private Layer[] layers; //Stores the layers of the image
     
+    private int layer;
+    
     private BufferedImage lastRender; //Stores the last render of the image
     private Graphics graphics;
     
@@ -32,6 +34,8 @@ public class Canvas {
         layers = new Layer[1];
         layers[0] = new Layer(size);
         
+        layer = 0;
+        
         createDrawSystem();
     }
     
@@ -40,6 +44,8 @@ public class Canvas {
         layers = new Layer[1];
         layers[0] = new Layer(width, height);
          
+        layer = 0;
+        
         createDrawSystem();
     }
     
@@ -74,5 +80,21 @@ public class Canvas {
 
     public BufferedImage render() {
         return lastRender;
+    }
+    
+    public Layer layer() {
+        return layers[layer];
+    }
+    
+    public void drawPixel(int x, int y) {
+        //TODO: Make this much more efficient / support transparency
+        for(int i = layers.length - 1; i >= 0; i--) {
+            lastRender.setRGB(x, y, layers[i].getRGB(x, y));
+        }
+    }
+    
+    //Returns whether the specified pixel is visible in the current layer
+    public boolean visible(int x, int y) {
+        return true; //TODO: Actually check for visibility
     }
 }
