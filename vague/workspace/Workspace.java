@@ -173,7 +173,7 @@ public final class Workspace extends Container {
     }
            
     public void createTool() {
-        if(Controls.bank.status(Controls.MODIFIER_CONTROL)) { //If the snapping control is activated, the new tool needs to be snapped to grid
+        if(Controls.bank.status(Controls.WORKSPACE_GRID_SNAP)) { //If the snapping control is activated, the new tool needs to be snapped to grid
             toolStart.snap(GRID_SIZE); //Snaps the tool start to grid
             toolEnd.snap(GRID_SIZE); //Snaps the tool end to grid
         }
@@ -243,7 +243,7 @@ public final class Workspace extends Container {
           created, then both toolStart and toolEnd will be snapped because they had
           not been snapped previously.
         */
-        if(Controls.bank.status(Controls.MODIFIER_CONTROL)) {
+        if(Controls.bank.status(Controls.WORKSPACE_GRID_SNAP)) {
             start.snap(GRID_SIZE); //Snap the drawing Vectors if the snapping control is active
             size.snap(GRID_SIZE);
         }
@@ -311,7 +311,7 @@ public final class Workspace extends Container {
             activeChild.mouseMove(pos.getDif(activeChild.position()),dif); //Pass the mouse movement on to the active child (or the new active child, if it was just updated)
         }
         else if(createTool) { //If there is not an active child, but tools are being created, nothing other than tool creation should be happending
-            if(Controls.bank.status(Controls.MODIFIER_SHIFT)) { //If the square tool control is active, make the tool square
+            if(Controls.bank.status(Controls.WORKSPACE_SQUARE_TOOL)) { //If the square tool control is active, make the tool square
                 toolEnd = new Vector(pos.x,pos.x + (toolStart.y - toolStart.x)); //Right now, squaring the tool is done using the x coordinate
                 ////TODO: Make much better square tool creation algorithm (need to consider the most user-friendly way to do so)
             }

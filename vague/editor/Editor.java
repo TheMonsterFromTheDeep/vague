@@ -128,33 +128,38 @@ public class Editor extends Module {
     
     @Override
     public void keyDown() {
-        if(Controls.bank.status(Controls.EDITOR_RESET_VIEW)) {
-            boolean draw = false; //If the zoom / pan was updated, this thing needs to be re-drawn
-            if(Controls.bank.status(Controls.MODIFIER_CONTROL)) {                
+        boolean draw = false;
+        if(Controls.bank.status(Controls.EDITOR_RESET_ZOOM_AND_PAN)) {
+            canvasPosition = new Vector(DEFAULT_CANVAS_POSITION);
+            center();
+            
+            canvasZoom = DEFAULT_CANVAS_ZOOM;
+            prepare();
+            
+            draw = true;
+        }
+        else {
+            if(Controls.bank.status(Controls.EDITOR_RESET_PAN)) {                
                 //Reset the position
                 canvasPosition = new Vector(DEFAULT_CANVAS_POSITION);
                 center(); //Center the canvas in the center of the editor
-                
+
                 draw = true;
             }
-            if(Controls.bank.status(Controls.MODIFIER_SHIFT)) {
+            if(Controls.bank.status(Controls.EDITOR_RESET_ZOOM)) {
                 canvasZoom = DEFAULT_CANVAS_ZOOM;
                 //Zoom to reset the buffer
                 prepare();
-                
+
                 draw = true;
             }
-            if(draw) {
-                redraw();
-            }
         }
-        if(Controls.bank.status(Controls.MODIFIER_SHIFT)) {
-            if(Controls.bank.status(Controls.EDITOR_TOGGLE_GRID)) { 
-                gridLines = !gridLines;
-                prepare(); //Re-create the background buffer
-                redraw(); //Reflect updated graphical state
-            }
+        if(Controls.bank.status(Controls.EDITOR_TOGGLE_GRID)) { 
+            gridLines = !gridLines;
+            prepare(); //Re-create the background buffer
+            redraw(); //Reflect updated graphical state
         }
+        if(draw) { redraw(); }
     }
     
     @Override
@@ -175,7 +180,7 @@ public class Editor extends Module {
     
     @Override
     public void mouseScroll(MouseWheelEvent e) {
-        if(Controls.bank.status(Controls.MODIFIER_CONTROL)) {
+        if(Controls.bank.status(Controls.EDITOR_MODIFIER_ZOOM)) {
             canvasZoom -= e.getWheelRotation();
             if(canvasZoom > ZOOM_MAX) { canvasZoom = ZOOM_MAX; }
             if(canvasZoom < ZOOM_MIN) { canvasZoom = ZOOM_MIN; }
