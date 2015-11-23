@@ -30,6 +30,8 @@ public class Editor extends Module {
     static final Color TILE_COLOR_LIGHT = new Color(0xcfcfdd);
     static final Color TILE_COLOR_DARK = new Color(0x909090);
     
+    static final Color GRID_COLOR = new Color(0xff0000);
+    
     //The number of pixels tall and wide each tile in a transparent image background is
     static final int TILE_SIZE = 4;
     
@@ -44,6 +46,8 @@ public class Editor extends Module {
     private BufferedImage tiledBackground;
     
     private boolean panning = false;
+    
+    private boolean gridLines = false;
     
     private Editor() {
         this.bgColor = BG_COLOR;
@@ -75,9 +79,30 @@ public class Editor extends Module {
                 g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             }
         }
+        
+        if(gridLines) {
+            int scale = (int)getScale();
+            //The grid only really looks good if the scale is greater than or equal to 4
+            if(scale >= 4) {
+                g.setColor(GRID_COLOR);
+                for(int x = scale; x < width; x += scale) {
+                    g.drawLine(x, 0, x, height);
+                }
+                for(int y = scale; y < height; y += scale) {
+                    g.drawLine(0, y, width, y);
+                }
+            }
+        }
+    }
+    
+    private double getScale() {
+        return Math.pow(2, canvasZoom);
     }
     
     private void zoom() {
+        if(canvasRender != null) {
+            canvasRender.flush(); //Dispose of current data so as not to leave a bunch of floating pixel data in memory
+        }
         double scaleMultiplier = Math.pow(2, canvasZoom);
         AffineTransform scale = new AffineTransform(AffineTransform.getScaleInstance(scaleMultiplier, scaleMultiplier));
         AffineTransformOp scaleop = new AffineTransformOp(scale, null);
@@ -115,12 +140,19 @@ public class Editor extends Module {
             if(Controls.bank.status(Controls.MODIFIER_SHIFT)) {
                 canvasZoom = DEFAULT_CANVAS_ZOOM;
                 //Zoom to reset the buffer
-                zoom();
+                prepare();
                 
                 draw = true;
             }
             if(draw) {
                 redraw();
+            }
+        }
+        if(Controls.bank.status(Controls.MODIFIER_SHIFT)) {
+            if(Controls.bank.status(Controls.EDITOR_TOGGLE_GRID)) { 
+                gridLines = !gridLines;
+                prepare(); //Re-create the background buffer
+                redraw(); //Reflect updated graphical state
             }
         }
     }
