@@ -18,8 +18,8 @@ public class Controls {
     
     //Initializes the default state of the controls of the application
     public static final Chord[] DEFAULT = new Chord[] {
-        new Chord(WORKSPACE_GRID_SNAP,new Control(KeyEvent.VK_SHIFT)),
         new Chord(WORKSPACE_GRID_SNAP,new Control(KeyEvent.VK_CONTROL)),
+        new Chord(WORKSPACE_SQUARE_TOOL,new Control(KeyEvent.VK_SHIFT)),
         new Chord(EDITOR_MODIFIER_ZOOM,new Control(KeyEvent.VK_CONTROL)),
         new Chord(EDITOR_RESET_ZOOM,new Control(KeyEvent.VK_8),Chord.MODIFIER_SHIFT),
         new Chord(EDITOR_RESET_PAN,new Control(KeyEvent.VK_8),Chord.MODIFIER_CONTROL),
