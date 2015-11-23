@@ -71,7 +71,9 @@ public class Editor extends Module {
         //Create a dummy immage
         canvasRender = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
         
+        //////TEST PURPOSES ONLY!!!!!!
         currentTool = new Pencil(filter());
+        /////
         
         center(); //Set the canvas position to the center of the Editor
         prepare(); //Initialize the graphical state of this Editor's buffer
@@ -127,11 +129,19 @@ public class Editor extends Module {
             //The grid only really looks good if the scale is greater than or equal to 4
             if(scale >= 4) {
                 g.setColor(GRID_COLOR);
-                for(int x = scale; x < width; x += scale) {
-                    g.drawLine(x, 0, x, height);
+                int i = 0;
+                while(i < width) {
+                    g.drawLine(i, 0, i, height);
+                    i += scale - 1;
+                    g.drawLine(i, 0, i, height);
+                    i++;
                 }
-                for(int y = scale; y < height; y += scale) {
-                    g.drawLine(0, y, width, y);
+                i = 0;
+                while(i < height) {
+                    g.drawLine(0, i, width, i);
+                    i += scale - 1;
+                    g.drawLine(0, i, width, i);
+                    i++;
                 }
             }
         }
@@ -166,11 +176,9 @@ public class Editor extends Module {
     public void mouseMove(Vector mousePos, Vector mouseDif) {
         if(updateTool) {
             if(currentTool != null) {
-                int canvasX = canvasPosition.x - (canvasRender.getWidth() / 2);
-                int canvasY = canvasPosition.y - (canvasRender.getHeight() / 2);
-                if(mousePos.x > canvasX && mousePos.x < canvasX + canvasRender.getWidth() && mousePos.y > canvasY && mousePos.y < canvasY + canvasRender.getHeight()) {
+                if(canvasBounds.encloses(mousePos)) {
                     double scale = getScale();
-                    currentTool.modify(new Vector((int)((mousePos.x - canvasX) / scale), (int)((mousePos.y - canvasY) / scale)));
+                    currentTool.modify(new Vector((int)((mousePos.x - canvasBounds.left()) / scale), (int)((mousePos.y - canvasBounds.top()) / scale)));
                 }
             }
         }
@@ -255,6 +263,8 @@ public class Editor extends Module {
     public void onResize(Vector newSize) {
         Vector oldOffset = new Vector((width() / 2) - canvasPosition.x, (height() / 2) - canvasPosition.y);
         canvasPosition = new Vector((newSize.x / 2) - oldOffset.x, (newSize.y / 2) - oldOffset.y);
+        
+        createBounds();
     }
     
     @Override
@@ -270,9 +280,7 @@ public class Editor extends Module {
     public void drawPixel(int x, int y, Color c) {
         graphics.setColor(c);
         int scale = (int)getScale();
-        int canvasX = canvasPosition.x - (canvasRender.getWidth() / 2);
-        int canvasY = canvasPosition.y - (canvasRender.getHeight() / 2);
-        graphics.fillRect(canvasX + x * scale, canvasY + y * scale, scale, scale);
+        graphics.fillRect(canvasBounds.left() + x * scale, canvasBounds.top() + y * scale, scale, scale);
         
         drawParent();
     }
@@ -281,16 +289,14 @@ public class Editor extends Module {
     public void draw() {
         this.fillBackground();
         graphics.setColor(Color.BLACK);
-        int canvasX = canvasPosition.x - (canvasRender.getWidth() / 2);
-        int canvasY = canvasPosition.y - (canvasRender.getHeight() / 2);
-        graphics.drawRect(canvasX - 1, canvasY - 1, canvasRender.getWidth() + 1, canvasRender.getHeight() + 1);
-        graphics.drawImage(tiledBackground, canvasX, canvasY, null);
+        graphics.drawRect(canvasBounds.left() - 1, canvasBounds.top() - 1, canvasRender.getWidth() + 1, canvasRender.getHeight() + 1);
+        graphics.drawImage(tiledBackground, canvasBounds.left(), canvasBounds.top(), null);
         
         if(canvasDrawQueued) {
             renderCanvas();
         }
         
-        graphics.drawImage(canvasRender, canvasX, canvasY, null);
+        graphics.drawImage(canvasRender, canvasBounds.left(), canvasBounds.top(), null);
     }
     
     public EditFilter filter() {
