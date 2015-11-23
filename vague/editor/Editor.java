@@ -27,7 +27,7 @@ public class Editor extends Module {
     
     static final Color BG_COLOR = new Color(0xcbcbdd);
     
-    static final Color TILE_COLOR_LIGHT = new Color(0x090909);
+    static final Color TILE_COLOR_LIGHT = new Color(0xcfcfdd);
     static final Color TILE_COLOR_DARK = new Color(0x909090);
     
     //The number of pixels tall and wide each tile in a transparent image background is
@@ -71,7 +71,7 @@ public class Editor extends Module {
         
         for(int x = 0; x < (width / TILE_SIZE) + 1; x++) {
             for(int y = 0; y < (height / TILE_SIZE) + 1; y++) {
-                g.setColor(x % 2 == 0 ? TILE_COLOR_LIGHT : TILE_COLOR_DARK);
+                g.setColor((((x % 2) + y) % 2) == 0 ? TILE_COLOR_LIGHT : TILE_COLOR_DARK);
                 g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             }
         }
