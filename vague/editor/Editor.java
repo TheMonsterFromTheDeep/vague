@@ -11,6 +11,7 @@ import vague.editor.image.Canvas;
 import vague.editor.tool.EditFilter;
 import vague.editor.tool.Pencil;
 import vague.editor.tool.Tool;
+import vague.geom.Rectangle;
 import vague.input.Controls;
 import vague.module.Module;
 import vague.util.Vector;
@@ -39,6 +40,7 @@ public class Editor extends Module {
     static final int TILE_SIZE = 4;
     
     private Vector canvasPosition; //Stores the position of the canvas inside this particular Editor module
+    private Rectangle canvasBounds; //Stores the bounds of the canvas
     private int canvasZoom; //Stores the zoom level of the Editor
     
     //Stores the Editor's current buffer of the Canvas - each editor can have a different zoom, so each editor may
@@ -50,13 +52,13 @@ public class Editor extends Module {
     
     private boolean panning = false;
     
-    private boolean gridLines = false;
+    private boolean drawGridLines = false;
     
     private boolean updateTool = false;
     
     //If the canvas needs to be re-drawn, this will be true
     //it will be set to false as soon as the canvas is re-drawn
-    private boolean redrawCanvas = false;
+    private boolean canvasDrawQueued = false;
     
     private Tool currentTool = null;
     
@@ -65,6 +67,9 @@ public class Editor extends Module {
         
         canvasPosition = new Vector(DEFAULT_CANVAS_POSITION);
         canvasZoom = DEFAULT_CANVAS_ZOOM; //The zoom is calculated based on a power; a power of zero is a scale of 1:1
+        
+        //Create a dummy immage
+        canvasRender = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
         
         currentTool = new Pencil(filter());
         
@@ -77,6 +82,30 @@ public class Editor extends Module {
             Canvas.create(24, 24); //TEST SIZE ONLY
         }
         return new Editor();
+    }
+           
+    private double getScale() {
+        return Math.pow(2, canvasZoom);
+    }
+       
+    private void shift(int x, int y) {
+        canvasPosition.add(x, y);
+        canvasBounds.translate(x, y);
+    }
+    
+    private void shift(Vector v) {
+        canvasPosition.add(v);
+        canvasBounds.translate(v);
+    }
+    
+    
+    private void createBounds() {
+        canvasBounds = new Rectangle(
+                canvasPosition.x - (canvasRender.getWidth() / 2), 
+                canvasPosition.y - (canvasRender.getHeight() / 2),
+                canvasRender.getWidth(),
+                canvasRender.getHeight()
+        );
     }
     
     private void createBackground() {
@@ -93,7 +122,7 @@ public class Editor extends Module {
             }
         }
         
-        if(gridLines) {
+        if(drawGridLines) {
             int scale = (int)getScale();
             //The grid only really looks good if the scale is greater than or equal to 4
             if(scale >= 4) {
@@ -108,11 +137,7 @@ public class Editor extends Module {
         }
     }
     
-    private double getScale() {
-        return Math.pow(2, canvasZoom);
-    }
-    
-    private void zoom() {
+    private void renderCanvas() {
         if(canvasRender != null) {
             canvasRender.flush(); //Dispose of current data so as not to leave a bunch of floating pixel data in memory
         }
@@ -120,15 +145,21 @@ public class Editor extends Module {
         AffineTransform scale = new AffineTransform(AffineTransform.getScaleInstance(scaleMultiplier, scaleMultiplier));
         AffineTransformOp scaleop = new AffineTransformOp(scale, null);
         canvasRender = scaleop.filter(Canvas.canvas.render(), null);
+        
+        createBounds();
+        
+        //The draw has been done; it no longer needs to be queued
+        canvasDrawQueued = false;
     }
     
     private void prepare() {
-        zoom();
+        renderCanvas();
         createBackground();
     }
     
     private void center() {
         canvasPosition = new Vector(width() / 2, height() / 2);
+        createBounds();
     }
     
     @Override
@@ -144,7 +175,7 @@ public class Editor extends Module {
             }
         }
         if(panning) {
-            canvasPosition.add(mouseDif);
+            shift(mouseDif);
             redraw();
         }
     }
@@ -178,7 +209,7 @@ public class Editor extends Module {
             }
         }
         if(Controls.bank.status(Controls.EDITOR_TOGGLE_GRID)) { 
-            gridLines = !gridLines;
+            drawGridLines = !drawGridLines;
             prepare(); //Re-create the background buffer
             redraw(); //Reflect updated graphical state
         }
@@ -228,12 +259,12 @@ public class Editor extends Module {
     
     @Override
     public void onFocus() {
-        zoom(); //Update this buffer in case it was changed elsewhere
+        renderCanvas(); //Update this buffer in case it was changed elsewhere
     }
     
-    //Updates the image of the editor that this has
-    public void updateEditor() {
-        zoom();
+    //Should bee set by the EditFilter when it wants the canvas to be re-drawn
+    public void queueCanvasDraw() {
+        canvasDrawQueued = true;
     }
     
     public void drawPixel(int x, int y, Color c) {
@@ -242,8 +273,6 @@ public class Editor extends Module {
         int canvasX = canvasPosition.x - (canvasRender.getWidth() / 2);
         int canvasY = canvasPosition.y - (canvasRender.getHeight() / 2);
         graphics.fillRect(canvasX + x * scale, canvasY + y * scale, scale, scale);
-        
-        redrawCanvas = true;
         
         drawParent();
     }
@@ -257,8 +286,8 @@ public class Editor extends Module {
         graphics.drawRect(canvasX - 1, canvasY - 1, canvasRender.getWidth() + 1, canvasRender.getHeight() + 1);
         graphics.drawImage(tiledBackground, canvasX, canvasY, null);
         
-        if(redrawCanvas) {
-            updateEditor();
+        if(canvasDrawQueued) {
+            renderCanvas();
         }
         
         graphics.drawImage(canvasRender, canvasX, canvasY, null);

@@ -57,6 +57,14 @@ public class Rectangle {
     public int bottom() { return position.y + size.y; }
     public int right() { return position.x + size.x; }   
     
+    public void translate(int x, int y) {
+        position.add(x, y);
+    }
+    
+    public void translate(Vector v) {
+        position.add(v);
+    }
+    
     /**
      * This returns whether the Rectangle contains the specified point.
      * 

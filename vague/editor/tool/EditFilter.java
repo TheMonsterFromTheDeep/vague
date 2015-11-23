@@ -26,6 +26,7 @@ public class EditFilter {
         canvas.drawPixel(x, y);
         if(canvas.visible(x, y)) {
             editor.drawPixel(x, y, c);
+            editor.queueCanvasDraw();
         }
     }
     
@@ -34,6 +35,7 @@ public class EditFilter {
         canvas.drawPixel(x, y);
         if(canvas.visible(x, y)) {
             editor.drawPixel(x, y, new Color(rgb));
+            editor.queueCanvasDraw();
         }
     }
 }

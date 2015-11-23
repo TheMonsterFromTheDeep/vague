@@ -49,6 +49,11 @@ public class Vector {
         this.y += v.y;
     }
     
+    public void add(int x, int y) {
+        this.x += x;
+        this.y += y;
+    }
+    
     /**
      * Subtracts another vector from this one.
      * @param v The vector to subtract from this one.
@@ -56,6 +61,11 @@ public class Vector {
     public void subtract(Vector v) {
         this.x -= v.x;
         this.y -= v.y;
+    }
+    
+    public void subtract(int x, int y) {
+        this.x += x;
+        this.y += y;
     }
     
     /**
