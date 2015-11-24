@@ -3,6 +3,7 @@ package vague.editor.image;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import vague.util.Colors;
 import vague.util.Vector;
 
 /**
@@ -41,8 +42,18 @@ public class Canvas {
     
     private Canvas(int width, int height) {
         this.size = new Vector(width, height);
+        //layers = new Layer[2];
+        //layers[0] = new Layer(width, height);
+        //Color fill = new Color(0x22ffffff, true);
+        //for(int x = 0; x < 24; x++) {
+         //   for(int y = 0; y < 24; y++) {
+        //        layers[0].setPixel(x, y, fill);
+        //    }
+        //}
+        //layers[1] = new Layer(width, height);
+        //layer = 0;
         layers = new Layer[1];
-        layers[0] = new Layer(width, height);
+        layers[0] = new Layer(size);
          
         layer = 0;
         
@@ -88,9 +99,15 @@ public class Canvas {
     
     public void drawPixel(int x, int y) {
         //TODO: Make this much more efficient / support transparency
-        for(int i = layers.length - 1; i >= 0; i--) {
-            lastRender.setRGB(x, y, layers[i].getRGB(x, y));
+        Color c = new Color(layers[0].getRGB(x, y), true);
+        //for(int i = layers.length - 1; i >= 0; i--) {
+        //    lastRender.setRGB(x, y, layers[i].getRGB(x, y));
+        //}
+        for(Layer l : layers) {
+            c = Colors.mix(c, new Color(l.getRGB(x, y), true));
         }
+        
+        lastRender.setRGB(x, y, c.getRGB());
     }
     
     //Returns whether the specified pixel is visible in the current layer
