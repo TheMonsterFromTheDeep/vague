@@ -233,7 +233,7 @@ public class Editor extends Module {
                 
                 if(canvasBounds.encloses(mPos)) {
                     double scale = getScale();
-                    currentTool.modify(new Vector((int)((mPos.x - canvasBounds.left()) / scale), (int)((mPos.y - canvasBounds.top()) / scale)));
+                    currentTool.onDown(new Vector((int)((mPos.x - canvasBounds.left()) / scale), (int)((mPos.y - canvasBounds.top()) / scale)));
                 }
             }
             keepFocus();

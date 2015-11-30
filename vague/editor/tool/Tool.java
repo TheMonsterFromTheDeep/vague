@@ -17,4 +17,9 @@ public abstract class Tool {
     
     //Called when the mouse is down on the Editor - the Tool should update the EditFilter
     public abstract void modify(Vector position);
+    
+    //Called when the tool first becomes "down"
+    public void onDown(Vector position) { }
+    //Called when the tool is released
+    public void onUp(Vector position) { }
 }
