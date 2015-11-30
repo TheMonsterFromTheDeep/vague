@@ -2,6 +2,7 @@ package vague.editor.image;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import vague.util.Colors;
 import vague.util.Vector;
 
 /**
@@ -38,6 +39,14 @@ public class Layer {
     
     public void setPixel(int x, int y, Color c) {
         data.setRGB(x, y, c.getRGB());
+    }
+    
+    public void blendPixel(int x, int y, Color c) {
+        data.setRGB(x, y, Colors.mix(c, new Color(data.getRGB(x, y), true)).getRGB());
+    }
+    
+    public Color getPixel(int x, int y) {
+        return new Color(data.getRGB(x, y), true);
     }
     
     public void setRGB(int x, int y, int rgb) {

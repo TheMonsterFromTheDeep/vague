@@ -228,6 +228,14 @@ public class Editor extends Module {
     public void mouseDown(MouseEvent e) {
         if(e.getButton() == MouseEvent.BUTTON1) {
             updateTool = true;
+            if(currentTool != null) {
+                Vector mPos = mousePosition();
+                
+                if(canvasBounds.encloses(mPos)) {
+                    double scale = getScale();
+                    currentTool.modify(new Vector((int)((mPos.x - canvasBounds.left()) / scale), (int)((mPos.y - canvasBounds.top()) / scale)));
+                }
+            }
             keepFocus();
         }
         if(e.getButton() == MouseEvent.BUTTON2) {

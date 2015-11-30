@@ -14,6 +14,8 @@ public class Controls {
     public static final int EDITOR_RESET_PAN = 4;
     public static final int EDITOR_RESET_ZOOM_AND_PAN = 5;
     public static final int EDITOR_TOGGLE_GRID = 6;
+    public static final int PENCIL_DRAW_LINE = 7;
+    public static final int PENCIL_INVERT_COLORS = 8;
     public static final int TEST_COLOR = 900; //A test control for changing drawing color on the TestModule
     
     //Initializes the default state of the controls of the application
@@ -25,6 +27,8 @@ public class Controls {
         new Chord(EDITOR_RESET_PAN,new Control(KeyEvent.VK_8),Chord.MODIFIER_CONTROL),
         new Chord(EDITOR_RESET_ZOOM_AND_PAN,new Control(KeyEvent.VK_8),Chord.MODIFIER_SHIFT_AND_CONTROL),
         new Chord(EDITOR_TOGGLE_GRID,new Control(KeyEvent.VK_S),Chord.MODIFIER_SHIFT),
+        new Chord(PENCIL_DRAW_LINE,new Control(KeyEvent.VK_SHIFT)),
+        new Chord(PENCIL_INVERT_COLORS,new Control(KeyEvent.VK_CONTROL)),
         new Chord(TEST_COLOR,new Control(KeyEvent.VK_SPACE))
     };
     
