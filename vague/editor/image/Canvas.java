@@ -110,6 +110,11 @@ public class Canvas {
         lastRender.setRGB(x, y, c.getRGB());
     }
     
+    public Color getColor(int x, int y) {
+        ///TODO: DO THIS WITHOUT USING THE RENDERERERER
+        return new Color(lastRender.getRGB(x, y),true);
+    }
+    
     //Returns whether the specified pixel is visible in the current layer
     public boolean visible(int x, int y) {
         return true; //TODO: Actually check for visibility

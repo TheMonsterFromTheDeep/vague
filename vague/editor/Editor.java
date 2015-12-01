@@ -34,6 +34,9 @@ public class Editor extends Module {
     static final Color TILE_COLOR_LIGHT = new Color(0xcfcfdd);
     static final Color TILE_COLOR_DARK = new Color(0x909090);
     
+    static final Color OUTLINE_COLOR_LIGHT = new Color(0xaa0000);
+    static final Color OUTLINE_COLOR_DARK = new Color(0x440000);
+    
     static final Color GRID_COLOR = new Color(0xff0000);
     
     //The number of pixels tall and wide each tile in a transparent image background is
@@ -45,7 +48,7 @@ public class Editor extends Module {
     
     //Stores the Editor's current buffer of the Canvas - each editor can have a different zoom, so each editor may
     //need its own buffer.
-    private BufferedImage canvasRender;
+    //private BufferedImage canvasRender;
     
     //Stores the tiled background drawn behind a transparent Canvas.
     private BufferedImage tiledBackground;
@@ -69,11 +72,13 @@ public class Editor extends Module {
         canvasZoom = DEFAULT_CANVAS_ZOOM; //The zoom is calculated based on a power; a power of zero is a scale of 1:1
         
         //Create a dummy immage
-        canvasRender = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+        //canvasRender = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
         
         //////TEST PURPOSES ONLY!!!!!!
         currentTool = new Pencil(filter());
         /////
+        
+        canvasBounds = new Rectangle(0, 0, 0, 0);
         
         center(); //Set the canvas position to the center of the Editor
         prepare(); //Initialize the graphical state of this Editor's buffer
@@ -81,7 +86,7 @@ public class Editor extends Module {
     
     public static Editor create() {
         if(Canvas.canvas == null) {
-            Canvas.create(24, 24); //TEST SIZE ONLY
+            Canvas.create(256,256); //TEST SIZE ONLY
         }
         return new Editor();
     }
@@ -100,19 +105,23 @@ public class Editor extends Module {
         canvasBounds.translate(v);
     }
     
-    
+    //////?TODO!!!!!!!!!!!!!!!!!: Make this work with scales less than 0
     private void createBounds() {
+        int scale = (int)Math.round(getScale());
+        int width = Canvas.canvas.width() * scale;
+        int height = Canvas.canvas.height() * scale;
+        
         canvasBounds = new Rectangle(
-                canvasPosition.x - (canvasRender.getWidth() / 2), 
-                canvasPosition.y - (canvasRender.getHeight() / 2),
-                canvasRender.getWidth(),
-                canvasRender.getHeight()
+                canvasPosition.x - (width / 2), 
+                canvasPosition.y - (height / 2),
+                width,
+                height
         );
     }
     
-    private void createBackground() {
-        int width = canvasRender.getWidth();
-        int height = canvasRender.getHeight();
+    /*private void createBackground() {
+        //int width = canvasRender.getWidth();
+        //int height = canvasRender.getHeight();
         
         tiledBackground = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics g = tiledBackground.createGraphics();
@@ -145,26 +154,46 @@ public class Editor extends Module {
                 }
             }
         }
-    }
+    }*/
     
     private void renderCanvas() {
-        if(canvasRender != null) {
-            canvasRender.flush(); //Dispose of current data so as not to leave a bunch of floating pixel data in memory
-        }
+        System.err.println("rendering canvas!");
+        //if(canvasRender != null) {
+            //canvasRender.flush(); //Dispose of current data so as not to leave a bunch of floating pixel data in memory
+        //}
         double scaleMultiplier = Math.pow(2, canvasZoom);
-        AffineTransform scale = new AffineTransform(AffineTransform.getScaleInstance(scaleMultiplier, scaleMultiplier));
-        AffineTransformOp scaleop = new AffineTransformOp(scale, null);
-        canvasRender = scaleop.filter(Canvas.canvas.render(), null);
+        //AffineTransform scale = new AffineTransform(AffineTransform.getScaleInstance(scaleMultiplier, scaleMultiplier));
+        //AffineTransformOp scaleop = new AffineTransformOp(scale, null);
+        //canvasRender = scaleop.filter(Canvas.canvas.render(), null);
         
-        createBounds();
+        //createBounds();
         
-        //The draw has been done; it no longer needs to be queued
-        canvasDrawQueued = false;
+        int pixelWidth = (int)Math.round(scaleMultiplier);
+        
+        for(int x = 0; x < Canvas.canvas.width(); x++) {
+            for(int y = 0; y < Canvas.canvas.height(); y++) {
+                graphics.setColor((((x % 2) + y) % 2) == 0 ? TILE_COLOR_LIGHT : TILE_COLOR_DARK);
+                graphics.fillRect(canvasBounds.left() + x * pixelWidth, canvasBounds.top() + y * pixelWidth, pixelWidth, pixelWidth);
+                
+                graphics.setColor(Canvas.canvas.getColor(x,y));
+                graphics.fillRect(canvasBounds.left() + x * pixelWidth, canvasBounds.top() + y * pixelWidth, pixelWidth, pixelWidth);
+            }
+        }
+        for(int x = 0; x < Canvas.canvas.width(); x++) {
+            graphics.setColor(x % 2 == 0 ? OUTLINE_COLOR_LIGHT : OUTLINE_COLOR_DARK);
+            graphics.drawLine(canvasBounds.left() + x * pixelWidth, canvasBounds.top() - 1, canvasBounds.left() + (x + 1) * pixelWidth,canvasBounds.top() - 1);
+            graphics.drawLine(canvasBounds.left() + x * pixelWidth, canvasBounds.bottom(), canvasBounds.left() + (x + 1) * pixelWidth,canvasBounds.bottom());
+        }
+        for(int y = 0; y < Canvas.canvas.height(); y++) {
+            graphics.setColor(y % 2 == 0 ? OUTLINE_COLOR_LIGHT : OUTLINE_COLOR_DARK);
+            graphics.drawLine(canvasBounds.left() - 1, canvasBounds.top() + y * pixelWidth, canvasBounds.left() - 1,canvasBounds.top() + (y + 1) * pixelWidth);
+            graphics.drawLine(canvasBounds.right(), canvasBounds.top() + y * pixelWidth, canvasBounds.right(),canvasBounds.top() + (y + 1) * pixelWidth);
+        }
     }
     
     private void prepare() {
+        createBounds();
         renderCanvas();
-        createBackground();
     }
     
     private void center() {
@@ -297,14 +326,9 @@ public class Editor extends Module {
     public void draw() {
         this.fillBackground();
         graphics.setColor(Color.BLACK);
-        graphics.drawRect(canvasBounds.left() - 1, canvasBounds.top() - 1, canvasRender.getWidth() + 1, canvasRender.getHeight() + 1);
         graphics.drawImage(tiledBackground, canvasBounds.left(), canvasBounds.top(), null);
         
-        if(canvasDrawQueued) {
-            renderCanvas();
-        }
-        
-        graphics.drawImage(canvasRender, canvasBounds.left(), canvasBounds.top(), null);
+        renderCanvas();
     }
     
     public EditFilter filter() {
