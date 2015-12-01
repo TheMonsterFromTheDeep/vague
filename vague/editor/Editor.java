@@ -86,7 +86,7 @@ public class Editor extends Module {
     
     public static Editor create() {
         if(Canvas.canvas == null) {
-            Canvas.create(256,256); //TEST SIZE ONLY
+            Canvas.create(32,32);//TEST SIZE ONLY
         }
         return new Editor();
     }
@@ -107,9 +107,9 @@ public class Editor extends Module {
     
     //////?TODO!!!!!!!!!!!!!!!!!: Make this work with scales less than 0
     private void createBounds() {
-        int scale = (int)Math.round(getScale());
-        int width = Canvas.canvas.width() * scale;
-        int height = Canvas.canvas.height() * scale;
+        double scale = getScale();
+        int width = (int)Math.round(Canvas.canvas.width() * scale);
+        int height = (int)Math.round(Canvas.canvas.height() * scale);
         
         canvasBounds = new Rectangle(
                 canvasPosition.x - (width / 2), 

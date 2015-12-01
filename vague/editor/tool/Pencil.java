@@ -19,6 +19,9 @@ public class Pencil extends Tool {
         if(Controls.bank.status(Controls.PENCIL_DRAW_LINE)) {
             filter.blendLine(filter.cursor.x, filter.cursor.y, position.x, position.y, (Controls.bank.status(Controls.PENCIL_INVERT_COLORS)) ? filter.background : filter.foreground);
         }
+        else {
+            filter.blendPixel(position.x,position.y,(Controls.bank.status(Controls.PENCIL_INVERT_COLORS)) ? filter.background : filter.foreground);
+        }
         filter.cursor = position;
     }
 
