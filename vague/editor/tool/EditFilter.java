@@ -57,35 +57,33 @@ public class EditFilter {
     }
     
     public void drawLine(int sx, int sy, int ex, int ey, Color c) {        
-        double angle = Math.atan2(ey-sy,ex-sx);
-        double changex = Math.cos(angle);
-        double changey = Math.sin(angle);
-        
         int iterations = (int)Math.ceil(Math.sqrt((ex - sx) * (ex - sx) + (ey - sy) * (ey - sy)));
+        
+        double changex = (double)(ex - sx)  / iterations;
+        double changey = (double)(ey - sy) / iterations;
         
         double x = sx;
         double y = sy;
         for(int i = 0; i < iterations; i++) {
-            setPixel((int)Math.round(x), (int)Math.round(y), c);
-            y += changey;
+            setPixel((int)x, (int)y, c);
             x += changex;
-        }
+            y += changey;
+        }           
     }
     
     public void blendLine(int sx, int sy, int ex, int ey, Color c) {
-        double angle = Math.atan2(ey-sy,ex-sx);
-        double changex = Math.cos(angle);
-        double changey = Math.sin(angle);
-        
         int iterations = (int)Math.ceil(Math.sqrt((ex - sx) * (ex - sx) + (ey - sy) * (ey - sy)));
+        
+        double changex = (double)(ex - sx)  / iterations;
+        double changey = (double)(ey - sy) / iterations;
         
         double x = sx;
         double y = sy;
         for(int i = 0; i < iterations; i++) {
-            blendPixel((int)Math.round(x), (int)Math.round(y), c);
-            y += changey;
+            blendPixel((int)x, (int)y, c);
             x += changex;
-        }
+            y += changey;
+        }            
     }
     
     public void setRGB(int x, int y, int rgb) {
