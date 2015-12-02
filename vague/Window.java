@@ -203,13 +203,10 @@ public class Window extends JFrame {
         });
         
         mouseTracker = new MouseTracker();
-        mouseTimer = new Timer(MOUSE_FRAMES, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                mouseTracker.track(windowMousePosition());
-                if(mouseTracker.moved()) {
-                    system.mouseMove(mouseTracker.position(),mouseTracker.difference());
-                }
+        mouseTimer = new Timer(MOUSE_FRAMES, (ActionEvent e) -> {
+            mouseTracker.track(windowMousePosition());
+            if(mouseTracker.moved()) {
+                system.mouseMove(mouseTracker.position(),mouseTracker.difference());
             }
         });
     }

@@ -1,6 +1,6 @@
 package vague.editor.tool;
 
-import vague.editor.image.Canvas;
+import vague.editor.image.EditTarget;
 import vague.util.Vector;
 
 /**

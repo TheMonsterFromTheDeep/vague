@@ -2,8 +2,7 @@ package vague.editor.tool;
 
 import java.awt.Color;
 import vague.editor.Editor;
-import vague.editor.image.Canvas;
-import vague.util.Colors;
+import vague.editor.image.EditTarget;
 import vague.util.Vector;
 
 /**
@@ -15,7 +14,7 @@ import vague.util.Vector;
 public class EditFilter {
     //Handles to the Editor module and the Canvas
     private Editor editor;
-    private Canvas canvas;
+    private EditTarget canvas;
     
     //Can be used to do things like draw lines and stuff
     //changeable by tools
@@ -26,7 +25,7 @@ public class EditFilter {
     //This is the background color
     public Color background;
     
-    public EditFilter(Editor editor, Canvas canvas) {
+    public EditFilter(Editor editor, EditTarget canvas) {
         this.editor = editor;
         this.canvas = canvas;
         

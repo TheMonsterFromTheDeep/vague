@@ -2,7 +2,7 @@ package vague.editor.image;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import vague.util.Colors;
+import vague.image.Canvas;
 import vague.util.Vector;
 
 /**
@@ -14,39 +14,42 @@ public class Layer {
     private Vector position; //Stores the position of the layer
     private Vector size; //Stores the size of the layer - should never be out of sync with the data image
     
-    private BufferedImage data; //Stores the image data of the Layer
+    //private BufferedImage data; //Stores the image data of the Layer
+    private Canvas data; //Stores the image data of the Layer
     
     public Layer(Vector size) {
         this.size = new Vector(size);
         position = new Vector(0,0);
         
-        data = new BufferedImage(size.x, size.y, BufferedImage.TYPE_INT_ARGB);
+        //data = new BufferedImage(size.x, size.y, BufferedImage.TYPE_INT_ARGB);
+        data = new Canvas(size.x, size.y);
     }
     
     public Layer(int width, int height) {
         this.size = new Vector(width, height);
         position = new Vector(0,0);
         
-        data = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        //data = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        data = new Canvas(width, height);
     }
     
     public BufferedImage render() {
-        return data;
+        return data.render();
     }
     
     public int x() { return position.x; }
     public int y() { return position.y; }
     
     public void setPixel(int x, int y, Color c) {
-        data.setRGB(x, y, c.getRGB());
+        data.set(x, y, c);
     }
     
     public void blendPixel(int x, int y, Color c) {
-        data.setRGB(x, y, Colors.mix(c, new Color(data.getRGB(x, y), true)).getRGB());
+        data.blend(x, y, c);
     }
     
     public Color getPixel(int x, int y) {
-        return new Color(data.getRGB(x, y), true);
+        return data.get(x, y);
     }
     
     public void setRGB(int x, int y, int rgb) {
