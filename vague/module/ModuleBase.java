@@ -53,8 +53,7 @@ public class ModuleBase {
      * can properly draw without drawing its out parent.
      * @param m 
      */
-    public void drawChild(Module m) {
-        graphics.drawImage(m.render(),m.x(),m.y(),null);
+    public void drawChild(Module m, int x, int y, int width, int height) {
     }
     
     public void setCursor(Cursor c) { }

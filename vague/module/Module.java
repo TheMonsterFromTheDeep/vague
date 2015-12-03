@@ -1,10 +1,12 @@
 package vague.module;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
+import vague.Program;
 import vague.Resources;
 import vague.geom.Rectangle;
 import vague.util.Cursor;
@@ -180,16 +182,19 @@ public class Module extends ModuleBase {
      * @param m 
      */
     @Override
-    public void drawChild(Module m) {
-        graphics.drawImage(m.render(),m.x(),m.y(),null);
-        drawParent();
+    public void drawChild(Module m, int x, int y, int width, int height) {
+        drawParent(x, y, width, height);
+    }
+    
+    public void drawParent() {
+        parent.drawChild(this, bounds.left(), bounds.top(), bounds.size.x, bounds.size.y);
     }
     
     /**
      * Causes the parent to update it's graphical representation of the child object.
      */
-    public void drawParent() {
-        parent.drawChild(this);
+    public void drawParent(int x, int y, int width, int height) {
+        parent.drawChild(this, x - bounds.left(), y - bounds.top(), width, height);
     }
     
     /**
@@ -390,29 +395,14 @@ public class Module extends ModuleBase {
         return(bounds.intersects(r));
     }
     
-    /**
-     * This method returns the rendered version of the Module.
-     * 
-     * However, it's misleading name is false - it does not actually
-     * re-draw ('render') the module, it simply returns an image that has
-     * already been drawn to.
-     * @return A rendered graphic of the Module.
-     */
-    public final BufferedImage render() {
-        /*
-        Question of redundancy:
+    protected final void beginDraw(GraphicsCallback c) {
         
-        Doesn't an accessor not really make sense when the object in question is a reference
-        and not in fact an object?
-        
-        The rendered version will still be able to be modified. It would be really inefficient
-        to make a copy of the render when returning it.
-        
-        Maybe just keep this method, and if in the future there are more things that need to be done,
-        change it here so it doesn't have to be changed elsewhere?
-         */
-        return buffer;
     }
+    
+    protected final void beginDraw(int x, int y, int width, int height, GraphicsCallback c) {
+        Program.window.requestDraw(x - bounds.left(), y - bounds.top(), width, height, c);
+    }
+    
     
     /**
      * Returns whether parent classes should bother to draw this module.

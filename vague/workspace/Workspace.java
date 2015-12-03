@@ -115,12 +115,13 @@ public final class Workspace extends Container {
     }
     
     @Override
-    public void drawChild(Module m) {
+    public void drawChild(Module m, int x, int y, int width, int height) {
         if(m == moveTool) { //If a tool has been moved, it needs to be re-drawn
             graphics.drawImage(workspace,0,0,null);
         }
-        graphics.drawImage(m.render(),m.x(),m.y(),null); //Draw the tool that needs to be re-drawn
-        drawParent(); //Draw the parent to reflect graphics changes higher in the object hierarchy
+        //graphics.drawImage(m.render(),m.x(),m.y(),null); //Draw the tool that needs to be re-drawn
+        //drawParent(); //Draw the parent to reflect graphics changes higher in the object hierarchy
+        super.drawChild(m, x, y, width, height);
     }
     
     /**

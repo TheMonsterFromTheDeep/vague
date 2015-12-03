@@ -23,9 +23,11 @@ import java.awt.image.BufferedImage;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import vague.geom.Rectangle;
 import vague.input.Control;
 import vague.input.Controls;
 import vague.module.Exchange;
+import vague.module.GraphicsCallback;
 import vague.module.Module;
 import vague.module.TestModule;
 import vague.module.container.Container;
@@ -69,6 +71,8 @@ public class Window extends JFrame {
     */
     MouseTracker mouseTracker;
     
+    GraphicsCallback nextCallback;
+    
     /**
      * Constructs a new Window. This should be the only
      * constructor and should initialize the window for the application.
@@ -91,8 +95,10 @@ public class Window extends JFrame {
         JPanel panel = new JPanel() {
             @Override
             public void paintComponent(Graphics g) {
-                g.drawImage(system.render(), 0, 0, null);
-                //draw(g); //Pass the graphics object to the class's draw() method so it can render the things it needs to
+                if(nextCallback != null) {
+                    nextCallback.callback(g);
+                    nextCallback = null;
+                }
             }
         };
         panel.setPreferredSize(new java.awt.Dimension(DEFAULT_WIDTH,DEFAULT_HEIGHT));
@@ -106,15 +112,16 @@ public class Window extends JFrame {
         shownCursor = Cursor.getDefaultCursor();
         hiddenCursor = Toolkit.getDefaultToolkit().createCustomCursor(new BufferedImage(1,1,BufferedImage.TYPE_INT_ARGB), new Point(0, 0), "transparent cursor");
         
-        system = new Exchange(Workspace.create(DEFAULT_WIDTH,DEFAULT_HEIGHT,new Module[]{})) {
+        //system = new Exchange(Workspace.create(DEFAULT_WIDTH,DEFAULT_HEIGHT,new Module[]{})) {
+        system = new Exchange(TestModule.create(DEFAULT_WIDTH,DEFAULT_HEIGHT)) {
             @Override
             public Vector mousePosition() {
                 return windowMousePosition();
             }
 
             @Override
-            public void drawWindow() {
-                panel.repaint();
+            public void drawWindow(int x, int y, int width, int height) {
+                panel.repaint(0, x, y, width, height);
             }
             
             @Override
@@ -211,6 +218,10 @@ public class Window extends JFrame {
         });
     }
     
+    public void paintRect(int x, int y, int width, int height) {
+        
+    }
+    
     /**
      * Runs the program, allowing the user to interact with the controls.
      */
@@ -218,6 +229,15 @@ public class Window extends JFrame {
         system.redraw(); //Redraw so that there is content on the screen
         this.setVisible(true); //Set the window visible so that the user can interact.
         mouseTimer.start(); //Start the mouse timer so that most of the app will actually work
+    }
+    
+    public void requestDraw(int x, int y, int width, int height, GraphicsCallback g) {
+        System.err.println("recieved draw reqquest");
+        if(nextCallback == null) {
+            nextCallback = g;
+            
+            repaint(x, y, width, height);
+        }
     }
     
     /**

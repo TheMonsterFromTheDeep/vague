@@ -66,31 +66,32 @@ public abstract class Exchange extends ModuleBase {
     
     public final BufferedImage render() {
         if(cursor == null) {
-            return child.render();
+            //return child.render();
         }
         else {
-            BufferedImage render = new BufferedImage(child.render().getWidth(), child.render().getHeight(), BufferedImage.TYPE_INT_ARGB);
+            //BufferedImage render = new BufferedImage(child.render().getWidth(), child.render().getHeight(), BufferedImage.TYPE_INT_ARGB);
             
-            Vector mPos = mousePosition();
+            //Vector mPos = mousePosition();
             
-            Graphics g = render.createGraphics();
-            g.drawImage(child.render(), 0, 0, null);
-            g.drawImage(cursor.image, cursor.getDrawX(mPos.x), cursor.getDrawY(mPos.y), null);
+            //Graphics g = render.createGraphics();
+            //g.drawImage(child.render(), 0, 0, null);
+            //g.drawImage(cursor.image, cursor.getDrawX(mPos.x), cursor.getDrawY(mPos.y), null);
                 
             
-            return render;
+            //return render;
         }
+        return null;
     }
     
-    public abstract void drawWindow();
+    public abstract void drawWindow(int x, int y, int width, int height);
     
     public final void redraw() {
         child.redraw();
     }
     
     @Override
-    public void drawChild(Module m) {
-        drawWindow();
+    public void drawChild(Module m, int x, int y, int width, int height) {
+        drawWindow(x, y, width, height);
     }
     
     /**

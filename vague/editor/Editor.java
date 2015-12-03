@@ -328,7 +328,7 @@ public class Editor extends Module {
         int scale = (int)getScale();
         graphics.fillRect(canvasBounds.left() + x * scale, canvasBounds.top() + y * scale, scale, scale);
         
-        drawParent();
+        drawParent(x,y,1,1);
     }
     
     @Override
