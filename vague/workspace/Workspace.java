@@ -7,8 +7,8 @@ import java.awt.image.BufferedImage;
 import vague.Resources;
 import vague.geom.Rectangle;
 import vague.input.Controls;
-import vague.module.Module;
-import vague.module.container.Container;
+import module.Module;
+import module.container.Container;
 import vague.util.Vector;
 
 /**

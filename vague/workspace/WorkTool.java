@@ -6,7 +6,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import vague.Resources;
 import vague.input.Controls;
-import vague.module.Module;
+import module.Module;
 import vague.module.TestModule;
 import vague.util.Cursor;
 import vague.util.Vector;

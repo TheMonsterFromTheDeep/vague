@@ -1,5 +1,7 @@
 package vague.module;
 
+import module.GraphicsCallback;
+import module.Module;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;

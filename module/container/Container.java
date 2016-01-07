@@ -1,9 +1,9 @@
-package vague.module.container;
+package module.container;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import vague.module.Module;
+import module.Module;
 import vague.util.Vector;
 
 /**

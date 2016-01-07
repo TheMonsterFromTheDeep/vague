@@ -1,4 +1,4 @@
-package vague.module;
+package module;
 
 import java.awt.Graphics;
 

@@ -1,5 +1,6 @@
-package vague.module;
+package module;
 
+import module.meta.ModuleBase;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
@@ -101,15 +102,7 @@ public class Module extends ModuleBase {
         graphics.fillRect(0, 0, buffer.getWidth(), buffer.getHeight());
         graphics.drawImage(old, 0, 0, null);
     }
-    
-    /**
-     * Can be called if a module needs to be sure it is ready for rendering.
-     * 
-     * For example, it can be called in a constructor if a module must start with
-     * a certain graphical state.
-     */  
-    protected final void readyForRendering() { doRenderCalc(); } 
-    
+        
     /**
      * Constructs a BufferedImage with the width and height of the Module that is valid:
      * if the width or height of the Module is less than zero than the width / height of the

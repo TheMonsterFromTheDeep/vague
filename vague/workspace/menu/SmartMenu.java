@@ -3,7 +3,7 @@ package vague.workspace.menu;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
 import vague.editor.Editor;
-import vague.module.Module;
+import module.Module;
 import vague.module.TestModule;
 import vague.util.Vector;
 import vague.workspace.WorkTool;

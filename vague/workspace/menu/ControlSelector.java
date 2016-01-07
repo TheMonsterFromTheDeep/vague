@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import vague.Resources;
-import vague.module.Module;
+import module.Module;
 import vague.util.TextDrawer;
 
 public class ControlSelector {

@@ -1,5 +1,6 @@
-package vague.module;
+package module;
 
+import module.meta.ModuleBase;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;

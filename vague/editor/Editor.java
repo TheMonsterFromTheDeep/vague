@@ -13,7 +13,7 @@ import vague.editor.tool.Pencil;
 import vague.editor.tool.Tool;
 import vague.geom.Rectangle;
 import vague.input.Controls;
-import vague.module.Module;
+import module.Module;
 import vague.util.Vector;
 
 /**
