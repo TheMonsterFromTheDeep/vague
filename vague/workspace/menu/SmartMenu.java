@@ -5,7 +5,7 @@ import java.awt.event.MouseEvent;
 import vague.editor.Editor;
 import module.Module;
 import vague.module.TestModule;
-import vague.util.Vector;
+import module.util.Vector;
 import vague.workspace.WorkTool;
 
 /**

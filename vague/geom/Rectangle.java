@@ -1,6 +1,6 @@
 package vague.geom;
 
-import vague.util.Vector;
+import module.util.Vector;
 
 /**
  * Defines a rectangle with a position in coordinate space along with a width and a height.

@@ -1,5 +1,7 @@
 package vague.util;
 
+import module.util.Vector;
+
 /**
  * The Percents class contains a pair of x and y percentages used to store percent values so Module children
  * of a Container can be resized properly with the most possible information.

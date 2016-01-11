@@ -7,7 +7,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
 import module.Module;
 import vague.util.Cursor;
-import vague.util.Vector;
+import module.util.Vector;
 
 /**
  * The ModuleBase class defines a simple parent class that is then subclassed to Module.
@@ -16,7 +16,7 @@ import vague.util.Vector;
  * to parent a Module to an Exchange, the Exchange must be a subclass of ModuleBase
  * @author TheMonsterFromTheDeep
  */
-public class ModuleBase {
+public class ModuleBase implements ModuleParent {
   
     //Stores the rendered version of the module. Private because nothing should modify it.
     protected BufferedImage buffer;
@@ -31,7 +31,7 @@ public class ModuleBase {
     protected Graphics graphics;
     
     //The parent of this Module.
-    protected ModuleBase parent;
+    protected ModuleParent parent;
     //Stores whether this module *has* a parent.
     /*
     Question: is this even relevant? Most of the methods that rely on hasParent being true
@@ -73,6 +73,7 @@ public class ModuleBase {
      * the mouse position directly.
      * @return A Vector object containing the mouse position.
      */
+    @Override
     public Vector mousePosition() {
         return parent.mousePosition();
     }
@@ -84,7 +85,7 @@ public class ModuleBase {
      * will be able to call methods of their parent.
      * @param m The ModuleBase to become the parent.
      */
-    public final void setParent(ModuleBase m) {
+    public final void setParent(ModuleParent m) {
         hasParent = true;
         parent = m;
     }
@@ -98,5 +99,19 @@ public class ModuleBase {
     public final void clearParent() {
         hasParent = false;
         parent = null;
+    }
+
+    @Override
+    public void drawChild(Module child) {
+    }
+
+    @Override
+    public int getAbsoluteX() {
+        return parent.getAbsoluteX();
+    }
+
+    @Override
+    public int getAbsoluteY() {
+        return parent.getAbsoluteY();
     }
 }

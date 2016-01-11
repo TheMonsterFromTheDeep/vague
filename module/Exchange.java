@@ -7,7 +7,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
 import vague.util.Cursor;
-import vague.util.Vector;
+import module.util.Vector;
 
 /**
  * The Exchange class interfaces between the Window class, which handles user input using AWT,

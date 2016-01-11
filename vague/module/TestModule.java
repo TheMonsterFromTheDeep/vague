@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage;
 import vague.Resources;
 import vague.input.Controls;
 import vague.util.Cursor;
-import vague.util.Vector;
+import module.util.Vector;
 
 /**
  * A Module object used to test various features of Containers and other Modules that rely on 

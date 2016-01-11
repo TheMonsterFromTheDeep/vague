@@ -1,4 +1,4 @@
-package vague.util;
+package module.util;
 
 /**
  * The Vector class is a simple container for two integers.

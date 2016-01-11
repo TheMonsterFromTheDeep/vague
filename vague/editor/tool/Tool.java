@@ -1,7 +1,7 @@
 package vague.editor.tool;
 
 import vague.editor.image.EditTarget;
-import vague.util.Vector;
+import module.util.Vector;
 
 /**
  * Represents a tool that performs some operation on the image, such as modifying its look or changing what other

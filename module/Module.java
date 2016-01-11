@@ -1,18 +1,21 @@
 package module;
 
-import module.meta.ModuleBase;
+//import module.meta.ModuleBase;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
+import module.meta.ModuleParent;
+import module.meta.NullParent;
+import module.paint.GraphicsHandle;
 import vague.Program;
 import vague.Resources;
 import vague.geom.Rectangle;
 import vague.util.Cursor;
 import vague.util.Percents;
-import vague.util.Vector;
+import module.util.Vector;
 
 /**
  * The Module class defines an object which does graphical rendering and processes user input.
@@ -27,7 +30,7 @@ import vague.util.Vector;
  * Non-abstract modules can also be initialized without subclassing.
  * @author TheMonsterFromTheDeep
  */
-public class Module extends ModuleBase {
+public class Module implements ModuleParent {
     /**
      * Position and size are private so that they are not modified outside the class.
      * 
@@ -49,6 +52,32 @@ public class Module extends ModuleBase {
     
     
     protected boolean retaining = false;
+    
+    private Window windowHandle;
+    
+    //Stores the rendered version of the module. Private because nothing should modify it.
+    //protected BufferedImage buffer;
+    /*
+    The graphics object draws directly to "buffer". It is expected of the child
+    modules that the graphics object is not modified to draw on another image.    
+    -->Question: maybe subclass graphics so that it can't be modified?
+    
+    The 'graphics' object  is protected so that subclasses can access it and
+    do their drawing code.
+    */
+    //protected Graphics graphics;
+    
+    //The parent of this Module.
+    protected ModuleParent parent;
+    //Stores whether this module *has* a parent.
+    /*
+    Question: is this even relevant? Most of the methods that rely on hasParent being true
+    shouldn't even be called if a module doesn't have a parent and wouldn't make any sense to
+    call if the module doesn't have a parent.
+    */
+    protected boolean hasParent;
+
+   
     
     /**
      * Initializes a Module to the specified position and size.
@@ -74,6 +103,7 @@ public class Module extends ModuleBase {
          * With the default size, it is impossible to render anything.
          */
         bounds = new Rectangle(0,0,0,0);
+        parent = new NullParent();
         doRenderCalc();
     }
     
@@ -93,14 +123,14 @@ public class Module extends ModuleBase {
         
         //Declare a BufferedImage object to hold the current data of the buffer
         //so that it can be drawn back to the new buffer
-        BufferedImage old = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        old.createGraphics().drawImage(buffer, 0, 0, null);
-        buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        //BufferedImage old = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        //old.createGraphics().drawImage(buffer, 0, 0, null);
+        //buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         //Allow graphics to be used.
-        graphics = buffer.createGraphics();
-        graphics.setColor(bgColor);
-        graphics.fillRect(0, 0, buffer.getWidth(), buffer.getHeight());
-        graphics.drawImage(old, 0, 0, null);
+        //graphics = buffer.createGraphics();
+        //graphics.setColor(bgColor);
+        //graphics.fillRect(0, 0, buffer.getWidth(), buffer.getHeight());
+        //graphics.drawImage(old, 0, 0, null);
     }
         
     /**
@@ -120,8 +150,8 @@ public class Module extends ModuleBase {
      * Fills the background with 'bgColor'. Can be called during the draw() method.
      */
     protected final void fillBackground() {
-        graphics.setColor(bgColor);
-        graphics.fillRect(0, 0, bounds.size.x, bounds.size.y);
+        //graphics.setColor(bgColor);
+        //graphics.fillRect(0, 0, bounds.size.x, bounds.size.y);
     }
     
     /**
@@ -132,7 +162,7 @@ public class Module extends ModuleBase {
      * @param y The y position of the top-left corner of the text.
      */
     protected final void drawText(String text, int size, int x, int y) {
-        graphics.drawImage(Resources.bank.text.draw(text, size), x, y, null);
+        //graphics.drawImage(Resources.bank.text.draw(text, size), x, y, null);
     }
     
     /**
@@ -158,7 +188,6 @@ public class Module extends ModuleBase {
      */
     public final void redraw() {
         draw();
-        drawParent();
     }
     
     /**
@@ -175,20 +204,20 @@ public class Module extends ModuleBase {
      * @param m 
      */
     @Override
-    public void drawChild(Module m, int x, int y, int width, int height) {
-        drawParent(x, y, width, height);
+    public void drawChild(Module m) {
+        m.repaint();
     }
     
-    public void drawParent() {
+    /*public void drawParent() {
         parent.drawChild(this, bounds.left(), bounds.top(), bounds.size.x, bounds.size.y);
     }
     
     /**
      * Causes the parent to update it's graphical representation of the child object.
-     */
+     *
     public void drawParent(int x, int y, int width, int height) {
         parent.drawChild(this, x - bounds.left(), y - bounds.top(), width, height);
-    }
+    }*/
     
     /**
      * Returns a vector object containing the mouse position.
@@ -388,14 +417,18 @@ public class Module extends ModuleBase {
         return(bounds.intersects(r));
     }
     
-    protected final void beginDraw(GraphicsCallback c) {
+    /*protected final void beginDraw(GraphicsCallback c) {
         
     }
     
     protected final void beginDraw(int x, int y, int width, int height, GraphicsCallback c) {
         Program.window.requestDraw(x - bounds.left(), y - bounds.top(), width, height, c);
-    }
+    }*/
     
+    
+    public final void repaint() {
+        windowHandle.requestHandle(this);
+    }
     
     /**
      * Returns whether parent classes should bother to draw this module.
@@ -411,5 +444,47 @@ public class Module extends ModuleBase {
      */
     public final boolean visible() {
         return !bounds.size.similar(Vector.ZERO);
+    }
+    
+    /**
+     * Called when the Module is redrawn either through a call to repaint or when a higher level Module or the Window wants it to
+     * be redrawn.
+     */
+    public void paint(GraphicsHandle g) { }
+    
+    @Override
+    public int getAbsoluteX() {
+        return bounds.position.x + parent.getAbsoluteX();
+    }
+    
+    @Override
+    public int getAbsoluteY() {
+        return bounds.position.y + parent.getAbsoluteY();
+    }
+    
+    /**
+     * Sets the parent of the module.
+     * 
+     * Mostly called by container classes so that their child modules
+     * will be able to call methods of their parent.
+     * @param m The ModuleBase to become the parent.
+     */
+    public final void setParent(ModuleParent m) {
+        hasParent = true;
+        parent = m;
+        if(parent == null) {
+            parent = new NullParent();
+        }
+    }
+    
+    /**
+     * Clears the parent of the module.
+     * 
+     * The module will no longer have a parent (it will be nullified) and it will no longer
+     * consider itself as having a parent.
+     */
+    public final void clearParent() {
+        hasParent = false;
+        parent = new NullParent();
     }
 }

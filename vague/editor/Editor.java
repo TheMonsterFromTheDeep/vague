@@ -14,7 +14,7 @@ import vague.editor.tool.Tool;
 import vague.geom.Rectangle;
 import vague.input.Controls;
 import module.Module;
-import vague.util.Vector;
+import module.util.Vector;
 
 /**
  * Represents an image editor that can manipulate and draw to the Canvas. Multiple instances can be created, with different

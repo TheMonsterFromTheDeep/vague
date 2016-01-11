@@ -9,7 +9,7 @@ import vague.geom.Rectangle;
 import vague.input.Controls;
 import module.Module;
 import module.container.Container;
-import vague.util.Vector;
+import module.util.Vector;
 
 /**
  * The Workspace defines a container in which the user can create and move small containers which

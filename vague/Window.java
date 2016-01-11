@@ -32,7 +32,7 @@ import module.Module;
 import vague.module.TestModule;
 import module.container.Container;
 import vague.util.MouseTracker;
-import vague.util.Vector;
+import module.util.Vector;
 import vague.workspace.Workspace;
 
 /**

@@ -3,7 +3,7 @@ package vague.editor.image;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import vague.image.Canvas;
-import vague.util.Vector;
+import module.util.Vector;
 
 /**
  * Represents a single layer of image data. Multiple layers can be created inside a single image project, and

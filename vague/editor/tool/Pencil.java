@@ -2,7 +2,7 @@ package vague.editor.tool;
 
 import java.awt.Color;
 import vague.input.Controls;
-import vague.util.Vector;
+import module.util.Vector;
 
 /**
  *

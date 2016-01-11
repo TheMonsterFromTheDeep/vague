@@ -3,7 +3,7 @@ package vague.editor.tool;
 import java.awt.Color;
 import vague.editor.Editor;
 import vague.editor.image.EditTarget;
-import vague.util.Vector;
+import module.util.Vector;
 
 /**
  * Represents a system through which tools are interfaced with the editor and the image. This allows tools

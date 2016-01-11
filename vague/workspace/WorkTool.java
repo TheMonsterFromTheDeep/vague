@@ -9,7 +9,7 @@ import vague.input.Controls;
 import module.Module;
 import vague.module.TestModule;
 import vague.util.Cursor;
-import vague.util.Vector;
+import module.util.Vector;
 import vague.workspace.menu.SmartMenu;
 
 /**
