@@ -1,4 +1,4 @@
-package vague.geom;
+package module.util;
 
 import module.util.Vector;
 

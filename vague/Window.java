@@ -23,7 +23,7 @@ import java.awt.image.BufferedImage;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-import vague.geom.Rectangle;
+import module.util.Rectangle;
 import vague.input.Control;
 import vague.input.Controls;
 import module.Exchange;

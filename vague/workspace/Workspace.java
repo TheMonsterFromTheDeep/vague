@@ -5,7 +5,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
 import vague.Resources;
-import vague.geom.Rectangle;
+import module.util.Rectangle;
 import vague.input.Controls;
 import module.Module;
 import module.container.Container;

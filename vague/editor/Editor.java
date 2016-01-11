@@ -11,7 +11,7 @@ import vague.editor.image.EditTarget;
 import vague.editor.tool.EditFilter;
 import vague.editor.tool.Pencil;
 import vague.editor.tool.Tool;
-import vague.geom.Rectangle;
+import module.util.Rectangle;
 import vague.input.Controls;
 import module.Module;
 import module.util.Vector;

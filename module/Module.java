@@ -12,7 +12,7 @@ import module.meta.NullParent;
 import module.paint.GraphicsHandle;
 import vague.Program;
 import vague.Resources;
-import vague.geom.Rectangle;
+import module.util.Rectangle;
 import vague.util.Cursor;
 import vague.util.Percents;
 import module.util.Vector;
