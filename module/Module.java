@@ -9,6 +9,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
 import module.meta.ModuleParent;
 import module.meta.NullParent;
+import module.paint.GraphicsCallback;
 import module.paint.GraphicsHandle;
 import vague.Program;
 import vague.Resources;
@@ -53,7 +54,7 @@ public class Module implements ModuleParent {
     
     protected boolean retaining = false;
     
-    private Window windowHandle;
+    private final Window windowHandle;
     
     //Stores the rendered version of the module. Private because nothing should modify it.
     //protected BufferedImage buffer;
@@ -95,7 +96,7 @@ public class Module implements ModuleParent {
         doRenderCalc();
     }
     
-    protected Module() {
+    protected Module(Window handle) {
         /**
          * Default position and size of the Module.
          * The default position is 0, 0 and the default size is also 0, 0.
@@ -104,11 +105,12 @@ public class Module implements ModuleParent {
          */
         bounds = new Rectangle(0,0,0,0);
         parent = new NullParent();
+        windowHandle = handle;
         doRenderCalc();
     }
     
-    public static Module create() {
-        return new Module();
+    public static Module create(Window handle) {
+        return new Module(handle);
     }
     
     /**
@@ -144,14 +146,6 @@ public class Module implements ModuleParent {
         int width = (bufferSize.x < 1) ? 1 : bufferSize.x;
         int height = (bufferSize.y < 1) ? 1 : bufferSize.y;
         return new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB);
-    }
-    
-    /**
-     * Fills the background with 'bgColor'. Can be called during the draw() method.
-     */
-    protected final void fillBackground() {
-        //graphics.setColor(bgColor);
-        //graphics.fillRect(0, 0, bounds.size.x, bounds.size.y);
     }
     
     /**
@@ -207,17 +201,6 @@ public class Module implements ModuleParent {
     public void drawChild(Module m) {
         m.repaint();
     }
-    
-    /*public void drawParent() {
-        parent.drawChild(this, bounds.left(), bounds.top(), bounds.size.x, bounds.size.y);
-    }
-    
-    /**
-     * Causes the parent to update it's graphical representation of the child object.
-     *
-    public void drawParent(int x, int y, int width, int height) {
-        parent.drawChild(this, x - bounds.left(), y - bounds.top(), width, height);
-    }*/
     
     /**
      * Returns a vector object containing the mouse position.
@@ -430,6 +413,10 @@ public class Module implements ModuleParent {
         windowHandle.requestHandle(this);
     }
     
+    public final void repaint(int x, int y, int width, int height, GraphicsCallback callback) {
+        windowHandle.requestHandle(this, callback, x, y, width, height);
+    }
+    
     /**
      * Returns whether parent classes should bother to draw this module.
      * If it has a size of zero, than it's graphical data buffer will not contain any useful graphical
@@ -486,5 +473,12 @@ public class Module implements ModuleParent {
     public final void clearParent() {
         hasParent = false;
         parent = new NullParent();
+    }
+    
+    /**
+     * Returns a handle to the Window that the Module is attached to.
+     */
+    public final Window getHandle() {
+        return windowHandle;
     }
 }

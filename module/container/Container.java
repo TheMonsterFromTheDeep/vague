@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import module.Module;
+import module.Window;
 import module.util.Vector;
 
 /**
@@ -18,7 +19,8 @@ public class Container extends Module {
     protected Module activeChild; //Stores a reference to the active child
     protected int activeIndex; //Stores the index of the active child: equal to -1 if there is no active child
     
-    protected Container(Module[] children) {
+    protected Container(Window handle, Module[] children) {
+        super(handle);
         if(children.length < 1) {
             this.children = new Module[0]; //If there are no children, then there are no children
             clearActiveChild(); //Clear the active child because there can't be an active child
@@ -42,7 +44,8 @@ public class Container extends Module {
         }
     }
     
-    protected Container(int width, int height, Module[] children) {
+    protected Container(Window handle, int width, int height, Module[] children) {
+        super(handle);
         initialize(new Vector(0,0), new Vector(width,height)); //Initialize the Container with the given width and height (children's height does not matter; they can go outside Container)
         if(children.length < 1) {
             this.children = new Module[0]; //If there are no children, then there are no children
@@ -55,8 +58,8 @@ public class Container extends Module {
     }
     
     //Conforms to the Module.create() format - also used to safely pass an object after it is done construction
-    public static Container create(Module[] children) {
-        Container c = new Container(children);
+    public static Container create(Window handle, Module[] children) {
+        Container c = new Container(handle, children);
         
         for(int i = 0; i < c.children.length; i++) { //Set the parent of all child modules so that they function properly
             c.children[i].setParent(c);
@@ -68,8 +71,8 @@ public class Container extends Module {
     }
     
     //Conforms to the Module.create() format
-    public static Container create(int width, int height, Module[] children) {
-        Container c = new Container(width,height,children);
+    public static Container create(Window handle, int width, int height, Module[] children) {
+        Container c = new Container(handle, width,height,children);
         
         for(int i = 0; i < c.children.length; i++) { //Set the parent of all child modules
             c.children[i].setParent(c);
@@ -124,7 +127,7 @@ public class Container extends Module {
      */
     protected final void clearActiveChild() {
         activeIndex = -1; //An activeIndex of -1 indicates there is no active child
-        activeChild = Module.create(); //Set the activeChild to a dummy Module so nothing bad happens
+        activeChild = Module.create(getHandle()); //Set the activeChild to a dummy Module so nothing bad happens
     }
     
     /**
