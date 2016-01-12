@@ -2,14 +2,10 @@ package module;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import module.meta.ModuleParent;
+import module.paint.GraphicsCallback;
 import module.paint.GraphicsHandle;
 import module.util.Vector;
 import vague.util.Cursor;
@@ -24,7 +20,8 @@ public class Window extends JFrame implements ModuleParent/*, MouseListener, Mou
     
     private JPanel panel;
     
-    Module paintTarget;
+    private Module paintTarget;
+    private GraphicsCallback paintCallback;
     
     public Window() {
         this("");
@@ -40,8 +37,15 @@ public class Window extends JFrame implements ModuleParent/*, MouseListener, Mou
             @Override
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                //TODO: Make module targeting work correctly
-                paintTarget.paint(new GraphicsHandle(paintTarget.getAbsoluteX(), paintTarget.getAbsoluteY(), g));
+                //TODO: Make module targeting work correctly - fixed?
+                if(paintCallback == null) {
+                    paintTarget.paint(new GraphicsHandle(paintTarget.getAbsoluteX(), paintTarget.getAbsoluteY(), g));
+                }
+                else {
+                    paintCallback.paint(new GraphicsHandle(paintTarget.getAbsoluteX(), paintTarget.getAbsoluteY(), g));
+                }
+                
+                //TODO: Implement partial redraw calls by Modules
             }
         };
         panel.setPreferredSize(new Dimension(width, height));
@@ -54,10 +58,21 @@ public class Window extends JFrame implements ModuleParent/*, MouseListener, Mou
     
     @Override
     public void drawChild(Module child) {
-        panel.repaint(child.x(), child.y(), child.width(), child.height());
+        paintTarget = child;
+        paintCallback = null;
+        panel.repaint(child.getAbsoluteX(), child.getAbsoluteY(), child.width(), child.height());
     }
     
     public void requestHandle(Module child) {
+        paintTarget = child;
+        paintCallback = null;
+        panel.repaint(child.getAbsoluteX(), child.getAbsoluteY(), child.width(), child.height());
+    }
+    
+    public void requestHandle(Module child, GraphicsCallback callback, int x, int y, int width, int height) {
+        paintTarget = child;
+        paintCallback = callback;
+        panel.repaint(child.getAbsoluteX() + x, child.getAbsoluteY() + y, width, height);
     }
     
     @Override

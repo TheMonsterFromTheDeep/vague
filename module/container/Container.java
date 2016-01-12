@@ -239,8 +239,7 @@ public class Container extends Module {
     protected final void drawChildren() {
         for(int i = 0; i < children.length; i++) { //Iterate through all the children
             if(children[i].visible()) { //If the child isn't visible, there is no point in drawing it, so make sure that it is visible
-                children[i].draw(); //Re-render the child (use only the draw() method so it doesn't call drawParent())
-                graphics.drawImage(children[i].render(), children[i].x(), children[i].y(), null); //Draw the rendered child module
+                children[i].repaint();
             }
         }
     }
@@ -249,8 +248,7 @@ public class Container extends Module {
     public void draw() {
         for(int i = 0; i < children.length; i++) { //Iterate through children modules
             if(children[i].visible()) { //If a child is visible, draw it; otherwise, don't
-                children[i].draw(); //Re-render the child (use only draw() method so drawParent() is not called)
-                graphics.drawImage(children[i].render(), children[i].x(), children[i].y(), null); //Draw the rendered child
+                children[i].repaint();
             }
         }
     }

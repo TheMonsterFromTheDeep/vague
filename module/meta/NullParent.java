@@ -7,7 +7,7 @@ import vague.util.Cursor;
 /**
  * The NullParent represents a null module parent. It might be good in the future for it to not silently ignore everything a module does.
  */
-public class NullParent implements ModuleParent {
+public final class NullParent implements ModuleParent {
 
     @Override
     public void drawChild(Module child) { }

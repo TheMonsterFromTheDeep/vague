@@ -3,7 +3,6 @@ package module.paint;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 
 /**
@@ -11,10 +10,10 @@ import java.awt.image.ImageObserver;
  * uses it for drawing. A properly created GraphicsHandle is guaranteed to provide a correct graphical offset.
  */
 public class GraphicsHandle {
-    private int offsetx;
-    private int offsety;
+    private final int offsetx;
+    private final int offsety;
     
-    private Graphics graphics;
+    private final Graphics graphics;
     
     public GraphicsHandle(int x, int y, Graphics g) {
         offsetx = x;
@@ -27,18 +26,18 @@ public class GraphicsHandle {
     }
     
     public void drawRect(int x, int y, int width, int height) {
-        graphics.drawRect(x, y, width, height);
+        graphics.drawRect(offsetx + x, offsety + y, width, height);
     }
     
     public void fillRect(int x, int y, int width, int height) {
-        graphics.fillRect(x, y, width, height);
+        graphics.fillRect(offsetx + x, offsety + y, width, height);
     }
     
     public void drawImage(Image image, int x, int y) {
-        graphics.drawImage(image, x, y, null);
+        graphics.drawImage(image, offsetx + x, offsety + y, null);
     }
     
     public void drawImage(Image image, int x, int y, ImageObserver io) {
-        graphics.drawImage(image, x, y, io);
+        graphics.drawImage(image, offsetx + x, offsety + y, io);
     }
 }
