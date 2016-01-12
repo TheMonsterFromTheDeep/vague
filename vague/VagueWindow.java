@@ -40,7 +40,7 @@ import vague.workspace.Workspace;
  * Events are passed through the window to all child modules.
  * @author TheMonsterFromTheDeep
  */
-public class Window extends JFrame {
+public class VagueWindow extends JFrame {
     public final static int DEFAULT_WIDTH = 800; //Default width and height of the window
     public final static int DEFAULT_HEIGHT = 600;
     
@@ -80,7 +80,7 @@ public class Window extends JFrame {
      * However, it should not yet run the program. The .run() method needs
      * to be called to begin the program.
      */
-    public Window() {
+    public VagueWindow() {
         //The format for the title is "$Filename | Vague".
         super("Untitled | Vague"); //Set the title of the window. The default file is "Untitled".
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //When the window is closed, the program should exit.
@@ -144,10 +144,10 @@ public class Window extends JFrame {
         this.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent ce) {
-                Dimension size = Window.this.getSize();
+                Dimension size = VagueWindow.this.getSize();
                 if(size.width < MIN_WIDTH) { size.width = MIN_WIDTH; }
                 if(size.height < MIN_HEIGHT) { size.height = MIN_HEIGHT; }
-                Window.this.setSize(size); 
+                VagueWindow.this.setSize(size); 
                 system.resize(size.width,size.height);
             }
         });
@@ -204,7 +204,7 @@ public class Window extends JFrame {
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowStateChanged(WindowEvent e) {
-                system.resize(Window.this.getSize().width,Window.this.getSize().height);
+                system.resize(VagueWindow.this.getSize().width,VagueWindow.this.getSize().height);
                 System.err.println("Window state changed!");
             }
         });
