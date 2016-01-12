@@ -9,7 +9,7 @@ import vague.input.Controls;
  */
 public class Program {
     //TODO: Use actual handles in Modules to the window
-    public static Window window;
+    public static VagueWindow window;
     
     /**
      * The entry point for the application.
@@ -27,7 +27,7 @@ public class Program {
         Controls.bank = new Controls(Controls.DEFAULT);
         
         //Create a Window so that the user can use the actual application
-        window = new Window();
+        window = new VagueWindow();
         window.run();
     }
 }
