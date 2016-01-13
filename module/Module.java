@@ -160,31 +160,6 @@ public class Module implements ModuleParent {
     }
     
     /**
-     * Contains all the drawing code for the Module. Drawing code should be implemented
-     * using the 'graphics' member of the Module class. The 'graphics' object draws 
-     * to the 'buffer' BufferedImage, which can be accessed by parent classes to be rendered
-     * higher in the Module hierarchy.
-     * 
-     * This method should NOT call drawParent(). If a Module needs to draw itself and its parent,
-     * it should call the redraw() method from inside its body. The draw() method may be called by
-     * parent modules and it could possibly cause an infinite loop of parent calling child calling parent
-     * calling child.
-     */
-    public void draw() { }
-    
-    /**
-     * Causes the Module to re-draw itself and reflect all changes higher in the object hierarchy. This 
-     * method should be called whenever the Module modifies it's graphical state so that the top-level
-     * Window can reflect the modified state as quickly as possible. 
-     * 
-     * This method simply calls the draw() method of the Module, causing it to draw all things, and then
-     * the drawParent() method, so that changes will be reflected higher in the hierarchy.
-     */
-    public final void redraw() {
-        draw();
-    }
-    
-    /**
      * Causes the Module to draw one of its child nodes.
      * 
      * Also causes the Module to ask its parent to draw itself, so that the graphical
@@ -302,7 +277,7 @@ public class Module implements ModuleParent {
         onResize(new Vector(width, height)); //Call the onResize() method in case a subclass cares when it is resized
         bounds.size = new Vector(width, height); //Update the size of the bounds
         doRenderCalc(); //Re-do render calculations because this now has a different buffer size
-        draw(); //Redraw in case it needs to be re-drawn
+        //repaint(); //Redraw in case it needs to be re-drawn
     }
     
     /**
@@ -318,7 +293,7 @@ public class Module implements ModuleParent {
         onResize(v);
         bounds.size = new Vector(v); //The Vector is copied so that nothing has a reference to size through a refererence
         doRenderCalc();
-        draw();
+        //repaint();
     }
     
     /**
@@ -411,6 +386,10 @@ public class Module implements ModuleParent {
     
     public final void repaint() {
         windowHandle.requestHandle(this);
+    }
+    
+    public final void repaint(GraphicsCallback callback) {
+        windowHandle.requestHandle(this, callback);
     }
     
     public final void repaint(int x, int y, int width, int height, GraphicsCallback callback) {

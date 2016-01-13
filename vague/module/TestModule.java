@@ -1,15 +1,10 @@
 package vague.module;
 
-import module.GraphicsCallback;
+import module.paint.GraphicsCallback;
 import module.Module;
 import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import vague.Resources;
-import vague.input.Controls;
-import vague.util.Cursor;
+import module.Window;
+import module.paint.GraphicsHandle;
 import module.util.Vector;
 
 /**
@@ -21,7 +16,7 @@ public class TestModule extends Module {
     class myCallback implements GraphicsCallback {
 
         @Override
-        public void callback(Graphics g) {
+        public void paint(GraphicsHandle g) {
             g.setColor(new Color(0xff0000));
             g.fillRect(0, 0, 20, 20);
         }
@@ -32,13 +27,14 @@ public class TestModule extends Module {
     
     myCallback callback;
     
-    private TestModule(int width, int height) {
+    private TestModule(Window w, int width, int height) {
+        super(w);
         callback = new myCallback();
-        beginDraw(0, 0, 0, 0, callback);
+        //beginDraw(0, 0, 0, 0, callback);
     }
     
-    public static TestModule create(int width, int height) {
-        return new TestModule(width,height);
+    public static TestModule create(Window w, int width, int height) {
+        return new TestModule(w,width,height);
     }
     
     @Override

@@ -2,19 +2,28 @@ package module;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.MouseInfo;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import module.meta.ModuleParent;
 import module.paint.GraphicsCallback;
 import module.paint.GraphicsHandle;
 import module.util.Vector;
+import vague.input.Controls;
 import vague.util.Cursor;
 
 /**
  * The Window interfaces the Module system with various Java windowing systems to form a coherent unit.
  * @author TheMonsterFromTheDeep
  */
-public class Window extends JFrame implements ModuleParent/*, MouseListener, MouseMotionListener, KeyListener*/ {
+public class Window extends JFrame implements ModuleParent, MouseListener, MouseMotionListener, MouseWheelListener, KeyListener {
 
     private static final int DEFAULT_SIZE = 300;
     
@@ -22,6 +31,8 @@ public class Window extends JFrame implements ModuleParent/*, MouseListener, Mou
     
     private Module paintTarget;
     private GraphicsCallback paintCallback;
+    
+    Module child;
     
     public Window() {
         this("");
@@ -38,11 +49,13 @@ public class Window extends JFrame implements ModuleParent/*, MouseListener, Mou
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 //TODO: Make module targeting work correctly - fixed?
-                if(paintCallback == null) {
-                    paintTarget.paint(new GraphicsHandle(paintTarget.getAbsoluteX(), paintTarget.getAbsoluteY(), g));
-                }
-                else {
-                    paintCallback.paint(new GraphicsHandle(paintTarget.getAbsoluteX(), paintTarget.getAbsoluteY(), g));
+                if(paintTarget != null) {
+                    if(paintCallback == null) {
+                        paintTarget.paint(new GraphicsHandle(paintTarget.getAbsoluteX(), paintTarget.getAbsoluteY(), g));
+                    }
+                    else {
+                        paintCallback.paint(new GraphicsHandle(paintTarget.getAbsoluteX(), paintTarget.getAbsoluteY(), g));
+                    }
                 }
                 
                 //TODO: Implement partial redraw calls by Modules
@@ -56,6 +69,10 @@ public class Window extends JFrame implements ModuleParent/*, MouseListener, Mou
         setVisible(true);
     }
     
+    public final void setChild(Module child) {
+        this.child = child;
+    }
+    
     @Override
     public void drawChild(Module child) {
         paintTarget = child;
@@ -66,6 +83,12 @@ public class Window extends JFrame implements ModuleParent/*, MouseListener, Mou
     public void requestHandle(Module child) {
         paintTarget = child;
         paintCallback = null;
+        panel.repaint(child.getAbsoluteX(), child.getAbsoluteY(), child.width(), child.height());
+    }
+    
+    public void requestHandle(Module child, GraphicsCallback callback) {
+        paintTarget = child;
+        paintCallback = callback;
         panel.repaint(child.getAbsoluteX(), child.getAbsoluteY(), child.width(), child.height());
     }
     
@@ -85,16 +108,19 @@ public class Window extends JFrame implements ModuleParent/*, MouseListener, Mou
         return 0;
     }
     
-    /*@Override
+    @Override
     public void mouseClicked(MouseEvent me) {
+        child.mouseClick(me);
     }
 
     @Override
     public void mousePressed(MouseEvent me) {
+        child.mouseDown(me);
     }
 
     @Override
     public void mouseReleased(MouseEvent me) {
+        child.mouseUp(me);
     }
 
     @Override
@@ -111,26 +137,38 @@ public class Window extends JFrame implements ModuleParent/*, MouseListener, Mou
 
     @Override
     public void mouseMoved(MouseEvent me) {
+        //TODO: Implement mouse moving
+        child.mouseMove(Vector.ZERO, Vector.ZERO);
+    }
+    
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent mwe) {
+        child.mouseScroll(mwe);
     }
 
     @Override
     public void keyTyped(KeyEvent ke) {
+        child.keyType(ke);
     }
 
     @Override
     public void keyPressed(KeyEvent ke) {
+        Controls.bank.update(ke.getKeyCode(),true);
+        child.keyDown();
     }
 
     @Override
     public void keyReleased(KeyEvent ke) {
-    }*/
-
-    
+        Controls.bank.update(ke.getKeyCode(),false);
+        child.keyUp();
+    }
     
     @Override
     public Vector mousePosition() {
-        //TODO: implement mouse position
-        return null;
+        return new Vector(
+                MouseInfo.getPointerInfo().getLocation().x - this.getX() - this.getInsets().left,
+                MouseInfo.getPointerInfo().getLocation().y - this.getY() - this.getInsets().top
+        );
     }
 
     
@@ -142,8 +180,6 @@ public class Window extends JFrame implements ModuleParent/*, MouseListener, Mou
     @Override
     public void clearCursor() {
     }
-
-    
 
     
 }

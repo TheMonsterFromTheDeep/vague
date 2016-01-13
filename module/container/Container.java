@@ -5,6 +5,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import module.Module;
 import module.Window;
+import module.paint.GraphicsHandle;
 import module.util.Vector;
 
 /**
@@ -174,7 +175,7 @@ public class Container extends Module {
         }
         children = tmp; //Set the children of this Container to the array without the removed child
         
-        redraw(); //The container will likely have a changed graphical state
+        repaint(); //The container will likely have a changed graphical state
     }
     
     @Override
@@ -248,7 +249,7 @@ public class Container extends Module {
     }
     
     @Override
-    public void draw() {
+    public void paint(GraphicsHandle g) {
         for(int i = 0; i < children.length; i++) { //Iterate through children modules
             if(children[i].visible()) { //If a child is visible, draw it; otherwise, don't
                 children[i].repaint();

@@ -2,6 +2,7 @@ package vague.editor;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import module.Window;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
@@ -68,7 +69,8 @@ public class Editor extends Module {
     private Tool currentTool = null;
     
     
-    private Editor() {
+    private Editor(Window w) {
+        super(w);
         this.bgColor = BG_COLOR;
         
         canvasPosition = new Vector(DEFAULT_CANVAS_POSITION);
@@ -87,11 +89,11 @@ public class Editor extends Module {
         prepare(); //Initialize the graphical state of this Editor's buffer
     }
     
-    public static Editor create() {
+    public static Editor create(Window w) {
         if(EditTarget.target == null) {
             EditTarget.create(100,100);//TEST SIZE ONLY
         }
-        return new Editor();
+        return new Editor(w);
     }
            
     private double getScale() {
@@ -136,11 +138,11 @@ public class Editor extends Module {
         
         for(int x = 0; x < EditTarget.target.width(); x += size) {
             for(int y = 0; y < EditTarget.target.height(); y += size) {
-                graphics.setColor((((x % 2) + y) % 2) == 0 ? TILE_COLOR_LIGHT : TILE_COLOR_DARK);
-                graphics.fillRect(canvasBounds.left() + x * pixelDist, canvasBounds.top() + y * pixelDist, pixelWidth, pixelWidth);
-                
-                graphics.setColor(EditTarget.target.getColor(x,y));
-                graphics.fillRect(canvasBounds.left() + x * pixelDist, canvasBounds.top() + y * pixelDist, pixelWidth, pixelWidth);
+//                graphics.setColor((((x % 2) + y) % 2) == 0 ? TILE_COLOR_LIGHT : TILE_COLOR_DARK);
+//                graphics.fillRect(canvasBounds.left() + x * pixelDist, canvasBounds.top() + y * pixelDist, pixelWidth, pixelWidth);
+//                
+//                graphics.setColor(EditTarget.target.getColor(x,y));
+//                graphics.fillRect(canvasBounds.left() + x * pixelDist, canvasBounds.top() + y * pixelDist, pixelWidth, pixelWidth);
             }
         }
     }
@@ -161,37 +163,33 @@ public class Editor extends Module {
         
         for(int x = 0; x < EditTarget.target.width(); x++) {
             for(int y = 0; y < EditTarget.target.height(); y++) {
-                graphics.setColor((((x % 2) + y) % 2) == 0 ? TILE_COLOR_LIGHT : TILE_COLOR_DARK);
-                graphics.fillRect(canvasBounds.left() + x * pixelWidth, canvasBounds.top() + y * pixelWidth, pixelWidth, pixelWidth);
-                
-                graphics.setColor(EditTarget.target.getColor(x,y));
-                graphics.fillRect(canvasBounds.left() + x * pixelWidth, canvasBounds.top() + y * pixelWidth, pixelWidth, pixelWidth);
+//                graphics.setColor((((x % 2) + y) % 2) == 0 ? TILE_COLOR_LIGHT : TILE_COLOR_DARK);
+//                graphics.fillRect(canvasBounds.left() + x * pixelWidth, canvasBounds.top() + y * pixelWidth, pixelWidth, pixelWidth);
+//                
+//                graphics.setColor(EditTarget.target.getColor(x,y));
+//                graphics.fillRect(canvasBounds.left() + x * pixelWidth, canvasBounds.top() + y * pixelWidth, pixelWidth, pixelWidth);
             }
         }
         for(int x = 0; x < EditTarget.target.width(); x++) {
-            graphics.setColor(x % 2 == 0 ? OUTLINE_COLOR_LIGHT : OUTLINE_COLOR_DARK);
-            graphics.drawLine(canvasBounds.left() + x * pixelWidth, canvasBounds.top() - 1, canvasBounds.left() + (x + 1) * pixelWidth,canvasBounds.top() - 1);
-            graphics.drawLine(canvasBounds.left() + x * pixelWidth, canvasBounds.bottom(), canvasBounds.left() + (x + 1) * pixelWidth,canvasBounds.bottom());
+//            graphics.setColor(x % 2 == 0 ? OUTLINE_COLOR_LIGHT : OUTLINE_COLOR_DARK);
+//            graphics.drawLine(canvasBounds.left() + x * pixelWidth, canvasBounds.top() - 1, canvasBounds.left() + (x + 1) * pixelWidth,canvasBounds.top() - 1);
+//            graphics.drawLine(canvasBounds.left() + x * pixelWidth, canvasBounds.bottom(), canvasBounds.left() + (x + 1) * pixelWidth,canvasBounds.bottom());
         }
         for(int y = 0; y < EditTarget.target.height(); y++) {
-            graphics.setColor(y % 2 == 0 ? OUTLINE_COLOR_LIGHT : OUTLINE_COLOR_DARK);
-            graphics.drawLine(canvasBounds.left() - 1, canvasBounds.top() + y * pixelWidth, canvasBounds.left() - 1,canvasBounds.top() + (y + 1) * pixelWidth);
-            graphics.drawLine(canvasBounds.right(), canvasBounds.top() + y * pixelWidth, canvasBounds.right(),canvasBounds.top() + (y + 1) * pixelWidth);
+//            graphics.setColor(y % 2 == 0 ? OUTLINE_COLOR_LIGHT : OUTLINE_COLOR_DARK);
+//            graphics.drawLine(canvasBounds.left() - 1, canvasBounds.top() + y * pixelWidth, canvasBounds.left() - 1,canvasBounds.top() + (y + 1) * pixelWidth);
+//            graphics.drawLine(canvasBounds.right(), canvasBounds.top() + y * pixelWidth, canvasBounds.right(),canvasBounds.top() + (y + 1) * pixelWidth);
         }
     }
     
     private void drawLowRes() {
-        this.fillBackground();
+        //this.fillBackground();
         renderLowResCanvas();
-        
-        drawParent();
     }
     
     private void drawNormal() {
-        this.fillBackground();
+        //this.fillBackground();
         renderCanvas();
-        
-        drawParent();
     }
     
     private void prepare() {
@@ -251,9 +249,9 @@ public class Editor extends Module {
         if(Controls.bank.status(Controls.EDITOR_TOGGLE_GRID)) { 
             drawGridLines = !drawGridLines;
             prepare(); //Re-create the background buffer
-            redraw(); //Reflect updated graphical state
+            repaint(); //Reflect updated graphical state
         }
-        if(draw) { redraw(); }
+        if(draw) { repaint(); }
     }
      
     @Override
@@ -324,16 +322,11 @@ public class Editor extends Module {
     }
     
     public void drawPixel(int x, int y, Color c) {
-        graphics.setColor(c);
+        //graphics.setColor(c);
         int scale = (int)getScale();
-        graphics.fillRect(canvasBounds.left() + x * scale, canvasBounds.top() + y * scale, scale, scale);
+        //graphics.fillRect(canvasBounds.left() + x * scale, canvasBounds.top() + y * scale, scale, scale);
         
-        drawParent(x,y,1,1);
-    }
-    
-    @Override
-    public void draw() {
-        drawNormal();
+        //drawParent(x,y,1,1);
     }
     
     public EditFilter filter() {

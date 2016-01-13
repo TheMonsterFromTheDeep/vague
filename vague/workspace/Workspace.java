@@ -8,7 +8,10 @@ import vague.Resources;
 import module.util.Rectangle;
 import vague.input.Controls;
 import module.Module;
+import module.Window;
 import module.container.Container;
+import module.paint.GraphicsCallback;
+import module.paint.GraphicsHandle;
 import module.util.Vector;
 
 /**
@@ -42,8 +45,10 @@ public final class Workspace extends Container {
     public static final int GRID_SIZE = 40; //This size of the grid that WorkTools shoudl snap to when snapping them to grid
                                             //(may be dynamic in future)
     
-    private Workspace(int width, int height, Module[] children) {
-        super(width,height,children);
+    ToolDrawer toolDrawer;
+    
+    private Workspace(Window w, int width, int height, Module[] children) {
+        super(w, width,height,children);
         
         workspace = getValidBuffer(size());
         
@@ -51,8 +56,8 @@ public final class Workspace extends Container {
     }
     
     //Conform to Module.create() syntax
-    public static Workspace create(int width, int height, Module[] children) {
-        return new Workspace(width,height,children);
+    public static Workspace create(Window w, int width, int height, Module[] children) {
+        return new Workspace(w, width,height,children);
     }
     
     @Override
@@ -73,7 +78,7 @@ public final class Workspace extends Container {
             toolStart = new Vector(mousePosition()); //Copy the mousePosition into both the toolStart and toolEnd
             toolEnd = new Vector(toolStart); //both are equal to mousePosition because there is no other info yet
             
-            draw(); //Draw to update the workspace buffer
+            //draw(); //Draw to update the workspace buffer
         }
         else { //If there is an active tool (activeIndex > -1), then it should be updated
             activeChild.mouseDown(e);
@@ -114,16 +119,6 @@ public final class Workspace extends Container {
         }
     }
     
-    @Override
-    public void drawChild(Module m, int x, int y, int width, int height) {
-        if(m == moveTool) { //If a tool has been moved, it needs to be re-drawn
-            graphics.drawImage(workspace,0,0,null);
-        }
-        //graphics.drawImage(m.render(),m.x(),m.y(),null); //Draw the tool that needs to be re-drawn
-        //drawParent(); //Draw the parent to reflect graphics changes higher in the object hierarchy
-        super.drawChild(m, x, y, width, height);
-    }
-    
     /**
      * Called by child modules when they are being moved or resized. Alerts the Workspace to draw them differently
      * than other modules.
@@ -132,7 +127,7 @@ public final class Workspace extends Container {
     public void beginChanging(Module m) {
         moveTool = m; //If a Module is moving, it needs to be treated specially - special treatment
                       //is given to the module stored within moveTool
-        redraw(); //The module needs to be re-drawn so that the 'workspace' buffer is updated
+        repaint(); //The module needs to be re-drawn so that the 'workspace' buffer is updated
     }
     
     public void stopMoving() {
@@ -146,7 +141,7 @@ public final class Workspace extends Container {
             }
         }
         moveTool = null; //Nullify the move tool so no tool will be given special graphical / other treatment
-        redraw(); //Redraw the module because tools have been updated; also will reset buffers / things
+        repaint(); //Redraw the module because tools have been updated; also will reset buffers / things
     }
     
     public void stopResizing() {
@@ -156,7 +151,7 @@ public final class Workspace extends Container {
             }
         }
         moveTool = null;
-        redraw();
+        repaint();
     }
     
     public boolean validPosition(WorkTool t) {
@@ -178,7 +173,7 @@ public final class Workspace extends Container {
             toolStart.snap(GRID_SIZE); //Snaps the tool start to grid
             toolEnd.snap(GRID_SIZE); //Snaps the tool end to grid
         }
-        WorkTool newTool = WorkTool.create(toolStart,toolEnd); //Create the new tool
+        WorkTool newTool = WorkTool.create(getHandle(), toolStart,toolEnd); //Create the new tool
         /*
         Check if new tool is legitimate - this requires two checks:
         - The new tool has a size that is at least the minimum size
@@ -192,91 +187,99 @@ public final class Workspace extends Container {
             if(create) { //Create is only true if the new tool did not intersect any other tools
                 newTool.setWorkspace(this); //Allow the new WorkTool to use move and resize functions
                 addChild(newTool); //Add the new tool as a child
-                children[children.length - 1].draw(); //if a child was added, it needs to be drawn initially
+                //children[children.length - 1].draw(); //if a child was added, it needs to be drawn initially
             }
         }
-        redraw(); //If createTool, the Workspace always needs to be re-drawn because even if a tool
+        repaint(); //If createTool, the Workspace always needs to be re-drawn because even if a tool
                   //wasn't created, the red square needs to be un-drawn
     }
     
-    private void drawTool() {
-        graphics.drawImage(workspace,0,0,null); //Draw the current buffer of the workspace
-        
-        Vector start = new Vector(), size = new Vector(); //Store where the being created tool should be drawn
-        /* WORKTOOL VECTOR ORGANIZATION
-        Vector start - stores the start draw position of the tool
-        Vector size - stores the size of the tool being draw
-        
-        The start will consist of the lesser x and y out of toolStart and toolEnd.
-        The size will consist of the size required to draw based on this - it will
-          consist of the difference between the greater coordinate and the lesser
-          coordinate becauase that is the size of the tool.
-        */
-        if(toolStart.x < toolEnd.x) {
-            start.x = toolStart.x;
-            size.x = toolEnd.x - toolStart.x;
-        }
-        else {
-            start.x = toolEnd.x;
-            size.x = toolStart.x - toolEnd.x;
-        }
-        
-        if(toolStart.y < toolEnd.y) {
-            start.y = toolStart.y;
-            size.y = toolEnd.y - toolStart.y;
-        }
-        else {
-            start.y = toolEnd.y;
-            size.y = toolStart.y - toolEnd.y;
-        }
-        
-        /*
-        How snapping works with new tools -
-        
-        The toolStart and toolEnd are not themselves snapped because
-          if the snapping control becomes inactive, toolStart and toolEnd
-          will need to revert to what they were before snapping started.
-          When drawing the tools, however, if they are being snapped, the
-          Vectors used for drawing ('start' and 'size') do need to be snapped
-          such that an accurate picture of the new tool is drawn.
-        
-        If the snapping control continues to be active when the tool is actually
-          created, then both toolStart and toolEnd will be snapped because they had
-          not been snapped previously.
-        */
-        if(Controls.bank.status(Controls.WORKSPACE_GRID_SNAP)) {
-            start.snap(GRID_SIZE); //Snap the drawing Vectors if the snapping control is active
-            size.snap(GRID_SIZE);
-        }
-        
-        /*
-        The drawn rectangle should appear blue if the tool is valid and red 
-          if the tool is invalid. The only cases where the tool is invalid
-          (currently) are if it is smaller than the minimum size or if it
-          intersects a currently existing tool. Therefore, before drawaing the
-          tools, it is checked if they are valid to present a real-time picture
-          to the user if the tool is valid or not.
-        */
-        
-        boolean valid = true; //If true, the tool is valid and is drawn blue; otherwise, it is invalid and drawn red (and not created when the mouse is released.)
-        if (size.x >= MIN_SIZE && size.y >= MIN_SIZE) { //Checks to see if the tool is of a valid size
-            Rectangle validator = new Rectangle(start,size); //Create a rectangle with the potential bounds to check for intersections
-            for(Module m : children) { //Check to see if the bounds of the potential tool intersect any existing tools
-                if(m.intersects(validator)) {
-                    valid = false; //if the bounds intersect and existing tool, the tool should be drawn as red
+    class ToolDrawer implements GraphicsCallback {
+        @Override
+        public void paint(GraphicsHandle handle) {
+            handle.drawImage(workspace,0,0,null); //Draw the current buffer of the workspace
+
+            Vector start = new Vector(), size = new Vector(); //Store where the being created tool should be drawn
+            /* WORKTOOL VECTOR ORGANIZATION
+            Vector start - stores the start draw position of the tool
+            Vector size - stores the size of the tool being draw
+
+            The start will consist of the lesser x and y out of toolStart and toolEnd.
+            The size will consist of the size required to draw based on this - it will
+              consist of the difference between the greater coordinate and the lesser
+              coordinate becauase that is the size of the tool.
+            */
+            if(toolStart.x < toolEnd.x) {
+                start.x = toolStart.x;
+                size.x = toolEnd.x - toolStart.x;
+            }
+            else {
+                start.x = toolEnd.x;
+                size.x = toolStart.x - toolEnd.x;
+            }
+
+            if(toolStart.y < toolEnd.y) {
+                start.y = toolStart.y;
+                size.y = toolEnd.y - toolStart.y;
+            }
+            else {
+                start.y = toolEnd.y;
+                size.y = toolStart.y - toolEnd.y;
+            }
+
+            /*
+            How snapping works with new tools -
+
+            The toolStart and toolEnd are not themselves snapped because
+              if the snapping control becomes inactive, toolStart and toolEnd
+              will need to revert to what they were before snapping started.
+              When drawing the tools, however, if they are being snapped, the
+              Vectors used for drawing ('start' and 'size') do need to be snapped
+              such that an accurate picture of the new tool is drawn.
+
+            If the snapping control continues to be active when the tool is actually
+              created, then both toolStart and toolEnd will be snapped because they had
+              not been snapped previously.
+            */
+            if(Controls.bank.status(Controls.WORKSPACE_GRID_SNAP)) {
+                start.snap(GRID_SIZE); //Snap the drawing Vectors if the snapping control is active
+                size.snap(GRID_SIZE);
+            }
+
+            /*
+            The drawn rectangle should appear blue if the tool is valid and red 
+              if the tool is invalid. The only cases where the tool is invalid
+              (currently) are if it is smaller than the minimum size or if it
+              intersects a currently existing tool. Therefore, before drawaing the
+              tools, it is checked if they are valid to present a real-time picture
+              to the user if the tool is valid or not.
+            */
+
+            boolean valid = true; //If true, the tool is valid and is drawn blue; otherwise, it is invalid and drawn red (and not created when the mouse is released.)
+            if (size.x >= MIN_SIZE && size.y >= MIN_SIZE) { //Checks to see if the tool is of a valid size
+                Rectangle validator = new Rectangle(start,size); //Create a rectangle with the potential bounds to check for intersections
+                for(Module m : children) { //Check to see if the bounds of the potential tool intersect any existing tools
+                    if(m.intersects(validator)) {
+                        valid = false; //if the bounds intersect and existing tool, the tool should be drawn as red
+                    }
                 }
             }
-        }
-        else {
-            valid = false; //If the tool is not of a valid size, it should be drawn red
+            else {
+                valid = false; //If the tool is not of a valid size, it should be drawn red
+            }
+
+            handle.setColor(valid ? TOOL_FILL_COLOR : BAD_TOOL_FILL_COLOR); //Set the fill color of the tool based on whether the tool is valid or not
+            handle.fillRect(start.x + 1,start.y + 1,size.x - 2,size.y - 2); //Fill the projected bounds of the created tool
+            handle.setColor(valid ? TOOL_BORDER_COLOR : BAD_TOOL_BORDER_COLOR); //Set the border color based on whether the tool is valid or not
+            handle.drawRect(start.x, start.y, size.x - 1, size.y - 1); //Border in the projected bounds of the created tool
         }
         
-        graphics.setColor(valid ? TOOL_FILL_COLOR : BAD_TOOL_FILL_COLOR); //Set the fill color of the tool based on whether the tool is valid or not
-        graphics.fillRect(start.x + 1,start.y + 1,size.x - 2,size.y - 2); //Fill the projected bounds of the created tool
-        graphics.setColor(valid ? TOOL_BORDER_COLOR : BAD_TOOL_BORDER_COLOR); //Set the border color based on whether the tool is valid or not
-        graphics.drawRect(start.x, start.y, size.x - 1, size.y - 1); //Border in the projected bounds of the created tool
+    }
+    
+    private void drawTool() {
+        repaint(toolDrawer);
         
-        drawParent(); //Draw the parent because it SHOULD NOT be implicitly called by any other method when drawTool() is called
+        //drawParent(); //Draw the parent because it SHOULD NOT be implicitly called by any other method when drawTool() is called
     }
     
     private void updateActiveChild(Vector mousePosition) {
@@ -328,11 +331,11 @@ public final class Workspace extends Container {
     }
     
     @Override
-    public void draw() {
-        this.fillBackground(); //Fill the background with color just in case
+    public void paint(GraphicsHandle graphics) {
+        //this.fillBackground(); //Fill the background with color just in case
         for(int x = 0; x < width(); x+= BG_WIDTH) { //Draw the tiled grey stone background image
             for(int y = 0; y < height(); y+= BG_HEIGHT) {
-                graphics.drawImage(Resources.bank.BACKGROUND, x, y, null);
+                graphics.drawImage(Resources.bank.BACKGROUND, x, y);
             }
         }
         /* 'WORKSPACE' BUFFER EXPLANATION
@@ -344,18 +347,18 @@ public final class Workspace extends Container {
           children but not the dynamic child. The dynamaic child is then drawn onto this buffer because it
           needs to, just like every other child.
         */
-        for(Module m : children) {
+        /*for(Module m : children) {
             if(m != moveTool) {
                 graphics.drawImage(m.render(),m.x(),m.y(),null);
             }
-        }
+        }*/
         
         //As explained under 'WORKSPACE' BUFFER EXPLANATION, the static children are drawn to the 'workspace' buffer
-        workspace.createGraphics().drawImage(buffer, 0, 0, null);
+        //workspace.createGraphics().drawImage(buffer, 0, 0, null);
         
         if(moveTool != null) { //If a tool is being moved, it should not be drawn to the static buffer, but does need to be drawn to the normal
                                //graphics buffer
-            graphics.drawImage(moveTool.render(),moveTool.x(),moveTool.y(),null);
+            moveTool.repaint();
         }
     }
 }
