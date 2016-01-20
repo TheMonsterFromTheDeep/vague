@@ -1,6 +1,7 @@
 package vague;
 
 import javax.swing.JFrame;
+import module.Module;
 import module.Window;
 import vague.workspace.Workspace;
 
@@ -20,6 +21,8 @@ public class VagueWindow extends Window {
     public final static int MOUSE_FRAMES = 25;
     //Right now it is 40 FPS
     
+    private final Workspace workspace;
+    
     /**
      * Constructs a new Window. This should be the only
      * constructor and should initialize the window for the application.
@@ -29,11 +32,15 @@ public class VagueWindow extends Window {
      */
     public VagueWindow() {
         //The format for the title is "$Filename | Vague".
-        super("Untitled | Vague"); //Set the title of the window. The default file is "Untitled".
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //When the window is closed, the program should exit.
-        this.setIconImage(Resources.bank.ICON);
+        super("Untitled | Vague", DEFAULT_WIDTH, DEFAULT_HEIGHT); //Set the title of the window. The default file is "Untitled".
+        //this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //When the window is closed, the program should exit.
+        //this.setIconImage(Resources.bank.ICON);
         
-        setChild(Workspace.create(this));
+        //this.setSize(800, 600);
+        
+        workspace = Workspace.create(this, DEFAULT_WIDTH, DEFAULT_HEIGHT, new Module[0]);
+        
+        setChild(workspace);
     }
     
     /**
@@ -41,7 +48,7 @@ public class VagueWindow extends Window {
      */
     public void run() {
         //system.redraw(); //Redraw so that there is content on the screen
-        this.setVisible(true); //Set the window visible so that the user can interact.
+        //this.setVisible(true); //Set the window visible so that the user can interact.
         //mouseTimer.start(); //Start the mouse timer so that most of the app will actually work
     }
 }

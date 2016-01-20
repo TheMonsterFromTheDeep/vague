@@ -54,7 +54,7 @@ public final class Workspace extends Container {
     
     //Conform to Module.create() syntax
     public static Workspace create(Window w, int width, int height, Module[] children) {
-        return new Workspace(w, width,height,children);
+        return new Workspace(w, width, height, children);
     }
     
     @Override
@@ -193,7 +193,7 @@ public final class Workspace extends Container {
     
     private void drawTool() {
         ///argh this wording tho
-        GraphicsHandle handle = repaint();
+        GraphicsHandle handle = beginDraw();
         handle.drawImage(workspace,0,0,null); //Draw the current buffer of the workspace
 
         Vector start = new Vector(), size = new Vector(); //Store where the being created tool should be drawn
@@ -269,6 +269,7 @@ public final class Workspace extends Container {
         handle.fillRect(start.x + 1,start.y + 1,size.x - 2,size.y - 2); //Fill the projected bounds of the created tool
         handle.setColor(valid ? TOOL_BORDER_COLOR : BAD_TOOL_BORDER_COLOR); //Set the border color based on whether the tool is valid or not
         handle.drawRect(start.x, start.y, size.x - 1, size.y - 1); //Border in the projected bounds of the created tool
+        endDraw(handle);
     }
     
     private void updateActiveChild(Vector mousePosition) {
@@ -321,6 +322,9 @@ public final class Workspace extends Container {
     
     @Override
     public void paint(GraphicsHandle graphics) {
+        
+        System.err.println("Painting: " + graphics.width + " " + graphics.height);
+        
         //this.fillBackground(); //Fill the background with color just in case
         for(int x = 0; x < width(); x+= BG_WIDTH) { //Draw the tiled grey stone background image
             for(int y = 0; y < height(); y+= BG_HEIGHT) {
