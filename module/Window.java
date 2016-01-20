@@ -3,6 +3,8 @@ package module;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.MouseInfo;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -23,14 +25,18 @@ import vague.util.Cursor;
  * The Window interfaces the Module system with various Java windowing systems to form a coherent unit.
  * @author TheMonsterFromTheDeep
  */
-public class Window extends JFrame implements ModuleParent, MouseListener, MouseMotionListener, MouseWheelListener, KeyListener {
+public class Window implements ModuleParent, MouseListener, MouseMotionListener, MouseWheelListener, KeyListener {
 
     private static final int DEFAULT_SIZE = 300;
     
+    private JFrame frame;
     private JPanel panel;
     
     private BufferedImage buffer;
     private Graphics graphics;
+    
+    int minWidth = 50;
+    int minHeight = 50;
     
     //private Module paintTarget;
     //private GraphicsCallback paintCallback;
@@ -46,7 +52,7 @@ public class Window extends JFrame implements ModuleParent, MouseListener, Mouse
     private void loadBuffer() {
         if(graphics != null) { graphics.dispose(); }
         if(buffer != null) { buffer.flush(); }
-        buffer = createValidBuffer(this.getWidth(), this.getHeight());
+        buffer = createValidBuffer(panel.getWidth(), panel.getHeight());
         graphics = buffer.createGraphics();
     }
     
@@ -59,7 +65,9 @@ public class Window extends JFrame implements ModuleParent, MouseListener, Mouse
     }
     
     public Window(String title, int width, int height) {
-        super(title);
+        frame = new JFrame(title);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
         panel = new JPanel() {
             @Override
             public void paintComponent(Graphics g) {
@@ -80,14 +88,39 @@ public class Window extends JFrame implements ModuleParent, MouseListener, Mouse
         };
         panel.setPreferredSize(new Dimension(width, height));
         
-        add(panel);
-        pack();
+        frame.addMouseListener(this);
+        frame.addMouseWheelListener(this);
+        frame.addMouseMotionListener(this);
+        frame.addKeyListener(this);
         
-        buffer = createValidBuffer(this.getWidth(), this.getHeight());
+        frame.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                int width = frame.getWidth();
+                int height = frame.getHeight();
+                width = (width < minWidth) ? minWidth : width;
+                height = (height < minHeight) ? minHeight : height;
+                frame.setSize(width, height);
+                
+                loadBuffer();
+                
+                if(child != null) {
+                    child.resize(panel.getWidth(), panel.getHeight());
+                }
+            }
+        });
+        
+        frame.add(panel);
+        frame.pack();
+        
+        loadBuffer();
+        
+        frame.setVisible(true);
     }
     
     public final void setChild(Module child) {
         this.child = child;
+        child.repaint();
     }
     
     @Override
@@ -175,8 +208,8 @@ public class Window extends JFrame implements ModuleParent, MouseListener, Mouse
     @Override
     public Vector mousePosition() {
         return new Vector(
-                MouseInfo.getPointerInfo().getLocation().x - this.getX() - this.getInsets().left,
-                MouseInfo.getPointerInfo().getLocation().y - this.getY() - this.getInsets().top
+                MouseInfo.getPointerInfo().getLocation().x - frame.getX() - frame.getInsets().left,
+                MouseInfo.getPointerInfo().getLocation().y - frame.getY() - frame.getInsets().top
         );
     }
 

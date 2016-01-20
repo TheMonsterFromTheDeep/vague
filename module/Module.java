@@ -92,7 +92,7 @@ public class Module implements ModuleParent {
      */
     protected final void initialize(Vector position, Vector size) {
         bounds = new Rectangle(position, size);
-        doRenderCalc();
+        //doRenderCalc();
     }
     
     protected Module(Window handle) {
@@ -105,7 +105,7 @@ public class Module implements ModuleParent {
         bounds = new Rectangle(0,0,0,0);
         parent = new NullParent();
         windowHandle = handle;
-        doRenderCalc();
+        //doRenderCalc();
     }
     
     public static Module create(Window handle) {
@@ -118,7 +118,7 @@ public class Module implements ModuleParent {
      * Does calculations so that the module can be rendered with the correct
      * width and height.
      */
-    private void doRenderCalc() {
+    /*private void doRenderCalc() {
         int width = (bounds.size.x < 1) ? 1 : bounds.size.x; //Get a valid size for the BufferedImages
         int height = (bounds.size.y < 1) ? 1 : bounds.size.y;
         
@@ -132,7 +132,7 @@ public class Module implements ModuleParent {
         //graphics.setColor(bgColor);
         //graphics.fillRect(0, 0, buffer.getWidth(), buffer.getHeight());
         //graphics.drawImage(old, 0, 0, null);
-    }
+    }*/
         
     /**
      * Constructs a BufferedImage with the width and height of the Module that is valid:
@@ -275,8 +275,9 @@ public class Module implements ModuleParent {
         height = height < 0 ? 0 : height;
         onResize(new Vector(width, height)); //Call the onResize() method in case a subclass cares when it is resized
         bounds.size = new Vector(width, height); //Update the size of the bounds
-        doRenderCalc(); //Re-do render calculations because this now has a different buffer size
+        //doRenderCalc(); //Re-do render calculations because this now has a different buffer size
         //repaint(); //Redraw in case it needs to be re-drawn
+        repaint();
     }
     
     /**
@@ -291,7 +292,8 @@ public class Module implements ModuleParent {
         v.y = v.y < 0 ? 0 : v.y;
         onResize(v);
         bounds.size = new Vector(v); //The Vector is copied so that nothing has a reference to size through a refererence
-        doRenderCalc();
+        //doRenderCalc();
+        repaint();
         //repaint();
     }
     
@@ -386,7 +388,7 @@ public class Module implements ModuleParent {
     public final void repaint() {
         GraphicsHandle handle = windowHandle.beginDraw(this);
         paint(handle);
-        
+        windowHandle.endDraw(handle);
     }
     //TODO: Make these methods have a less ambiguous name
     public final GraphicsHandle beginDraw() {
