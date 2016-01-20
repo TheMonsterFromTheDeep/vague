@@ -125,6 +125,7 @@ public class Window implements ModuleParent, MouseListener, MouseMotionListener,
     
     public final void setChild(Module child) {
         this.child = child;
+        child.setParent(this);
         child.repaint();
     }
     
