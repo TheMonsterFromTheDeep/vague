@@ -112,6 +112,24 @@ public class WorkTool extends Module {
         initialize(pos,size); //Initialize the size and position of the WorkTool
     }
     
+    /**
+     * Initializes a nullified WorkTool that does nothing.
+     * @param w 
+     */
+    private WorkTool(Window w) {
+        super(w, 0, 0);
+    }
+    
+    /**
+     * Returns a nullified WorkTool that does nothing.
+     * @param window
+     * @return 
+     */
+    public static WorkTool create(Window window) {
+        //TODO: Figure out if this has side effects
+        return new WorkTool(window);
+    }
+    
     public static WorkTool create(Window window, Vector start, Vector end) {
         WorkTool w = new WorkTool(window, start,end); //Create the WorkTool based on the start and end Vectors
         

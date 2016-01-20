@@ -19,7 +19,7 @@ import module.util.Vector;
  * contain Modules.
  * @author TheMonsterFromTheDeep
  */
-public final class Workspace extends Container {
+public final class Workspace extends Module {
     public static final Color TOOL_BORDER_COLOR = new Color(0xbbbbdd); //Colors used when drawing the WorkTools
     public static final Color TOOL_FILL_COLOR = new Color(0xc3c3dd);
     public static final Color BAD_TOOL_BORDER_COLOR = new Color(0xff5858);
@@ -37,7 +37,7 @@ public final class Workspace extends Container {
     //NOTE: May be changed in the future to a integer which stores the function that the Container is
     //currently performing.
     
-    private Module moveTool; //Stores any child Module that is being moved. Used in order to draw them specially.
+    private WorkTool moveTool; //Stores any child Module that is being moved. Used in order to draw them specially.
     
     private BufferedImage workspace; //Stores a secondary buffer of the current workspace
     //such that it does not have to be re-drawn every time new tools are created
@@ -45,17 +45,82 @@ public final class Workspace extends Container {
     public static final int GRID_SIZE = 40; //This size of the grid that WorkTools shoudl snap to when snapping them to grid
                                             //(may be dynamic in future)
     
-    private Workspace(Window w, int width, int height, Module[] children) {
-        super(w, width,height,children);
+    private WorkTool[] children;
+    
+    int activeIndex; //Similar to the Container's activeIndex, stores the index in 'children' of the active child Module. -1 if there is none.
+    WorkTool activeChild; //Similar to the Container's activeChild, stores a handle to the active child Module.
+    
+    private Workspace(Window w, int width, int height) {
+        super(w, width, height);
         
         workspace = getValidBuffer(size());
+        
+        children = new WorkTool[0];
+        
+        clearActiveChild();
         
         this.bgColor = new Color(0xcfcfcf);
     }
     
     //Conform to Module.create() syntax
     public static Workspace create(Window w, int width, int height, Module[] children) {
-        return new Workspace(w, width, height, children);
+        return new Workspace(w, width, height);
+    }
+    
+    /**
+     * Adds a new child to the Container.
+     * @param m The child to add to the Container.
+     */
+    protected final void addChild(WorkTool m) {
+        m.setParent(this); //Set the parent of the child
+        
+        WorkTool[] tmp = children; //Expand the children array and add the new child.
+        children = new WorkTool[children.length + 1];
+        System.arraycopy(tmp, 0, children, 0, tmp.length); //Copy over the old values so they will be retained.
+        children[tmp.length] = m;    
+    }
+    
+    /**
+     * Clears the active child of the Container. The Container will have an activeIndex of -1, meaning it has no active child,
+     * and will act upon a dummy child as its active child.
+     */
+    protected final void clearActiveChild() {
+        activeIndex = -1; //An activeIndex of -1 indicates there is no active child
+        activeChild = WorkTool.create(getHandle()); //Set the activeChild to a dummy Module so nothing bad happens
+    }
+    
+    /**
+     * Sets the active child of the Container to the specified child. All operations to the active child will now apply to this
+     * child.
+     * @param index The index of the child to become active.
+     */
+    protected final void setActiveChild(int index) {
+        activeIndex = index; //Set the active index of the child.
+        activeChild = children[index]; //Set the active child to the child at the specified index.
+    }
+    
+    /**
+     * Removes the specified child module from the Container. Should ONLY be called by child modules / the
+     * container itself in order to remove themselves / children.
+     * @param m The Module to remove.
+     */
+    public final void removeChild(WorkTool m) {
+        WorkTool[] tmp = new WorkTool[children.length - 1]; //Creates a temporary array to hold the children without the child to delete
+        int i = 0; //Iterate through the children before the removed child and copy them over
+        while(children[i] != m && i < children.length) {
+            tmp[i] = children[i];
+            i++;
+        }
+        if(i == activeIndex) { clearActiveChild(); } //If the removed child was active, then the child needs to be cleared, because
+                                                     //no child should then be active
+        i++;
+        while(i < children.length) { //Iterate through the children after the removed child and copy them over
+            tmp[i - 1] = children[i];
+            i++;
+        }
+        children = tmp; //Set the children of this Container to the array without the removed child
+        
+        repaint(); //The container will likely have a changed graphical state
     }
     
     @Override
@@ -124,19 +189,17 @@ public final class Workspace extends Container {
      * than other modules.
      * @param m 
      */
-    public void beginChanging(Module m) {
+    public void beginChanging(WorkTool m) {
         moveTool = m; //If a Module is moving, it needs to be treated specially - special treatment
                       //is given to the module stored within moveTool
         repaint(); //The module needs to be re-drawn so that the 'workspace' buffer is updated
     }
     
     public void stopMoving() {
-        for(Module m : children) { //Reset the position of the moved tool if it intersects any other tools
-            if(m != moveTool) { //If the module is not the moveTool, check for intersection
-                if(m.intersects(moveTool)) {
-                    if(moveTool instanceof WorkTool) { //Safety check
-                        ((WorkTool)moveTool).resetMovePosition(); //If the tool being moved is intersecting others, it should be reset
-                    }
+        for(WorkTool wt : children) { //Reset the position of the moved tool if it intersects any other tools
+            if(wt != moveTool) { //If the module is not the moveTool, check for intersection
+                if(wt.intersects(moveTool)) {
+                    moveTool.resetMovePosition(); //If the tool being moved is intersecting others, it should be reset
                 }
             }
         }
@@ -145,10 +208,8 @@ public final class Workspace extends Container {
     }
     
     public void stopResizing() {
-        if(moveTool instanceof WorkTool) {
-            if(!validSize((WorkTool)moveTool)) {
-                ((WorkTool)moveTool).resetResize();
-            }
+        if(!validSize(moveTool)) {
+            moveTool.resetResize();
         }
         moveTool = null;
         repaint();
@@ -156,9 +217,9 @@ public final class Workspace extends Container {
     
     public boolean validPosition(WorkTool t) {
         boolean valid = true;
-        for(Module m : children) {
-            if(m != t) {
-                if(t.intersects(m)) { valid = false; }
+        for(WorkTool wt : children) {
+            if(wt != t) {
+                if(t.intersects(wt)) { valid = false; }
             }
         }
         return valid;
@@ -181,8 +242,8 @@ public final class Workspace extends Container {
         */
         if(newTool.width() >= MIN_SIZE && newTool.height() >= MIN_SIZE) {
             boolean create = true; //Stores whether the new tool should be added
-            for(Module m : children) {
-                if(newTool.intersects(m)) { create = false; } //If the new tool intersects an existing tool, it should not be created
+            for(WorkTool wt : children) {
+                if(newTool.intersects(wt)) { create = false; } //If the new tool intersects an existing tool, it should not be created
             }
             if(create) { //Create is only true if the new tool did not intersect any other tools
                 newTool.setWorkspace(this); //Allow the new WorkTool to use move and resize functions
@@ -258,8 +319,8 @@ public final class Workspace extends Container {
         boolean valid = true; //If true, the tool is valid and is drawn blue; otherwise, it is invalid and drawn red (and not created when the mouse is released.)
         if (size.x >= MIN_SIZE && size.y >= MIN_SIZE) { //Checks to see if the tool is of a valid size
             Rectangle validator = new Rectangle(start,size); //Create a rectangle with the potential bounds to check for intersections
-            for(Module m : children) { //Check to see if the bounds of the potential tool intersect any existing tools
-                if(m.intersects(validator)) {
+            for(WorkTool wt : children) { //Check to see if the bounds of the potential tool intersect any existing tools
+                if(wt.intersects(validator)) {
                     valid = false; //if the bounds intersect and existing tool, the tool should be drawn as red
                 }
             }
@@ -327,8 +388,6 @@ public final class Workspace extends Container {
     public void paint(GraphicsHandle graphics) {
         //this.fillBackground(); //Fill the background with color just in case
         
-        Graphics wGraphics = workspace.createGraphics();
-        
         for(int x = 0; x < width(); x+= BG_WIDTH) { //Draw the tiled grey stone background image
             for(int y = 0; y < height(); y+= BG_HEIGHT) {
                 graphics.drawImage(Resources.bank.BACKGROUND, x, y);
@@ -343,9 +402,9 @@ public final class Workspace extends Container {
           children but not the dynamic child. The dynamaic child is then drawn onto this buffer because it
           needs to, just like every other child.
         */
-        for(Module m : children) {
-            if(m != moveTool) {
-                m.repaint();
+        for(WorkTool wt : children) {
+            if(wt != moveTool) {
+                wt.repaint();
             }
         }
         

@@ -108,6 +108,19 @@ public class Module implements ModuleParent {
         //doRenderCalc();
     }
     
+    protected Module(Window handle, int width, int height) {
+        /**
+         * Default position and size of the Module.
+         * The default position is 0, 0 and the default size is also 0, 0.
+         * 
+         * With the default size, it is impossible to render anything.
+         */
+        bounds = new Rectangle(0,0,width,height);
+        parent = new NullParent();
+        windowHandle = handle;
+        //doRenderCalc();
+    }
+    
     public static Module create(Window handle) {
         return new Module(handle);
     }
