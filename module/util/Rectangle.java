@@ -118,9 +118,14 @@ public class Rectangle {
      * @return Whether the two Rectangles intersect.
      */
     public boolean intersects(Rectangle r) {
-        //Checks the other rectangle for intersections wiht this top left or bottom right corner and checks this rectangle
-        //for intersections with the others' top right or bottom left corner. If the two rectangles are intersecting, one
-        //if these checks should return true.
-        return r.encloses(this.topLeft()) || r.encloses(this.bottomRight()) || this.encloses(r.topRight()) || this.encloses(r.bottomLeft());
+        int thisx = position.x;
+        int thisy = position.y;
+        int thiswidth = size.x;
+        int thisheight = size.y;
+        int rx = r.position.x;
+        int ry = r.position.y;
+        int rwidth = r.size.x;
+        int rheight = r.size.y;
+        return (thisx + thiswidth >= rx && thisx + thiswidth <= rx + rwidth) || (rx + rwidth >= thisx && rx + rwidth <= thisx + thiswidth) && (thisy + thisheight >= ry && thisy + thisheight <= ry + rheight) || (ry + rheight >= thisy && ry + rheight <= thisy + thisheight);
     }
 }
