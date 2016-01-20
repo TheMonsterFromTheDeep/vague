@@ -95,14 +95,16 @@ public class Window extends JFrame implements ModuleParent, MouseListener, Mouse
         panel.repaint(child.getAbsoluteX(), child.getAbsoluteY(), child.width(), child.height());
     }
     
-    public GraphicsHandle requestHandle(Module child) {
-        panel.repaint(child.getAbsoluteX(), child.getAbsoluteY(), child.width(), child.height());
+    public GraphicsHandle beginDraw(Module child) {
         return new GraphicsHandle(child.getAbsoluteX(), child.getAbsoluteY(), child.width(), child.height(), graphics);
     }
     
-    public GraphicsHandle requestHandle(Module child, int x, int y, int width, int height) {
-        panel.repaint(child.getAbsoluteX() + x, child.getAbsoluteY() + y, width, height);
+    public GraphicsHandle beginDraw(Module child, int x, int y, int width, int height) {
         return new GraphicsHandle(x, y, width, height, graphics);
+    }
+    
+    public void endDraw(GraphicsHandle g) {
+        panel.repaint(g.offsetx, g.offsety, g.width, g.height);
     }
     
     @Override

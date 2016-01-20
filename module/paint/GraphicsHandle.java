@@ -10,14 +10,18 @@ import java.awt.image.ImageObserver;
  * uses it for drawing. A properly created GraphicsHandle is guaranteed to provide a correct graphical offset.
  */
 public class GraphicsHandle {
-    private final int offsetx;
-    private final int offsety;
+    public final int offsetx;
+    public final int offsety;
+    public final int width;
+    public final int height;
     
     private final Graphics graphics;
     
     public GraphicsHandle(int x, int y, int width, int height, Graphics g) {
         offsetx = x;
         offsety = y;
+        this.width = width;
+        this.height = height;
         graphics = g.create();
         graphics.setClip(x, y, width, height);
     }

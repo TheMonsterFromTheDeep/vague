@@ -382,13 +382,23 @@ public class Module implements ModuleParent {
         Program.window.requestDraw(x - bounds.left(), y - bounds.top(), width, height, c);
     }*/
     
+    
+    public final void repaint() {
+        GraphicsHandle handle = windowHandle.beginDraw(this);
+        paint(handle);
+        
+    }
     //TODO: Make these methods have a less ambiguous name
-    public final GraphicsHandle repaint() {
-        return windowHandle.requestHandle(this);
+    public final GraphicsHandle beginDraw() {
+        return windowHandle.beginDraw(this);
     }
     
-    public final GraphicsHandle repaint(int x, int y, int width, int height) {
-        return windowHandle.requestHandle(this, x, y, width, height);
+    public final GraphicsHandle beginDraw(int x, int y, int width, int height) {
+        return windowHandle.beginDraw(this, x, y, width, height);
+    }
+    
+    public final void endDraw(GraphicsHandle handle) {
+        windowHandle.endDraw(handle);
     }
     
     /**
@@ -410,6 +420,7 @@ public class Module implements ModuleParent {
     /**
      * Called when the Module is redrawn either through a call to repaint or when a higher level Module or the Window wants it to
      * be redrawn.
+     * @param g
      */
     public void paint(GraphicsHandle g) { }
     
