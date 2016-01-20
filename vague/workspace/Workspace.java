@@ -1,6 +1,7 @@
 package vague.workspace;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
@@ -73,7 +74,6 @@ public final class Workspace extends Container {
         if(activeIndex == -1) { //If there is no active tool, mouse down creates new tools
             createTool = true; //Set the tool creation flag so that the mouseMove() method will do tool creation
             toolStart = new Vector(mousePosition()); //Copy the mousePosition into both the toolStart and toolEnd
-            System.err.println("Tool start: " + toolStart.x + " " + toolStart.y);
             toolEnd = new Vector(toolStart); //both are equal to mousePosition because there is no other info yet
             
             
@@ -93,7 +93,7 @@ public final class Workspace extends Container {
                 createTool(); //Create the new tool child and add it to the Workspace
             }
         }
-        else { //If there is aan active tool (activeIndex > -1), then that tool should be updated
+        else { //If there is an active tool (activeIndex > -1), then that tool should be updated
             activeChild.mouseUp(e);
         }      
     }
@@ -325,10 +325,10 @@ public final class Workspace extends Container {
     
     @Override
     public void paint(GraphicsHandle graphics) {
-        
-        System.err.println("Painting: " + graphics.width + " " + graphics.height);
-        
         //this.fillBackground(); //Fill the background with color just in case
+        
+        Graphics wGraphics = workspace.createGraphics();
+        
         for(int x = 0; x < width(); x+= BG_WIDTH) { //Draw the tiled grey stone background image
             for(int y = 0; y < height(); y+= BG_HEIGHT) {
                 graphics.drawImage(Resources.bank.BACKGROUND, x, y);
@@ -343,14 +343,15 @@ public final class Workspace extends Container {
           children but not the dynamic child. The dynamaic child is then drawn onto this buffer because it
           needs to, just like every other child.
         */
-        /*for(Module m : children) {
+        for(Module m : children) {
             if(m != moveTool) {
-                graphics.drawImage(m.render(),m.x(),m.y(),null);
+                m.repaint();
             }
-        }*/
+        }
         
         //As explained under 'WORKSPACE' BUFFER EXPLANATION, the static children are drawn to the 'workspace' buffer
-        //workspace.createGraphics().drawImage(buffer, 0, 0, null);
+        //as the Workspace takes up the entire screen, this can be done just by getting the screen buffer
+        workspace = getHandle().getBuffer();
         
         if(moveTool != null) { //If a tool is being moved, it should not be drawn to the static buffer, but does need to be drawn to the normal
                                //graphics buffer

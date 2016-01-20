@@ -146,6 +146,14 @@ public class Window implements ModuleParent, MouseListener, MouseMotionListener,
         panel.repaint(g.offsetx, g.offsety, g.width, g.height);
     }
     
+    public BufferedImage getBuffer() {
+        BufferedImage b = new BufferedImage(buffer.getWidth(), buffer.getHeight(), buffer.getType());
+        Graphics g = b.createGraphics();
+        g.drawImage(buffer, 0, 0, null);
+        g.dispose();
+        return b;
+    }
+    
     @Override
     public int getAbsoluteX() {
         return 0;
@@ -221,12 +229,10 @@ public class Window implements ModuleParent, MouseListener, MouseMotionListener,
     
     @Override
     public Vector mousePosition() {
-        Vector v = new Vector(
+        return new Vector(
                 MouseInfo.getPointerInfo().getLocation().x - frame.getX() - frame.getInsets().left,
                 MouseInfo.getPointerInfo().getLocation().y - frame.getY() - frame.getInsets().top
         );
-        System.err.println("Mouse position: " + v.x + " " + v.y);
-        return v;
     }
 
     
