@@ -73,8 +73,11 @@ public final class Workspace extends Container {
         if(activeIndex == -1) { //If there is no active tool, mouse down creates new tools
             createTool = true; //Set the tool creation flag so that the mouseMove() method will do tool creation
             toolStart = new Vector(mousePosition()); //Copy the mousePosition into both the toolStart and toolEnd
+            System.err.println("Tool start: " + toolStart.x + " " + toolStart.y);
             toolEnd = new Vector(toolStart); //both are equal to mousePosition because there is no other info yet
             
+            
+            repaint();
             //draw(); //Draw to update the workspace buffer
         }
         else { //If there is an active tool (activeIndex > -1), then it should be updated
