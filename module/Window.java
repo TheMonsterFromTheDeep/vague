@@ -120,6 +120,8 @@ public class Window implements ModuleParent, MouseListener, MouseMotionListener,
         
         loadBuffer();
         
+        child = Module.create(this); //Create a dummy Module so there are no problems with null objects
+        
         frame.setVisible(true);
     }
     
