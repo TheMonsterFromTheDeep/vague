@@ -38,6 +38,9 @@ public class Window implements ModuleParent, MouseListener, MouseMotionListener,
     int minWidth = 50;
     int minHeight = 50;
     
+    //Used in the mouseMove() call to child modules
+    private Vector lastMousePos;
+    
     //private Module paintTarget;
     //private GraphicsCallback paintCallback;
     
@@ -88,10 +91,12 @@ public class Window implements ModuleParent, MouseListener, MouseMotionListener,
         };
         panel.setPreferredSize(new Dimension(width, height));
         
-        frame.addMouseListener(this);
-        frame.addMouseWheelListener(this);
-        frame.addMouseMotionListener(this);
-        frame.addKeyListener(this);
+        panel.addMouseListener(this);
+        panel.addMouseWheelListener(this);
+        panel.addKeyListener(this);
+        
+        lastMousePos = new Vector(Vector.ZERO);
+        panel.addMouseMotionListener(this);
         
         frame.addComponentListener(new ComponentAdapter() {
             @Override
@@ -173,14 +178,22 @@ public class Window implements ModuleParent, MouseListener, MouseMotionListener,
     public void mouseExited(MouseEvent me) {
     }
     
+    //I'm assuming that mouseDragged and mouseMoved will never be called at the same time...
     @Override
     public void mouseDragged(MouseEvent me) {
+        Vector mousePos = new Vector(me.getX(), me.getY());
+        Vector mouseDif = lastMousePos.getDif(mousePos);
+        lastMousePos.set(mousePos);
+        child.mouseMove(mousePos, mouseDif);
     }
 
     @Override
     public void mouseMoved(MouseEvent me) {
         //TODO: Implement mouse moving
-        child.mouseMove(Vector.ZERO, Vector.ZERO);
+        Vector mousePos = new Vector(me.getX(), me.getY());
+        Vector mouseDif = lastMousePos.getDif(mousePos);
+        lastMousePos.set(mousePos);
+        child.mouseMove(mousePos, mouseDif);
     }
     
     @Override
@@ -207,10 +220,12 @@ public class Window implements ModuleParent, MouseListener, MouseMotionListener,
     
     @Override
     public Vector mousePosition() {
-        return new Vector(
+        Vector v = new Vector(
                 MouseInfo.getPointerInfo().getLocation().x - frame.getX() - frame.getInsets().left,
                 MouseInfo.getPointerInfo().getLocation().y - frame.getY() - frame.getInsets().top
         );
+        System.err.println("Mouse position: " + v.x + " " + v.y);
+        return v;
     }
 
     
