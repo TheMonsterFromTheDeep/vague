@@ -1,6 +1,5 @@
 package vague.module;
 
-import module.paint.GraphicsCallback;
 import module.Module;
 import java.awt.Color;
 import module.Window;
@@ -13,23 +12,11 @@ import module.util.Vector;
  * @author TheMonsterFromTheDeep
  */
 public class TestModule extends Module {
-    class myCallback implements GraphicsCallback {
-
-        @Override
-        public void paint(GraphicsHandle g) {
-            g.setColor(new Color(0xff0000));
-            g.fillRect(0, 0, 20, 20);
-        }
-        
-    }
     
     int rectx;
     
-    myCallback callback;
-    
     private TestModule(Window w, int width, int height) {
         super(w);
-        callback = new myCallback();
         //beginDraw(0, 0, 0, 0, callback);
     }
     

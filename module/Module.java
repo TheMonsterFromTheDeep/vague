@@ -9,7 +9,6 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
 import module.meta.ModuleParent;
 import module.meta.NullParent;
-import module.paint.GraphicsCallback;
 import module.paint.GraphicsHandle;
 import vague.Program;
 import vague.Resources;
@@ -383,17 +382,13 @@ public class Module implements ModuleParent {
         Program.window.requestDraw(x - bounds.left(), y - bounds.top(), width, height, c);
     }*/
     
-    
-    public final void repaint() {
-        windowHandle.requestHandle(this);
+    //TODO: Make these methods have a less ambiguous name
+    public final GraphicsHandle repaint() {
+        return windowHandle.requestHandle(this);
     }
     
-    public final void repaint(GraphicsCallback callback) {
-        windowHandle.requestHandle(this, callback);
-    }
-    
-    public final void repaint(int x, int y, int width, int height, GraphicsCallback callback) {
-        windowHandle.requestHandle(this, callback, x, y, width, height);
+    public final GraphicsHandle repaint(int x, int y, int width, int height) {
+        return windowHandle.requestHandle(this, x, y, width, height);
     }
     
     /**

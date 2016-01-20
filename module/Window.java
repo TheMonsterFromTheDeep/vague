@@ -10,10 +10,10 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.image.BufferedImage;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import module.meta.ModuleParent;
-import module.paint.GraphicsCallback;
 import module.paint.GraphicsHandle;
 import module.util.Vector;
 import vague.input.Controls;
@@ -29,10 +29,26 @@ public class Window extends JFrame implements ModuleParent, MouseListener, Mouse
     
     private JPanel panel;
     
-    private Module paintTarget;
-    private GraphicsCallback paintCallback;
+    private BufferedImage buffer;
+    private Graphics graphics;
+    
+    //private Module paintTarget;
+    //private GraphicsCallback paintCallback;
     
     Module child;
+    
+    private static BufferedImage createValidBuffer(int width, int height) {
+        width = (width < 1) ? 1 : width;
+        height = (height < 1) ? 1 : height;
+        return new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+    }
+    
+    private void loadBuffer() {
+        if(graphics != null) { graphics.dispose(); }
+        if(buffer != null) { buffer.flush(); }
+        buffer = createValidBuffer(this.getWidth(), this.getHeight());
+        graphics = buffer.createGraphics();
+    }
     
     public Window() {
         this("");
@@ -49,16 +65,17 @@ public class Window extends JFrame implements ModuleParent, MouseListener, Mouse
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 //TODO: Make module targeting work correctly - fixed?
-                if(paintTarget != null) {
+                /*if(paintTarget != null) {
                     if(paintCallback == null) {
                         paintTarget.paint(new GraphicsHandle(paintTarget.getAbsoluteX(), paintTarget.getAbsoluteY(), g));
                     }
                     else {
                         paintCallback.paint(new GraphicsHandle(paintTarget.getAbsoluteX(), paintTarget.getAbsoluteY(), g));
                     }
-                }
+                }*/
                 
                 //TODO: Implement partial redraw calls by Modules
+                g.drawImage(buffer, 0, 0, null);
             }
         };
         panel.setPreferredSize(new Dimension(width, height));
@@ -66,7 +83,7 @@ public class Window extends JFrame implements ModuleParent, MouseListener, Mouse
         add(panel);
         pack();
         
-        setVisible(true);
+        buffer = createValidBuffer(this.getWidth(), this.getHeight());
     }
     
     public final void setChild(Module child) {
@@ -75,27 +92,17 @@ public class Window extends JFrame implements ModuleParent, MouseListener, Mouse
     
     @Override
     public void drawChild(Module child) {
-        paintTarget = child;
-        paintCallback = null;
         panel.repaint(child.getAbsoluteX(), child.getAbsoluteY(), child.width(), child.height());
     }
     
-    public void requestHandle(Module child) {
-        paintTarget = child;
-        paintCallback = null;
+    public GraphicsHandle requestHandle(Module child) {
         panel.repaint(child.getAbsoluteX(), child.getAbsoluteY(), child.width(), child.height());
+        return new GraphicsHandle(child.getAbsoluteX(), child.getAbsoluteY(), child.width(), child.height(), graphics);
     }
     
-    public void requestHandle(Module child, GraphicsCallback callback) {
-        paintTarget = child;
-        paintCallback = callback;
-        panel.repaint(child.getAbsoluteX(), child.getAbsoluteY(), child.width(), child.height());
-    }
-    
-    public void requestHandle(Module child, GraphicsCallback callback, int x, int y, int width, int height) {
-        paintTarget = child;
-        paintCallback = callback;
+    public GraphicsHandle requestHandle(Module child, int x, int y, int width, int height) {
         panel.repaint(child.getAbsoluteX() + x, child.getAbsoluteY() + y, width, height);
+        return new GraphicsHandle(x, y, width, height, graphics);
     }
     
     @Override

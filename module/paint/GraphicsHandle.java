@@ -15,10 +15,11 @@ public class GraphicsHandle {
     
     private final Graphics graphics;
     
-    public GraphicsHandle(int x, int y, Graphics g) {
+    public GraphicsHandle(int x, int y, int width, int height, Graphics g) {
         offsetx = x;
         offsety = y;
-        graphics = g;
+        graphics = g.create();
+        graphics.setClip(x, y, width, height);
     }
     
     public void setColor(Color c) {

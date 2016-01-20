@@ -10,7 +10,6 @@ import vague.input.Controls;
 import module.Module;
 import module.Window;
 import module.container.Container;
-import module.paint.GraphicsCallback;
 import module.paint.GraphicsHandle;
 import module.util.Vector;
 
@@ -44,8 +43,6 @@ public final class Workspace extends Container {
     
     public static final int GRID_SIZE = 40; //This size of the grid that WorkTools shoudl snap to when snapping them to grid
                                             //(may be dynamic in future)
-    
-    ToolDrawer toolDrawer;
     
     private Workspace(Window w, int width, int height, Module[] children) {
         super(w, width,height,children);
@@ -194,92 +191,84 @@ public final class Workspace extends Container {
                   //wasn't created, the red square needs to be un-drawn
     }
     
-    class ToolDrawer implements GraphicsCallback {
-        @Override
-        public void paint(GraphicsHandle handle) {
-            handle.drawImage(workspace,0,0,null); //Draw the current buffer of the workspace
+    private void drawTool() {
+        ///argh this wording tho
+        GraphicsHandle handle = repaint();
+        handle.drawImage(workspace,0,0,null); //Draw the current buffer of the workspace
 
-            Vector start = new Vector(), size = new Vector(); //Store where the being created tool should be drawn
-            /* WORKTOOL VECTOR ORGANIZATION
-            Vector start - stores the start draw position of the tool
-            Vector size - stores the size of the tool being draw
+        Vector start = new Vector(), size = new Vector(); //Store where the being created tool should be drawn
+        /* WORKTOOL VECTOR ORGANIZATION
+        Vector start - stores the start draw position of the tool
+        Vector size - stores the size of the tool being draw
 
-            The start will consist of the lesser x and y out of toolStart and toolEnd.
-            The size will consist of the size required to draw based on this - it will
-              consist of the difference between the greater coordinate and the lesser
-              coordinate becauase that is the size of the tool.
-            */
-            if(toolStart.x < toolEnd.x) {
-                start.x = toolStart.x;
-                size.x = toolEnd.x - toolStart.x;
-            }
-            else {
-                start.x = toolEnd.x;
-                size.x = toolStart.x - toolEnd.x;
-            }
+        The start will consist of the lesser x and y out of toolStart and toolEnd.
+        The size will consist of the size required to draw based on this - it will
+          consist of the difference between the greater coordinate and the lesser
+          coordinate becauase that is the size of the tool.
+        */
+        if(toolStart.x < toolEnd.x) {
+            start.x = toolStart.x;
+            size.x = toolEnd.x - toolStart.x;
+        }
+        else {
+            start.x = toolEnd.x;
+            size.x = toolStart.x - toolEnd.x;
+        }
 
-            if(toolStart.y < toolEnd.y) {
-                start.y = toolStart.y;
-                size.y = toolEnd.y - toolStart.y;
-            }
-            else {
-                start.y = toolEnd.y;
-                size.y = toolStart.y - toolEnd.y;
-            }
+        if(toolStart.y < toolEnd.y) {
+            start.y = toolStart.y;
+            size.y = toolEnd.y - toolStart.y;
+        }
+        else {
+            start.y = toolEnd.y;
+            size.y = toolStart.y - toolEnd.y;
+        }
 
-            /*
-            How snapping works with new tools -
+        /*
+        How snapping works with new tools -
 
-            The toolStart and toolEnd are not themselves snapped because
-              if the snapping control becomes inactive, toolStart and toolEnd
-              will need to revert to what they were before snapping started.
-              When drawing the tools, however, if they are being snapped, the
-              Vectors used for drawing ('start' and 'size') do need to be snapped
-              such that an accurate picture of the new tool is drawn.
+        The toolStart and toolEnd are not themselves snapped because
+          if the snapping control becomes inactive, toolStart and toolEnd
+          will need to revert to what they were before snapping started.
+          When drawing the tools, however, if they are being snapped, the
+          Vectors used for drawing ('start' and 'size') do need to be snapped
+          such that an accurate picture of the new tool is drawn.
 
-            If the snapping control continues to be active when the tool is actually
-              created, then both toolStart and toolEnd will be snapped because they had
-              not been snapped previously.
-            */
-            if(Controls.bank.status(Controls.WORKSPACE_GRID_SNAP)) {
-                start.snap(GRID_SIZE); //Snap the drawing Vectors if the snapping control is active
-                size.snap(GRID_SIZE);
-            }
+        If the snapping control continues to be active when the tool is actually
+          created, then both toolStart and toolEnd will be snapped because they had
+          not been snapped previously.
+        */
+        if(Controls.bank.status(Controls.WORKSPACE_GRID_SNAP)) {
+            start.snap(GRID_SIZE); //Snap the drawing Vectors if the snapping control is active
+            size.snap(GRID_SIZE);
+        }
 
-            /*
-            The drawn rectangle should appear blue if the tool is valid and red 
-              if the tool is invalid. The only cases where the tool is invalid
-              (currently) are if it is smaller than the minimum size or if it
-              intersects a currently existing tool. Therefore, before drawaing the
-              tools, it is checked if they are valid to present a real-time picture
-              to the user if the tool is valid or not.
-            */
+        /*
+        The drawn rectangle should appear blue if the tool is valid and red 
+          if the tool is invalid. The only cases where the tool is invalid
+          (currently) are if it is smaller than the minimum size or if it
+          intersects a currently existing tool. Therefore, before drawaing the
+          tools, it is checked if they are valid to present a real-time picture
+          to the user if the tool is valid or not.
+        */
 
-            boolean valid = true; //If true, the tool is valid and is drawn blue; otherwise, it is invalid and drawn red (and not created when the mouse is released.)
-            if (size.x >= MIN_SIZE && size.y >= MIN_SIZE) { //Checks to see if the tool is of a valid size
-                Rectangle validator = new Rectangle(start,size); //Create a rectangle with the potential bounds to check for intersections
-                for(Module m : children) { //Check to see if the bounds of the potential tool intersect any existing tools
-                    if(m.intersects(validator)) {
-                        valid = false; //if the bounds intersect and existing tool, the tool should be drawn as red
-                    }
+        boolean valid = true; //If true, the tool is valid and is drawn blue; otherwise, it is invalid and drawn red (and not created when the mouse is released.)
+        if (size.x >= MIN_SIZE && size.y >= MIN_SIZE) { //Checks to see if the tool is of a valid size
+            Rectangle validator = new Rectangle(start,size); //Create a rectangle with the potential bounds to check for intersections
+            for(Module m : children) { //Check to see if the bounds of the potential tool intersect any existing tools
+                if(m.intersects(validator)) {
+                    valid = false; //if the bounds intersect and existing tool, the tool should be drawn as red
                 }
             }
-            else {
-                valid = false; //If the tool is not of a valid size, it should be drawn red
-            }
-
-            handle.setColor(valid ? TOOL_FILL_COLOR : BAD_TOOL_FILL_COLOR); //Set the fill color of the tool based on whether the tool is valid or not
-            handle.fillRect(start.x + 1,start.y + 1,size.x - 2,size.y - 2); //Fill the projected bounds of the created tool
-            handle.setColor(valid ? TOOL_BORDER_COLOR : BAD_TOOL_BORDER_COLOR); //Set the border color based on whether the tool is valid or not
-            handle.drawRect(start.x, start.y, size.x - 1, size.y - 1); //Border in the projected bounds of the created tool
         }
-        
-    }
-    
-    private void drawTool() {
-        repaint(toolDrawer);
-        
-        //drawParent(); //Draw the parent because it SHOULD NOT be implicitly called by any other method when drawTool() is called
+        else {
+            valid = false; //If the tool is not of a valid size, it should be drawn red
+        }
+
+        handle.setColor(valid ? TOOL_FILL_COLOR : BAD_TOOL_FILL_COLOR); //Set the fill color of the tool based on whether the tool is valid or not
+        handle.fillRect(start.x + 1,start.y + 1,size.x - 2,size.y - 2); //Fill the projected bounds of the created tool
+        handle.setColor(valid ? TOOL_BORDER_COLOR : BAD_TOOL_BORDER_COLOR); //Set the border color based on whether the tool is valid or not
+        handle.drawRect(start.x, start.y, size.x - 1, size.y - 1); //Border in the projected bounds of the created tool
     }
     
     private void updateActiveChild(Vector mousePosition) {
