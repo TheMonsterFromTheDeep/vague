@@ -1,8 +1,10 @@
 package vague;
 
+import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
 import module.Module;
 import module.Window;
+import vague.input.Controls;
 import vague.workspace.Workspace;
 
 /**
@@ -43,12 +45,13 @@ public class VagueWindow extends Window {
         setChild(workspace);
     }
     
-    /**
-     * Runs the program, allowing the user to interact with the controls.
-     */
-    public void run() {
-        //system.redraw(); //Redraw so that there is content on the screen
-        //this.setVisible(true); //Set the window visible so that the user can interact.
-        //mouseTimer.start(); //Start the mouse timer so that most of the app will actually work
+    @Override
+    public void keyDown(KeyEvent e) {
+        Controls.bank.update(e.getKeyCode(), true);
+    }
+    
+    @Override
+    public void keyUp(KeyEvent e) {
+        Controls.bank.update(e.getKeyCode(), false);
     }
 }

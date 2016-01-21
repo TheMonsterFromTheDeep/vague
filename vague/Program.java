@@ -28,6 +28,5 @@ public class Program {
         
         //Create a Window so that the user can use the actual application
         window = new VagueWindow();
-        window.run();
     }
 }

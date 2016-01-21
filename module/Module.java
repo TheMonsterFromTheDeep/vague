@@ -166,9 +166,10 @@ public class Module implements ModuleParent {
      * @param size The size multiplier of the text to draw.
      * @param x The x position of the top-left corner of the text.
      * @param y The y position of the top-left corner of the text.
+     * @param handle The handle to draw the text with.
      */
-    protected final void drawText(String text, int size, int x, int y) {
-        //graphics.drawImage(Resources.bank.text.draw(text, size), x, y, null);
+    protected final void drawText(String text, int size, int x, int y, GraphicsHandle handle) {
+        handle.drawImage(Resources.bank.text.draw(text, size), x, y, null);
     }
     
     /**

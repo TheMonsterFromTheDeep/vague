@@ -126,6 +126,6 @@ public class Rectangle {
         int ry = r.position.y;
         int rwidth = r.size.x;
         int rheight = r.size.y;
-        return (thisx + thiswidth >= rx && thisx + thiswidth <= rx + rwidth) || (rx + rwidth >= thisx && rx + rwidth <= thisx + thiswidth) && (thisy + thisheight >= ry && thisy + thisheight <= ry + rheight) || (ry + rheight >= thisy && ry + rheight <= thisy + thisheight);
+        return ((thisx + thiswidth >= rx && thisx + thiswidth <= rx + rwidth) || (rx + rwidth >= thisx && rx + rwidth <= thisx + thiswidth)) && ((thisy + thisheight >= ry && thisy + thisheight <= ry + rheight) || (ry + rheight >= thisy && ry + rheight <= thisy + thisheight));
     }
 }

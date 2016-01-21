@@ -18,7 +18,6 @@ import javax.swing.JPanel;
 import module.meta.ModuleParent;
 import module.paint.GraphicsHandle;
 import module.util.Vector;
-import vague.input.Controls;
 import vague.util.Cursor;
 
 /**
@@ -93,7 +92,7 @@ public class Window implements ModuleParent, MouseListener, MouseMotionListener,
         
         panel.addMouseListener(this);
         panel.addMouseWheelListener(this);
-        panel.addKeyListener(this);
+        frame.addKeyListener(this);
         
         lastMousePos = new Vector(Vector.ZERO);
         panel.addMouseMotionListener(this);
@@ -132,23 +131,23 @@ public class Window implements ModuleParent, MouseListener, MouseMotionListener,
     }
     
     @Override
-    public void drawChild(Module child) {
+    public final void drawChild(Module child) {
         panel.repaint(child.getAbsoluteX(), child.getAbsoluteY(), child.width(), child.height());
     }
     
-    public GraphicsHandle beginDraw(Module child) {
+    public final GraphicsHandle beginDraw(Module child) {
         return new GraphicsHandle(child.getAbsoluteX(), child.getAbsoluteY(), child.width(), child.height(), graphics);
     }
     
-    public GraphicsHandle beginDraw(Module child, int x, int y, int width, int height) {
+    public final GraphicsHandle beginDraw(Module child, int x, int y, int width, int height) {
         return new GraphicsHandle(x, y, width, height, graphics);
     }
     
-    public void endDraw(GraphicsHandle g) {
+    public final void endDraw(GraphicsHandle g) {
         panel.repaint(g.offsetx, g.offsety, g.width, g.height);
     }
     
-    public BufferedImage getBuffer() {
+    public final BufferedImage getBuffer() {
         BufferedImage b = new BufferedImage(buffer.getWidth(), buffer.getHeight(), buffer.getType());
         Graphics g = b.createGraphics();
         g.drawImage(buffer, 0, 0, null);
@@ -157,80 +156,84 @@ public class Window implements ModuleParent, MouseListener, MouseMotionListener,
     }
     
     @Override
-    public int getAbsoluteX() {
+    public final int getAbsoluteX() {
         return 0;
     }
 
     @Override
-    public int getAbsoluteY() {
+    public final int getAbsoluteY() {
         return 0;
     }
     
     @Override
-    public void mouseClicked(MouseEvent me) {
+    public final void mouseClicked(MouseEvent me) {
         child.mouseClick(me);
     }
 
     @Override
-    public void mousePressed(MouseEvent me) {
+    public final void mousePressed(MouseEvent me) {
         child.mouseDown(me);
     }
 
     @Override
-    public void mouseReleased(MouseEvent me) {
+    public final void mouseReleased(MouseEvent me) {
         child.mouseUp(me);
     }
 
     @Override
-    public void mouseEntered(MouseEvent me) {
+    public final void mouseEntered(MouseEvent me) {
     }
 
     @Override
-    public void mouseExited(MouseEvent me) {
+    public final void mouseExited(MouseEvent me) {
     }
     
     //I'm assuming that mouseDragged and mouseMoved will never be called at the same time...
     @Override
-    public void mouseDragged(MouseEvent me) {
+    public final void mouseDragged(MouseEvent me) {
         Vector mousePos = new Vector(me.getX(), me.getY());
-        Vector mouseDif = lastMousePos.getDif(mousePos);
+        Vector mouseDif = mousePos.getDif(lastMousePos);
         lastMousePos.set(mousePos);
         child.mouseMove(mousePos, mouseDif);
     }
 
     @Override
-    public void mouseMoved(MouseEvent me) {
+    public final void mouseMoved(MouseEvent me) {
         //TODO: Implement mouse moving
         Vector mousePos = new Vector(me.getX(), me.getY());
-        Vector mouseDif = lastMousePos.getDif(mousePos);
+        Vector mouseDif = mousePos.getDif(lastMousePos);
         lastMousePos.set(mousePos);
         child.mouseMove(mousePos, mouseDif);
     }
     
     @Override
-    public void mouseWheelMoved(MouseWheelEvent mwe) {
+    public final void mouseWheelMoved(MouseWheelEvent mwe) {
         child.mouseScroll(mwe);
     }
 
     @Override
-    public void keyTyped(KeyEvent ke) {
+    public final void keyTyped(KeyEvent ke) {
         child.keyType(ke);
     }
 
     @Override
-    public void keyPressed(KeyEvent ke) {
-        Controls.bank.update(ke.getKeyCode(),true);
+    public final void keyPressed(KeyEvent ke) {
+        keyDown(ke);
         child.keyDown();
     }
+    
+    public void keyDown(KeyEvent e) { }
 
     @Override
-    public void keyReleased(KeyEvent ke) {
-        Controls.bank.update(ke.getKeyCode(),false);
+    public final void keyReleased(KeyEvent ke) {
+        keyUp(ke);
         child.keyUp();
     }
     
+    public void keyUp(KeyEvent e) { }
+    
     @Override
-    public Vector mousePosition() {
+    public final Vector mousePosition() {
         return new Vector(
                 MouseInfo.getPointerInfo().getLocation().x - frame.getX() - frame.getInsets().left,
                 MouseInfo.getPointerInfo().getLocation().y - frame.getY() - frame.getInsets().top

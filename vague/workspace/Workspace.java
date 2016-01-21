@@ -86,7 +86,7 @@ public final class Workspace extends Module {
      */
     protected final void clearActiveChild() {
         activeIndex = -1; //An activeIndex of -1 indicates there is no active child
-        activeChild = WorkTool.create(getHandle()); //Set the activeChild to a dummy Module so nothing bad happens
+        activeChild = null; //Set the activeChild to a dummy Module so nothing bad happens
     }
     
     /**
@@ -143,6 +143,7 @@ public final class Workspace extends Module {
             
             
             repaint();
+            updateBuffer();
             //draw(); //Draw to update the workspace buffer
         }
         else { //If there is an active tool (activeIndex > -1), then it should be updated
@@ -192,7 +193,8 @@ public final class Workspace extends Module {
     public void beginChanging(WorkTool m) {
         moveTool = m; //If a Module is moving, it needs to be treated specially - special treatment
                       //is given to the module stored within moveTool
-        repaint(); //The module needs to be re-drawn so that the 'workspace' buffer is updated
+        repaint(); //The module needs to be re-drawn so that the 'workspace' buffer can be updated
+        updateBuffer();
     }
     
     public void stopMoving() {
@@ -204,7 +206,8 @@ public final class Workspace extends Module {
             }
         }
         moveTool = null; //Nullify the move tool so no tool will be given special graphical / other treatment
-        repaint(); //Redraw the module because tools have been updated; also will reset buffers / things
+        repaint(); //Redraw the module because tools have been updated
+        updateBuffer();
     }
     
     public void stopResizing() {
@@ -213,6 +216,7 @@ public final class Workspace extends Module {
         }
         moveTool = null;
         repaint();
+        updateBuffer();
     }
     
     public boolean validPosition(WorkTool t) {
@@ -386,6 +390,12 @@ public final class Workspace extends Module {
         }
     }
     
+    private void updateBuffer() {
+        //As explained under 'WORKSPACE' BUFFER EXPLANATION, the static children are drawn to the 'workspace' buffer
+        //as the Workspace takes up the entire screen, this can be done just by getting the screen buffer
+        workspace = getHandle().getBuffer();
+    }
+    
     @Override
     public void paint(GraphicsHandle graphics) {
         //this.fillBackground(); //Fill the background with color just in case
@@ -410,9 +420,7 @@ public final class Workspace extends Module {
             }
         }
         
-        //As explained under 'WORKSPACE' BUFFER EXPLANATION, the static children are drawn to the 'workspace' buffer
-        //as the Workspace takes up the entire screen, this can be done just by getting the screen buffer
-        workspace = getHandle().getBuffer();
+        
         
         if(moveTool != null) { //If a tool is being moved, it should not be drawn to the static buffer, but does need to be drawn to the normal
                                //graphics buffer

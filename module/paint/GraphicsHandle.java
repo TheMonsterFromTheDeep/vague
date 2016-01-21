@@ -45,4 +45,11 @@ public class GraphicsHandle {
     public void drawImage(Image image, int x, int y, ImageObserver io) {
         graphics.drawImage(image, offsetx + x, offsety + y, io);
     }
+    
+    public void fill(Color c) {
+        Color old = graphics.getColor();
+        graphics.setColor(c);
+        graphics.fillRect(offsetx, offsety, width, height);
+        graphics.setColor(old);
+    }
 }
