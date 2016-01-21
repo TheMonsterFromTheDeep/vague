@@ -92,7 +92,7 @@ public class Editor extends Module {
     
     public static Editor create(Window w) {
         if(EditTarget.target == null) {
-            EditTarget.create(256,256);//TEST SIZE ONLY
+            EditTarget.create(64,64);//TEST SIZE ONLY
         }
         return new Editor(w);
     }
@@ -140,7 +140,7 @@ public class Editor extends Module {
         
         double scaleMultiplier = Math.pow(2, canvasZoom);
         
-        int pixelDist = (int)Math.round(scaleMultiplier);
+        /*int pixelDist = (int)Math.round(scaleMultiplier);
         int pixelWidth = pixelDist * size;
         
         for(int x = 0; x < EditTarget.target.width(); x += size) {
@@ -151,7 +151,12 @@ public class Editor extends Module {
                 handle.setColor(EditTarget.target.getColor(x,y));
                 handle.fillRect(canvasBounds.left() + x * pixelDist, canvasBounds.top() + y * pixelDist, pixelWidth, pixelWidth);
             }
-        }
+        }*/
+        
+        handle.setColor(new Color(/*0xD9D9D9*/0x8C8C8C));
+        handle.fillRect(canvasBounds.left(), canvasBounds.top(), canvasBounds.size.x, canvasBounds.size.y);
+        handle.setColor(Color.BLACK);
+        handle.drawRect(canvasBounds.left(), canvasBounds.top(), canvasBounds.size.x, canvasBounds.size.y);
     }
     
     private void renderCanvas() {
