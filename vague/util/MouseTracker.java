@@ -1,5 +1,7 @@
 package vague.util;
 
+import module.util.Vector;
+
 /**
  * Tracks the mouse. Stores a vector of the old position and checks to see if the mouse moved.
  * @author TheMonsterFromTheDeep

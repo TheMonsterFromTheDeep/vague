@@ -2,6 +2,7 @@ package vague.editor;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import module.Window;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
@@ -11,10 +12,11 @@ import vague.editor.image.EditTarget;
 import vague.editor.tool.EditFilter;
 import vague.editor.tool.Pencil;
 import vague.editor.tool.Tool;
-import vague.geom.Rectangle;
+import module.util.Rectangle;
 import vague.input.Controls;
-import vague.module.Module;
-import vague.util.Vector;
+import module.Module;
+import module.paint.GraphicsHandle;
+import module.util.Vector;
 
 /**
  * Represents an image editor that can manipulate and draw to the Canvas. Multiple instances can be created, with different
@@ -68,7 +70,8 @@ public class Editor extends Module {
     private Tool currentTool = null;
     
     
-    private Editor() {
+    private Editor(Window w) {
+        super(w);
         this.bgColor = BG_COLOR;
         
         canvasPosition = new Vector(DEFAULT_CANVAS_POSITION);
@@ -87,11 +90,11 @@ public class Editor extends Module {
         prepare(); //Initialize the graphical state of this Editor's buffer
     }
     
-    public static Editor create() {
+    public static Editor create(Window w) {
         if(EditTarget.target == null) {
-            EditTarget.create(100,100);//TEST SIZE ONLY
+            EditTarget.create(64,64);//TEST SIZE ONLY
         }
-        return new Editor();
+        return new Editor(w);
     }
            
     private double getScale() {
@@ -123,6 +126,12 @@ public class Editor extends Module {
     }
     
     private void renderLowResCanvas() {
+        GraphicsHandle handle = beginDraw();
+        renderLowResCanvas(handle);
+        endDraw(handle);
+    }
+    
+    private void renderLowResCanvas(GraphicsHandle handle) {
         System.err.println("rendering low res canvas!");
         
         int size = ((EditTarget.target.width() + EditTarget.target.height()) / 2) / LOW_RES_RATIO;
@@ -131,31 +140,42 @@ public class Editor extends Module {
         
         double scaleMultiplier = Math.pow(2, canvasZoom);
         
-        int pixelDist = (int)Math.round(scaleMultiplier);
+        /*int pixelDist = (int)Math.round(scaleMultiplier);
         int pixelWidth = pixelDist * size;
         
         for(int x = 0; x < EditTarget.target.width(); x += size) {
             for(int y = 0; y < EditTarget.target.height(); y += size) {
-                graphics.setColor((((x % 2) + y) % 2) == 0 ? TILE_COLOR_LIGHT : TILE_COLOR_DARK);
-                graphics.fillRect(canvasBounds.left() + x * pixelDist, canvasBounds.top() + y * pixelDist, pixelWidth, pixelWidth);
+                handle.setColor((((x % 2) + y) % 2) == 0 ? TILE_COLOR_LIGHT : TILE_COLOR_DARK);
+                handle.fillRect(canvasBounds.left() + x * pixelDist, canvasBounds.top() + y * pixelDist, pixelWidth, pixelWidth);
                 
-                graphics.setColor(EditTarget.target.getColor(x,y));
-                graphics.fillRect(canvasBounds.left() + x * pixelDist, canvasBounds.top() + y * pixelDist, pixelWidth, pixelWidth);
+                handle.setColor(EditTarget.target.getColor(x,y));
+                handle.fillRect(canvasBounds.left() + x * pixelDist, canvasBounds.top() + y * pixelDist, pixelWidth, pixelWidth);
             }
-        }
+        }*/
+        
+        handle.setColor(new Color(/*0xD9D9D9*/0x8C8C8C));
+        handle.fillRect(canvasBounds.left(), canvasBounds.top(), canvasBounds.size.x, canvasBounds.size.y);
+        handle.setColor(Color.BLACK);
+        handle.drawRect(canvasBounds.left(), canvasBounds.top(), canvasBounds.size.x, canvasBounds.size.y);
     }
     
     private void renderCanvas() {
+        GraphicsHandle graphics = beginDraw();
+        renderCanvas(graphics);
+        endDraw(graphics);
+    }
+    
+    private void renderCanvas(GraphicsHandle graphics) {
         System.err.println("rendering canvas!");
-        //if(canvasRender != null) {
-            //canvasRender.flush(); //Dispose of current data so as not to leave a bunch of floating pixel data in memory
-        //}
+//        if(canvasRender != null) {
+//            canvasRender.flush(); //Dispose of current data so as not to leave a bunch of floating pixel data in memory
+//        }
         double scaleMultiplier = Math.pow(2, canvasZoom);
         //AffineTransform scale = new AffineTransform(AffineTransform.getScaleInstance(scaleMultiplier, scaleMultiplier));
         //AffineTransformOp scaleop = new AffineTransformOp(scale, null);
         //canvasRender = scaleop.filter(Canvas.canvas.render(), null);
         
-        //createBounds();
+        createBounds();
         
         int pixelWidth = (int)Math.round(scaleMultiplier);
         
@@ -170,28 +190,30 @@ public class Editor extends Module {
         }
         for(int x = 0; x < EditTarget.target.width(); x++) {
             graphics.setColor(x % 2 == 0 ? OUTLINE_COLOR_LIGHT : OUTLINE_COLOR_DARK);
-            graphics.drawLine(canvasBounds.left() + x * pixelWidth, canvasBounds.top() - 1, canvasBounds.left() + (x + 1) * pixelWidth,canvasBounds.top() - 1);
-            graphics.drawLine(canvasBounds.left() + x * pixelWidth, canvasBounds.bottom(), canvasBounds.left() + (x + 1) * pixelWidth,canvasBounds.bottom());
+            //graphics.drawLine(canvasBounds.left() + x * pixelWidth, canvasBounds.top() - 1, canvasBounds.left() + (x + 1) * pixelWidth,canvasBounds.top() - 1);
+            //graphics.drawLine(canvasBounds.left() + x * pixelWidth, canvasBounds.bottom(), canvasBounds.left() + (x + 1) * pixelWidth,canvasBounds.bottom());
         }
         for(int y = 0; y < EditTarget.target.height(); y++) {
             graphics.setColor(y % 2 == 0 ? OUTLINE_COLOR_LIGHT : OUTLINE_COLOR_DARK);
-            graphics.drawLine(canvasBounds.left() - 1, canvasBounds.top() + y * pixelWidth, canvasBounds.left() - 1,canvasBounds.top() + (y + 1) * pixelWidth);
-            graphics.drawLine(canvasBounds.right(), canvasBounds.top() + y * pixelWidth, canvasBounds.right(),canvasBounds.top() + (y + 1) * pixelWidth);
+            //graphics.drawLine(canvasBounds.left() - 1, canvasBounds.top() + y * pixelWidth, canvasBounds.left() - 1,canvasBounds.top() + (y + 1) * pixelWidth);
+            //graphics.drawLine(canvasBounds.right(), canvasBounds.top() + y * pixelWidth, canvasBounds.right(),canvasBounds.top() + (y + 1) * pixelWidth);
         }
+        
+        
     }
     
     private void drawLowRes() {
-        this.fillBackground();
-        renderLowResCanvas();
-        
-        drawParent();
+        GraphicsHandle handle = beginDraw();
+        handle.fill(bgColor);
+        renderLowResCanvas(handle);
+        endDraw(handle);
     }
     
     private void drawNormal() {
-        this.fillBackground();
-        renderCanvas();
-        
-        drawParent();
+        GraphicsHandle handle = beginDraw();
+        handle.fill(bgColor);
+        renderCanvas(handle);
+        endDraw(handle);
     }
     
     private void prepare() {
@@ -233,7 +255,7 @@ public class Editor extends Module {
             draw = true;
         }
         else {
-            if(Controls.bank.status(Controls.EDITOR_RESET_PAN)) {                
+            if(Controls.bank.status(Controls.EDITOR_RESET_PAN)) {
                 //Reset the position
                 canvasPosition = new Vector(DEFAULT_CANVAS_POSITION);
                 center(); //Center the canvas in the center of the editor
@@ -251,9 +273,9 @@ public class Editor extends Module {
         if(Controls.bank.status(Controls.EDITOR_TOGGLE_GRID)) { 
             drawGridLines = !drawGridLines;
             prepare(); //Re-create the background buffer
-            redraw(); //Reflect updated graphical state
+            //repaint(); //Reflect updated graphical state
         }
-        if(draw) { redraw(); }
+        if(draw) { repaint(); }
     }
      
     @Override
@@ -324,19 +346,20 @@ public class Editor extends Module {
     }
     
     public void drawPixel(int x, int y, Color c) {
-        graphics.setColor(c);
+        //graphics.setColor(c);
         int scale = (int)getScale();
-        graphics.fillRect(canvasBounds.left() + x * scale, canvasBounds.top() + y * scale, scale, scale);
+        //graphics.fillRect(canvasBounds.left() + x * scale, canvasBounds.top() + y * scale, scale, scale);
         
-        drawParent();
-    }
-    
-    @Override
-    public void draw() {
-        drawNormal();
+        //drawParent(x,y,1,1);
     }
     
     public EditFilter filter() {
         return new EditFilter(this, EditTarget.target);
+    }
+    
+    @Override
+    public void paint(GraphicsHandle handle) {
+        handle.fill(bgColor);
+        renderCanvas(handle);
     }
 }

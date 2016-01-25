@@ -6,10 +6,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import vague.Resources;
 import vague.input.Controls;
-import vague.module.Module;
+import module.Module;
+import module.Window;
+import module.paint.GraphicsHandle;
 import vague.module.TestModule;
 import vague.util.Cursor;
-import vague.util.Vector;
+import module.util.Vector;
 import vague.workspace.menu.SmartMenu;
 
 /**
@@ -77,7 +79,9 @@ public class WorkTool extends Module {
     
     private boolean focused; //Stores whether the WorkTool has focus
     
-    private WorkTool(Vector start, Vector end) {
+    private WorkTool(Window w, Vector start, Vector end) {
+        super(w);
+        
         bgColor = BG_COLOR; //Set the Module background color to the static background color
         
         /*
@@ -108,23 +112,41 @@ public class WorkTool extends Module {
         initialize(pos,size); //Initialize the size and position of the WorkTool
     }
     
-    public static WorkTool create(Vector start, Vector end) {
-        WorkTool w = new WorkTool(start,end); //Create the WorkTool based on the start and end Vectors
+    /**
+     * Initializes a nullified WorkTool that does nothing.
+     * @param w 
+     */
+    private WorkTool(Window w) {
+        super(w, 0, 0);
+    }
+    
+    /**
+     * Returns a nullified WorkTool that does nothing.
+     * @param window
+     * @return 
+     */
+    public static WorkTool create(Window window) {
+        //TODO: Figure out if this has side effects
+        return new WorkTool(window);
+    }
+    
+    public static WorkTool create(Window window, Vector start, Vector end) {
+        WorkTool w = new WorkTool(window, start,end); //Create the WorkTool based on the start and end Vectors
         
-        w.child = Module.create(); //This makes sure that the child module is initialized.
+        w.child = Module.create(window); //This makes sure that the child module is initialized.
         
         //TEST PURPOSES ONLY:
         //w.child = TestModule.create(0,0); //THIS IS USED TO TEST THE WorkTool AND IN THE FUTURE WILL NOT BE THERE
         //IN THE FUTURE, PLANS ARE TO HAVE A MENU APPEAR TO SELECT WHAT TYPE OF MODULE THIS WorkTool SHOULD REPRESENT
         //END TEST
         
-        w.child = SmartMenu.create(w);
+        w.child = SmartMenu.create(window, w);
         
         w.child.setParent(w); //Make sure there are no NullPointerExceptions thrown because of a loss of a parent     
         
         w.child.resize(w.width() - 2 * INSET_WIDTH, w.height() - 2 * INSET_WIDTH); //The borders around the child module are 20 px thick
         w.child.locate(INSET_WIDTH,INSET_WIDTH); //The child is located past the insets
-        w.child.draw(); //Make sure to draw the child module
+        //w.child.draw(); //Make sure to draw the child module
         return w;
     }
     
@@ -139,7 +161,7 @@ public class WorkTool extends Module {
     @Override
     public void onFocus() {
         focused = true;
-        redraw();
+        repaint();
     }
     
     @Override
@@ -148,7 +170,7 @@ public class WorkTool extends Module {
         nextAction = ACTION_NONE; //The WorkTool is taking no actions
         action = ACTION_NONE;
         //Changing nextAction will also change how the WorkTool is drawn if the mouse was over one of the controls
-        redraw(); //Re-draw the WorkTool because it has changed graphical state
+        repaint(); //Re-draw the WorkTool because it has changed graphical state
     }
     
     //Needs to be overridden to also includle whether the child is retaining focus
@@ -178,9 +200,11 @@ public class WorkTool extends Module {
             locate(newPos); //Locates the WorkTool at the new location
             
             valid = workspace.validPosition(this);
-            drawBorder(); //Draw the border in case it's graphical state has changed
+            redrawBorder(); //Draw the border in case it's graphical state has changed
             
-            drawParent(); //Re-draws its parent (if it's parent is a Workspace, then it will know to draw this Module specially using a buffer for all the others alone)
+            workspace.repaint();
+            
+            //drawParent(); //Re-draws its parent (if it's parent is a Workspace, then it will know to draw this Module specially using a buffer for all the others alone)
         }
         if(action == ACTION_RESIZE_TL) {
             Vector newCorner = position().getSum(pos.getDif(anchorVec)); //The new corner is the upper left (so, raw position)
@@ -199,9 +223,10 @@ public class WorkTool extends Module {
             resize(newSize);
             
             valid = workspace.validSize(this);
-            drawBorder(); //Draw the border in case it's graphical state has changed
+            redrawBorder(); //Draw the border in case it's graphical state has changed
             
-            drawParent();
+            workspace.repaint();
+            //drawParent();
         }
         if(action == ACTION_RESIZE_BL) {
             Vector newCorner = bounds().bottomLeft().getSum(pos.getDif(anchorVec)); //The new bottom-left corner
@@ -222,9 +247,10 @@ public class WorkTool extends Module {
             resize(newSize);
             
             valid = workspace.validSize(this);
-            drawBorder(); //Draw the border in case it's graphical state has changed
+            redrawBorder(); //Draw the border in case it's graphical state has changed
             
-            drawParent();
+            workspace.repaint();
+            //drawParent();
         }
         if(action == ACTION_RESIZE_BR) {
             Vector newPosition = position();
@@ -240,9 +266,10 @@ public class WorkTool extends Module {
             resize(newSize);
             
             valid = workspace.validSize(this);
-            drawBorder(); //Draw the border in case it's graphical state has changed
+            redrawBorder(); //Draw the border in case it's graphical state has changed
             
-            drawParent();
+            workspace.repaint();
+            //drawParent();
         }
         if(!child.retainFocus()) { //If the child is not retaining focus, check for various updates in the child's state
             boolean previous = active; //Stores the previous active state of the child
@@ -252,7 +279,7 @@ public class WorkTool extends Module {
                     if(!retainAction) {
                         nextAction = ACTION_CHILD; 
                         child.onFocus();
-                        redraw();  //Re-draw in case the graphical state of another control changed
+                        repaint();  //Re-draw in case the graphical state of another control changed
                     }
                 } //Update the focus if it changed
                 else { child.onUnfocus(); } //If the child is no longer active, it's focus is lost
@@ -316,7 +343,7 @@ public class WorkTool extends Module {
                     }
                     
                     if(oldAction != nextAction) {
-                        redraw();
+                        repaint();
                     }
                 }
             }
@@ -336,7 +363,7 @@ public class WorkTool extends Module {
             workspace.removeChild(this); //If the nextAction was ACTION_CLOSE, this WorkTool needs to be dismissed
         }
         else if(nextAction == ACTION_REFRESH) {
-            this.fill(SmartMenu.create(this));
+            this.fill(SmartMenu.create(getHandle(), this));
         }
         else if(nextAction == ACTION_MOVE) { //If the nextAction is ACTION_MOVE, start moving the WorkTool
             startPos = position(); //The start position, used to reset the WorkTool's position if it is moved invalidly,
@@ -382,7 +409,7 @@ public class WorkTool extends Module {
             */
             
             valid = true;          
-            redraw();
+            repaint();
         }
         if(nextAction == ACTION_RESIZE_TL || nextAction == ACTION_RESIZE_BL || nextAction == ACTION_RESIZE_BR) {        
             workspace.stopResizing();
@@ -393,7 +420,7 @@ public class WorkTool extends Module {
             
             valid = true;
             
-            redraw();
+            repaint();
         }
     }
     
@@ -419,8 +446,8 @@ public class WorkTool extends Module {
         //Resize the new child Module to fill the WorkTool
         child.resize(width() - 2 * INSET_WIDTH, height() - 2 * INSET_WIDTH);
         child.locate(INSET_WIDTH, INSET_WIDTH); //Locate the child inside the insets
-        child.draw(); //Set initial graphical state of child
-        redraw(); //Update WorkTool's graphical state to include that of the new child
+        //child.draw(); //Set initial graphical state of child
+        repaint(); //Update WorkTool's graphical state to include that of the new child
     }
     
     /*
@@ -442,9 +469,19 @@ public class WorkTool extends Module {
     @Override
     public void keyType(KeyEvent e) { child.keyType(e); }
        
+    /**
+     * Redraws only the border of the WorkTool, nothing else.
+     */
+    private void redrawBorder() {
+        GraphicsHandle handle = beginDraw();
+        drawBorder(handle);
+        endDraw(handle);
+    }
+    
     //Draws the border of the Module; called to update graphical state in move / resize classes
-    private void drawBorder() {           
-        graphics.setColor(
+    private void drawBorder(GraphicsHandle handle) {
+        
+        handle.setColor(
                 (action != ACTION_NONE) 
                 ? (valid)
                     ? BORDER_COLOR_CHANGING 
@@ -452,14 +489,15 @@ public class WorkTool extends Module {
                 : (focused) ?
                     BORDER_COLOR
                     : BORDER_COLOR_INACTIVE);
-        graphics.drawRect(0,0,width() - 1,height() - 1);
+        handle.drawRect(0,0,width() - 1,height() - 1);
+        
     }
     
     @Override
-    public void draw() {     
+    public void paint(GraphicsHandle graphics) {     
         graphics.setColor(bgColor);  //Fill the background color of the WorkTool; mostly used for insets
         graphics.fillRect(1, 1, width() - 2, height() - 2);
-        drawBorder();
+        drawBorder(graphics);
         graphics.setColor((nextAction == ACTION_CLOSE) ? DISMISS_COLOR_HIGH : DISMISS_COLOR); //Set the dismiss color based on whether the Module is closable
         graphics.fillRect(width() - INSET_WIDTH, 0, INSET_WIDTH, INSET_WIDTH);
         
@@ -489,6 +527,7 @@ public class WorkTool extends Module {
                 width() - (2 * INSET_WIDTH),
                 0, null);
         
-        graphics.drawImage(child.render(), INSET_WIDTH, INSET_WIDTH, null); //Draw the child module at its position (right inside the insets)
+        //graphics.drawImage(child.render(), INSET_WIDTH, INSET_WIDTH, null); //Draw the child module at its position (right inside the insets)
+        child.repaint();
     }
 }

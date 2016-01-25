@@ -1,15 +1,21 @@
-package vague.module;
+package module;
 
+//import module.meta.ModuleBase;
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
+import module.meta.ModuleParent;
+import module.meta.NullParent;
+import module.paint.GraphicsHandle;
+import vague.Program;
 import vague.Resources;
-import vague.geom.Rectangle;
+import module.util.Rectangle;
 import vague.util.Cursor;
 import vague.util.Percents;
-import vague.util.Vector;
+import module.util.Vector;
 
 /**
  * The Module class defines an object which does graphical rendering and processes user input.
@@ -24,7 +30,7 @@ import vague.util.Vector;
  * Non-abstract modules can also be initialized without subclassing.
  * @author TheMonsterFromTheDeep
  */
-public class Module extends ModuleBase {
+public class Module implements ModuleParent {
     /**
      * Position and size are private so that they are not modified outside the class.
      * 
@@ -47,6 +53,32 @@ public class Module extends ModuleBase {
     
     protected boolean retaining = false;
     
+    private final Window windowHandle;
+    
+    //Stores the rendered version of the module. Private because nothing should modify it.
+    //protected BufferedImage buffer;
+    /*
+    The graphics object draws directly to "buffer". It is expected of the child
+    modules that the graphics object is not modified to draw on another image.    
+    -->Question: maybe subclass graphics so that it can't be modified?
+    
+    The 'graphics' object  is protected so that subclasses can access it and
+    do their drawing code.
+    */
+    //protected Graphics graphics;
+    
+    //The parent of this Module.
+    protected ModuleParent parent;
+    //Stores whether this module *has* a parent.
+    /*
+    Question: is this even relevant? Most of the methods that rely on hasParent being true
+    shouldn't even be called if a module doesn't have a parent and wouldn't make any sense to
+    call if the module doesn't have a parent.
+    */
+    protected boolean hasParent;
+
+   
+    
     /**
      * Initializes a Module to the specified position and size.
      * 
@@ -60,10 +92,10 @@ public class Module extends ModuleBase {
      */
     protected final void initialize(Vector position, Vector size) {
         bounds = new Rectangle(position, size);
-        doRenderCalc();
+        //doRenderCalc();
     }
     
-    protected Module() {
+    protected Module(Window handle) {
         /**
          * Default position and size of the Module.
          * The default position is 0, 0 and the default size is also 0, 0.
@@ -71,11 +103,26 @@ public class Module extends ModuleBase {
          * With the default size, it is impossible to render anything.
          */
         bounds = new Rectangle(0,0,0,0);
-        doRenderCalc();
+        parent = new NullParent();
+        windowHandle = handle;
+        //doRenderCalc();
     }
     
-    public static Module create() {
-        return new Module();
+    protected Module(Window handle, int width, int height) {
+        /**
+         * Default position and size of the Module.
+         * The default position is 0, 0 and the default size is also 0, 0.
+         * 
+         * With the default size, it is impossible to render anything.
+         */
+        bounds = new Rectangle(0,0,width,height);
+        parent = new NullParent();
+        windowHandle = handle;
+        //doRenderCalc();
+    }
+    
+    public static Module create(Window handle) {
+        return new Module(handle);
     }
     
     /**
@@ -84,30 +131,22 @@ public class Module extends ModuleBase {
      * Does calculations so that the module can be rendered with the correct
      * width and height.
      */
-    private void doRenderCalc() {
+    /*private void doRenderCalc() {
         int width = (bounds.size.x < 1) ? 1 : bounds.size.x; //Get a valid size for the BufferedImages
         int height = (bounds.size.y < 1) ? 1 : bounds.size.y;
         
         //Declare a BufferedImage object to hold the current data of the buffer
         //so that it can be drawn back to the new buffer
-        BufferedImage old = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        old.createGraphics().drawImage(buffer, 0, 0, null);
-        buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        //BufferedImage old = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        //old.createGraphics().drawImage(buffer, 0, 0, null);
+        //buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         //Allow graphics to be used.
-        graphics = buffer.createGraphics();
-        graphics.setColor(bgColor);
-        graphics.fillRect(0, 0, buffer.getWidth(), buffer.getHeight());
-        graphics.drawImage(old, 0, 0, null);
-    }
-    
-    /**
-     * Can be called if a module needs to be sure it is ready for rendering.
-     * 
-     * For example, it can be called in a constructor if a module must start with
-     * a certain graphical state.
-     */  
-    protected final void readyForRendering() { doRenderCalc(); } 
-    
+        //graphics = buffer.createGraphics();
+        //graphics.setColor(bgColor);
+        //graphics.fillRect(0, 0, buffer.getWidth(), buffer.getHeight());
+        //graphics.drawImage(old, 0, 0, null);
+    }*/
+        
     /**
      * Constructs a BufferedImage with the width and height of the Module that is valid:
      * if the width or height of the Module is less than zero than the width / height of the
@@ -122,48 +161,15 @@ public class Module extends ModuleBase {
     }
     
     /**
-     * Fills the background with 'bgColor'. Can be called during the draw() method.
-     */
-    protected final void fillBackground() {
-        graphics.setColor(bgColor);
-        graphics.fillRect(0, 0, bounds.size.x, bounds.size.y);
-    }
-    
-    /**
      * Helper method to draw text to the Module.
      * @param text The String of text to draw.
      * @param size The size multiplier of the text to draw.
      * @param x The x position of the top-left corner of the text.
      * @param y The y position of the top-left corner of the text.
+     * @param handle The handle to draw the text with.
      */
-    protected final void drawText(String text, int size, int x, int y) {
-        graphics.drawImage(Resources.bank.text.draw(text, size), x, y, null);
-    }
-    
-    /**
-     * Contains all the drawing code for the Module. Drawing code should be implemented
-     * using the 'graphics' member of the Module class. The 'graphics' object draws 
-     * to the 'buffer' BufferedImage, which can be accessed by parent classes to be rendered
-     * higher in the Module hierarchy.
-     * 
-     * This method should NOT call drawParent(). If a Module needs to draw itself and its parent,
-     * it should call the redraw() method from inside its body. The draw() method may be called by
-     * parent modules and it could possibly cause an infinite loop of parent calling child calling parent
-     * calling child.
-     */
-    public void draw() { }
-    
-    /**
-     * Causes the Module to re-draw itself and reflect all changes higher in the object hierarchy. This 
-     * method should be called whenever the Module modifies it's graphical state so that the top-level
-     * Window can reflect the modified state as quickly as possible. 
-     * 
-     * This method simply calls the draw() method of the Module, causing it to draw all things, and then
-     * the drawParent() method, so that changes will be reflected higher in the hierarchy.
-     */
-    public final void redraw() {
-        draw();
-        drawParent();
+    protected final void drawText(String text, int size, int x, int y, GraphicsHandle handle) {
+        handle.drawImage(Resources.bank.text.draw(text, size), x, y, null);
     }
     
     /**
@@ -181,15 +187,7 @@ public class Module extends ModuleBase {
      */
     @Override
     public void drawChild(Module m) {
-        graphics.drawImage(m.render(),m.x(),m.y(),null);
-        drawParent();
-    }
-    
-    /**
-     * Causes the parent to update it's graphical representation of the child object.
-     */
-    public void drawParent() {
-        parent.drawChild(this);
+        m.repaint();
     }
     
     /**
@@ -291,8 +289,9 @@ public class Module extends ModuleBase {
         height = height < 0 ? 0 : height;
         onResize(new Vector(width, height)); //Call the onResize() method in case a subclass cares when it is resized
         bounds.size = new Vector(width, height); //Update the size of the bounds
-        doRenderCalc(); //Re-do render calculations because this now has a different buffer size
-        draw(); //Redraw in case it needs to be re-drawn
+        //doRenderCalc(); //Re-do render calculations because this now has a different buffer size
+        //repaint(); //Redraw in case it needs to be re-drawn
+        repaint();
     }
     
     /**
@@ -307,8 +306,9 @@ public class Module extends ModuleBase {
         v.y = v.y < 0 ? 0 : v.y;
         onResize(v);
         bounds.size = new Vector(v); //The Vector is copied so that nothing has a reference to size through a refererence
-        doRenderCalc();
-        draw();
+        //doRenderCalc();
+        repaint();
+        //repaint();
     }
     
     /**
@@ -390,28 +390,31 @@ public class Module extends ModuleBase {
         return(bounds.intersects(r));
     }
     
-    /**
-     * This method returns the rendered version of the Module.
-     * 
-     * However, it's misleading name is false - it does not actually
-     * re-draw ('render') the module, it simply returns an image that has
-     * already been drawn to.
-     * @return A rendered graphic of the Module.
-     */
-    public final BufferedImage render() {
-        /*
-        Question of redundancy:
+    /*protected final void beginDraw(GraphicsCallback c) {
         
-        Doesn't an accessor not really make sense when the object in question is a reference
-        and not in fact an object?
-        
-        The rendered version will still be able to be modified. It would be really inefficient
-        to make a copy of the render when returning it.
-        
-        Maybe just keep this method, and if in the future there are more things that need to be done,
-        change it here so it doesn't have to be changed elsewhere?
-         */
-        return buffer;
+    }
+    
+    protected final void beginDraw(int x, int y, int width, int height, GraphicsCallback c) {
+        Program.window.requestDraw(x - bounds.left(), y - bounds.top(), width, height, c);
+    }*/
+    
+    
+    public final void repaint() {
+        GraphicsHandle handle = windowHandle.beginDraw(this);
+        paint(handle);
+        windowHandle.endDraw(handle);
+    }
+    //TODO: Make these methods have a less ambiguous name
+    public final GraphicsHandle beginDraw() {
+        return windowHandle.beginDraw(this);
+    }
+    
+    public final GraphicsHandle beginDraw(int x, int y, int width, int height) {
+        return windowHandle.beginDraw(this, x, y, width, height);
+    }
+    
+    public final void endDraw(GraphicsHandle handle) {
+        windowHandle.endDraw(handle);
     }
     
     /**
@@ -428,5 +431,55 @@ public class Module extends ModuleBase {
      */
     public final boolean visible() {
         return !bounds.size.similar(Vector.ZERO);
+    }
+    
+    /**
+     * Called when the Module is redrawn either through a call to repaint or when a higher level Module or the Window wants it to
+     * be redrawn.
+     * @param g
+     */
+    public void paint(GraphicsHandle g) { }
+    
+    @Override
+    public int getAbsoluteX() {
+        return bounds.position.x + parent.getAbsoluteX();
+    }
+    
+    @Override
+    public int getAbsoluteY() {
+        return bounds.position.y + parent.getAbsoluteY();
+    }
+    
+    /**
+     * Sets the parent of the module.
+     * 
+     * Mostly called by container classes so that their child modules
+     * will be able to call methods of their parent.
+     * @param m The ModuleBase to become the parent.
+     */
+    public final void setParent(ModuleParent m) {
+        hasParent = true;
+        parent = m;
+        if(parent == null) {
+            parent = new NullParent();
+        }
+    }
+    
+    /**
+     * Clears the parent of the module.
+     * 
+     * The module will no longer have a parent (it will be nullified) and it will no longer
+     * consider itself as having a parent.
+     */
+    public final void clearParent() {
+        hasParent = false;
+        parent = new NullParent();
+    }
+    
+    /**
+     * Returns a handle to the Window that the Module is attached to.
+     */
+    public final Window getHandle() {
+        return windowHandle;
     }
 }

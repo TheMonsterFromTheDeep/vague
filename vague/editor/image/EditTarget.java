@@ -2,7 +2,7 @@ package vague.editor.image;
 
 import java.awt.Color;
 import vague.image.Canvas;
-import vague.util.Vector;
+import module.util.Vector;
 
 /**
  * Represents an image editing object of a specific size. Holds a set of Layers that are drawn.

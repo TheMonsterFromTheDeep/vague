@@ -8,6 +8,9 @@ import vague.input.Controls;
  * @author TheMonsterFromTheDeep
  */
 public class Program {
+    //TODO: Use actual handles in Modules to the window
+    public static VagueWindow window;
+    
     /**
      * The entry point for the application.
      * @param args Command line arguments.
@@ -24,6 +27,6 @@ public class Program {
         Controls.bank = new Controls(Controls.DEFAULT);
         
         //Create a Window so that the user can use the actual application
-        new Window().run();
+        window = new VagueWindow();
     }
 }

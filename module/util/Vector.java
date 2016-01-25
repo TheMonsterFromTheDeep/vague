@@ -1,4 +1,4 @@
-package vague.util;
+package module.util;
 
 /**
  * The Vector class is a simple container for two integers.
@@ -115,5 +115,14 @@ public class Vector {
     public void snap(int size) {
         this.x = (this.x / size) * size; //Integer divides the size and re-multiplies it, causing the sizes to be snapped
         this.y = (this.y / size) * size;
+    }
+    
+    /**
+     * Sets a Vector object to be identical to another Vector object without requiring reallocation of memory.
+     * @param v The Vector object to set this Vector identical to.
+     */
+    public void set(Vector v) {
+        this.x = v.x;
+        this.y = v.y;
     }
 }
