@@ -8,10 +8,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import vague.editor.image.EditTarget;
-import vague.editor.tool.EditFilter;
-import vague.editor.tool.Pencil;
-import vague.editor.tool.Tool;
+
 import module.util.Rectangle;
 import vague.input.Controls;
 import module.Module;
@@ -24,342 +21,62 @@ import module.util.Vector;
  * @author TheMonsterFromTheDeep
  */
 public class Editor extends Module {
-    public static final int ZOOM_MAX = 7; //Stores the maximum and minimum values for canvasZoom
-    public static final int ZOOM_MIN = -3;
-    
-    static final int LOW_RES_RATIO = 24;
-    
-    //The default canvas position and zoom
-    static final Vector DEFAULT_CANVAS_POSITION = new Vector(0, 0);
-    static final int DEFAULT_CANVAS_ZOOM = 0;
-    
     static final Color BG_COLOR = new Color(0xcbcbdd);
     
-    static final Color TILE_COLOR_LIGHT = new Color(0xcfcfdd);
-    static final Color TILE_COLOR_DARK = new Color(0x909090);
+    Context context;
     
-    static final Color OUTLINE_COLOR_LIGHT = new Color(0xaa0000);
-    static final Color OUTLINE_COLOR_DARK = new Color(0x440000);
+    private int panx; //Stores the distance, from the center, that the Context is panned.
+    private int pany;
     
-    static final Color GRID_COLOR = new Color(0xff0000);
+    private int centerx; //Stores the coordinates of the center of the Editor
+    private int centery;
     
-    //The number of pixels tall and wide each tile in a transparent image background is
-    static final int TILE_SIZE = 4;
-    
-    private Vector canvasPosition; //Stores the position of the canvas inside this particular Editor module
-    private Rectangle canvasBounds; //Stores the bounds of the canvas
-    private int canvasZoom; //Stores the zoom level of the Editor
-    
-    //Stores the Editor's current buffer of the Canvas - each editor can have a different zoom, so each editor may
-    //need its own buffer.
-    //private BufferedImage canvasRender;
-    
-    //Stores the tiled background drawn behind a transparent Canvas.
-    private BufferedImage tiledBackground;
-    
-    private boolean panning = false;
-    
-    private boolean drawGridLines = false;
-    
-    private boolean updateTool = false;
-    
-    //If the canvas needs to be re-drawn, this will be true
-    //it will be set to false as soon as the canvas is re-drawn
-    private boolean canvasDrawQueued = false;
-    
-    private Tool currentTool = null;
-    
+    boolean mouse = false;
     
     private Editor(Window w) {
         super(w);
-        this.bgColor = BG_COLOR;
+        context = Context.getContext();
         
-        canvasPosition = new Vector(DEFAULT_CANVAS_POSITION);
-        canvasZoom = DEFAULT_CANVAS_ZOOM; //The zoom is calculated based on a power; a power of zero is a scale of 1:1
+        panx = 0;
+        pany = 0;
         
-        //Create a dummy immage
-        //canvasRender = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-        
-        //////TEST PURPOSES ONLY!!!!!!
-        currentTool = new Pencil(filter());
-        /////
-        
-        canvasBounds = new Rectangle(0, 0, 0, 0);
-        
-        center(); //Set the canvas position to the center of the Editor
-        prepare(); //Initialize the graphical state of this Editor's buffer
+        centerx = 0;
+        centery = 0;
     }
     
+    @Override
+    public void onResize(Vector size) {
+        centerx = size.x / 2;
+        centery = size.y / 2;
+    }
+            
     public static Editor create(Window w) {
-        if(EditTarget.target == null) {
-            EditTarget.create(64,64);//TEST SIZE ONLY
-        }
         return new Editor(w);
     }
-           
-    private double getScale() {
-        return Math.pow(2, canvasZoom);
-    }
-       
-    private void shift(int x, int y) {
-        canvasPosition.add(x, y);
-        canvasBounds.translate(x, y);
-    }
-    
-    private void shift(Vector v) {
-        canvasPosition.add(v);
-        canvasBounds.translate(v);
-    }
-    
-    //////?TODO!!!!!!!!!!!!!!!!!: Make this work with scales less than 0
-    private void createBounds() {
-        double scale = getScale();
-        int width = (int)Math.round(EditTarget.target.width() * scale);
-        int height = (int)Math.round(EditTarget.target.height() * scale);
-        
-        canvasBounds = new Rectangle(
-                canvasPosition.x - (width / 2), 
-                canvasPosition.y - (height / 2),
-                width,
-                height
-        );
-    }
-    
-    private void renderLowResCanvas() {
-        GraphicsHandle handle = beginDraw();
-        renderLowResCanvas(handle);
-        endDraw(handle);
-    }
-    
-    private void renderLowResCanvas(GraphicsHandle handle) {
-        System.err.println("rendering low res canvas!");
-        
-        int size = ((EditTarget.target.width() + EditTarget.target.height()) / 2) / LOW_RES_RATIO;
-        size = size % 2 == 0 ? size + 1 : size;
-        size = size < 1 ? 1 : size;
-        
-        double scaleMultiplier = Math.pow(2, canvasZoom);
-        
-        /*int pixelDist = (int)Math.round(scaleMultiplier);
-        int pixelWidth = pixelDist * size;
-        
-        for(int x = 0; x < EditTarget.target.width(); x += size) {
-            for(int y = 0; y < EditTarget.target.height(); y += size) {
-                handle.setColor((((x % 2) + y) % 2) == 0 ? TILE_COLOR_LIGHT : TILE_COLOR_DARK);
-                handle.fillRect(canvasBounds.left() + x * pixelDist, canvasBounds.top() + y * pixelDist, pixelWidth, pixelWidth);
-                
-                handle.setColor(EditTarget.target.getColor(x,y));
-                handle.fillRect(canvasBounds.left() + x * pixelDist, canvasBounds.top() + y * pixelDist, pixelWidth, pixelWidth);
-            }
-        }*/
-        
-        handle.setColor(new Color(/*0xD9D9D9*/0x8C8C8C));
-        handle.fillRect(canvasBounds.left(), canvasBounds.top(), canvasBounds.size.x, canvasBounds.size.y);
-        handle.setColor(Color.BLACK);
-        handle.drawRect(canvasBounds.left(), canvasBounds.top(), canvasBounds.size.x, canvasBounds.size.y);
-    }
-    
-    private void renderCanvas() {
-        GraphicsHandle graphics = beginDraw();
-        renderCanvas(graphics);
-        endDraw(graphics);
-    }
-    
-    private void renderCanvas(GraphicsHandle graphics) {
-        System.err.println("rendering canvas!");
-//        if(canvasRender != null) {
-//            canvasRender.flush(); //Dispose of current data so as not to leave a bunch of floating pixel data in memory
-//        }
-        double scaleMultiplier = Math.pow(2, canvasZoom);
-        //AffineTransform scale = new AffineTransform(AffineTransform.getScaleInstance(scaleMultiplier, scaleMultiplier));
-        //AffineTransformOp scaleop = new AffineTransformOp(scale, null);
-        //canvasRender = scaleop.filter(Canvas.canvas.render(), null);
-        
-        createBounds();
-        
-        int pixelWidth = (int)Math.round(scaleMultiplier);
-        
-        for(int x = 0; x < EditTarget.target.width(); x++) {
-            for(int y = 0; y < EditTarget.target.height(); y++) {
-                graphics.setColor((((x % 2) + y) % 2) == 0 ? TILE_COLOR_LIGHT : TILE_COLOR_DARK);
-                graphics.fillRect(canvasBounds.left() + x * pixelWidth, canvasBounds.top() + y * pixelWidth, pixelWidth, pixelWidth);
-                
-                graphics.setColor(EditTarget.target.getColor(x,y));
-                graphics.fillRect(canvasBounds.left() + x * pixelWidth, canvasBounds.top() + y * pixelWidth, pixelWidth, pixelWidth);
-            }
-        }
-        for(int x = 0; x < EditTarget.target.width(); x++) {
-            graphics.setColor(x % 2 == 0 ? OUTLINE_COLOR_LIGHT : OUTLINE_COLOR_DARK);
-            //graphics.drawLine(canvasBounds.left() + x * pixelWidth, canvasBounds.top() - 1, canvasBounds.left() + (x + 1) * pixelWidth,canvasBounds.top() - 1);
-            //graphics.drawLine(canvasBounds.left() + x * pixelWidth, canvasBounds.bottom(), canvasBounds.left() + (x + 1) * pixelWidth,canvasBounds.bottom());
-        }
-        for(int y = 0; y < EditTarget.target.height(); y++) {
-            graphics.setColor(y % 2 == 0 ? OUTLINE_COLOR_LIGHT : OUTLINE_COLOR_DARK);
-            //graphics.drawLine(canvasBounds.left() - 1, canvasBounds.top() + y * pixelWidth, canvasBounds.left() - 1,canvasBounds.top() + (y + 1) * pixelWidth);
-            //graphics.drawLine(canvasBounds.right(), canvasBounds.top() + y * pixelWidth, canvasBounds.right(),canvasBounds.top() + (y + 1) * pixelWidth);
-        }
-        
-        
-    }
-    
-    private void drawLowRes() {
-        GraphicsHandle handle = beginDraw();
-        handle.fill(bgColor);
-        renderLowResCanvas(handle);
-        endDraw(handle);
-    }
-    
-    private void drawNormal() {
-        GraphicsHandle handle = beginDraw();
-        handle.fill(bgColor);
-        renderCanvas(handle);
-        endDraw(handle);
-    }
-    
-    private void prepare() {
-        createBounds();
-        renderCanvas();
-    }
-    
-    private void center() {
-        canvasPosition = new Vector(width() / 2, height() / 2);
-        createBounds();
-    }
     
     @Override
-    public void mouseMove(Vector mousePos, Vector mouseDif) {
-        if(updateTool) {
-            if(currentTool != null) {
-                if(canvasBounds.encloses(mousePos)) {
-                    double scale = getScale();
-                    currentTool.modify(new Vector((int)((mousePos.x - canvasBounds.left()) / scale), (int)((mousePos.y - canvasBounds.top()) / scale)));
-                }
-            }
+    public void mouseMove(Vector pos, Vector dif) {
+        if(mouse) { 
+            Vector newPosition = context.expand(new Vector(panx + centerx + context.getOffsetX(), pany + centery + context.getOffsetY()), pos);
+            panx = newPosition.x - (centerx + context.getOffsetX());
+            pany = newPosition.y - (centery + context.getOffsetY());
+            repaint();
         }
-        if(panning) {
-            shift(mouseDif);
-            drawLowRes();
-        }
-    }
-    
-    @Override
-    public void keyDown() {
-        boolean draw = false;
-        if(Controls.bank.status(Controls.EDITOR_RESET_ZOOM_AND_PAN)) {
-            canvasPosition = new Vector(DEFAULT_CANVAS_POSITION);
-            center();
-            
-            canvasZoom = DEFAULT_CANVAS_ZOOM;
-            prepare();
-            
-            draw = true;
-        }
-        else {
-            if(Controls.bank.status(Controls.EDITOR_RESET_PAN)) {
-                //Reset the position
-                canvasPosition = new Vector(DEFAULT_CANVAS_POSITION);
-                center(); //Center the canvas in the center of the editor
-
-                draw = true;
-            }
-            if(Controls.bank.status(Controls.EDITOR_RESET_ZOOM)) {
-                canvasZoom = DEFAULT_CANVAS_ZOOM;
-                //Zoom to reset the buffer
-                prepare();
-
-                draw = true;
-            }
-        }
-        if(Controls.bank.status(Controls.EDITOR_TOGGLE_GRID)) { 
-            drawGridLines = !drawGridLines;
-            prepare(); //Re-create the background buffer
-            //repaint(); //Reflect updated graphical state
-        }
-        if(draw) { repaint(); }
-    }
-     
-    @Override
-    public void keyUp() {
-        drawNormal();
     }
     
     @Override
     public void mouseDown(MouseEvent e) {
-        if(e.getButton() == MouseEvent.BUTTON1) {
-            updateTool = true;
-            if(currentTool != null) {
-                Vector mPos = mousePosition();
-                
-                if(canvasBounds.encloses(mPos)) {
-                    double scale = getScale();
-                    currentTool.onDown(new Vector((int)((mPos.x - canvasBounds.left()) / scale), (int)((mPos.y - canvasBounds.top()) / scale)));
-                }
-            }
-            keepFocus();
-        }
-        if(e.getButton() == MouseEvent.BUTTON2) {
-            panning = true;
-            keepFocus();
-        }
+        mouse = true;
     }
     
     @Override
     public void mouseUp(MouseEvent e) {
-        if(e.getButton() == MouseEvent.BUTTON1) {
-            updateTool = false;
-            releaseFocus();
-        }
-        if(e.getButton() == MouseEvent.BUTTON2) {
-            panning = false;
-            releaseFocus();
-            drawNormal();
-        }
-    }
-    
-    @Override
-    public void mouseScroll(MouseWheelEvent e) {
-        if(Controls.bank.status(Controls.EDITOR_MODIFIER_ZOOM)) {
-            canvasZoom -= e.getWheelRotation();
-            if(canvasZoom > ZOOM_MAX) { canvasZoom = ZOOM_MAX; }
-            if(canvasZoom < ZOOM_MIN) { canvasZoom = ZOOM_MIN; }
-            prepare();
-            drawLowRes();
-        }
-    }
-    
-    @Override
-    public void onResize(Vector newSize) {
-        Vector oldOffset = new Vector((width() / 2) - canvasPosition.x, (height() / 2) - canvasPosition.y);
-        canvasPosition = new Vector((newSize.x / 2) - oldOffset.x, (newSize.y / 2) - oldOffset.y);
-        
-        createBounds();
-    }
-    
-    @Override
-    public void onFocus() {
-        renderCanvas(); //Update this buffer in case it was changed elsewhere
-    }
-    
-    //Should bee set by the EditFilter when it wants the canvas to be re-drawn
-    public void queueCanvasDraw() {
-        canvasDrawQueued = true;
-    }
-    
-    public void drawPixel(int x, int y, Color c) {
-        //graphics.setColor(c);
-        int scale = (int)getScale();
-        //graphics.fillRect(canvasBounds.left() + x * scale, canvasBounds.top() + y * scale, scale, scale);
-        
-        //drawParent(x,y,1,1);
-    }
-    
-    public EditFilter filter() {
-        return new EditFilter(this, EditTarget.target);
+        mouse = false;
     }
     
     @Override
     public void paint(GraphicsHandle handle) {
-        handle.fill(bgColor);
-        renderCanvas(handle);
+        handle.fill(BG_COLOR);
+        context.drawBorder(handle, panx + centerx + context.getOffsetX(), pany + centery + context.getOffsetY());
     }
 }

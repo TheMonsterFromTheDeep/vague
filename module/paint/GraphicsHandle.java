@@ -30,6 +30,10 @@ public class GraphicsHandle {
         graphics.setColor(c);
     }
     
+    public Color getColor() {
+        return graphics.getColor();
+    }
+    
     public void drawRect(int x, int y, int width, int height) {
         graphics.drawRect(offsetx + x, offsety + y, width, height);
     }
