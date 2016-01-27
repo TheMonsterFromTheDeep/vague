@@ -36,10 +36,18 @@ public class ContextView {
     }
     
     public void panX(int x) {
-        this.x += (int)(x * (1 + zoomSize));
+        this.x += x;
     }
     
     public void panY(int y) {
+        this.y += y;
+    }
+    
+    public void panXScalar(int x) {
+        this.x += (int)(x * (1 + zoomSize));
+    }
+    
+    public void panYScalar(int y) {
         this.y += (int)(y * (1 + zoomSize));
     }
     

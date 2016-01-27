@@ -25,7 +25,10 @@ public class Editor extends Module {
     private int centerx; //Stores the coordinates of the center of the Editor
     private int centery;
     
-    boolean mouse = false;
+    boolean LMBDown = false;
+    boolean MMBDown = false;
+    
+    Vector panPos;
     
     ContextView view;
     
@@ -50,29 +53,49 @@ public class Editor extends Module {
     
     @Override
     public void mouseMove(Vector pos, Vector dif) {
-        if(mouse) {
+        if(LMBDown) {
             if(view.checkMouse(pos)) {
                 repaint();
             }
+        }
+        else if(MMBDown) {
+            view.panX(dif.x);
+            view.panY(dif.y);
+            repaint();
         }
     }
     
     @Override
     public void mouseDown(MouseEvent e) {
-        mouse = true;
+        switch(e.getButton()) {
+            case MouseEvent.BUTTON1:
+                LMBDown = true;
+                break;
+            case MouseEvent.BUTTON2:
+                MMBDown = true;
+                panPos = mousePosition();
+                break;
+        }
     }
     
     @Override
     public void mouseUp(MouseEvent e) {
-        mouse = false;
+        switch(e.getButton()) {
+            case MouseEvent.BUTTON1:
+                LMBDown = false;
+                break;
+            case MouseEvent.BUTTON2:
+                MMBDown = false;
+                break;
+        }
     }
     
     @Override
     public void mouseScroll(MouseWheelEvent e) {
         if(Controls.bank.status(Controls.EDITOR_MODIFIER_PAN_HORZ)) {
-            view.panX(-3 * (int)e.getPreciseWheelRotation());
+            view.panXScalar(-3 * (int)e.getPreciseWheelRotation());
         } else if(Controls.bank.status(Controls.EDITOR_MODIFIER_PAN_VERT)) {
-            view.panY(3 * (int)e.getPreciseWheelRotation());
+            view.panYScalar(3 * (int)e.getPreciseWheelRotation());
         } else {
             view.zoom(-(int)e.getPreciseWheelRotation());
         }
