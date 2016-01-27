@@ -1,7 +1,6 @@
 package vague.editor;
 
 import java.awt.Color;
-import java.awt.image.BufferedImage;
 import module.paint.GraphicsHandle;
 import module.util.Vector;
 
@@ -15,11 +14,11 @@ import module.util.Vector;
  * @author TheMonsterFromTheDeep
  */
 public class Context {
-    private static final int DEFAULT_SIZE = 32;
-    private static final int DEFAULT_SIZE_DIV = DEFAULT_SIZE + 1;
+    public static final int DEFAULT_SIZE = 32;
+    public static final int DEFAULT_SIZE_DIV = DEFAULT_SIZE + 1;
     
-    int width;
-    int height;
+    private int width;
+    private int height;
     
     private static Context context;
     
@@ -43,46 +42,11 @@ public class Context {
         return height / -2;
     }
     
-    /**
-     * @return the new position that the thing should be located at
-     */
-    public Vector expand(Vector position, Vector target) {
-        int x = target.x - position.x;
-        int y = target.y - position.y;
-        
-        int tileCountX = 0;
-        int tileCountY = 0;
-        
-        Vector newPos = new Vector(position);
-        
-        if (x > width) {
-            x -= width;
-            tileCountX = (x / DEFAULT_SIZE_DIV) + 1;
-            
-        }
-        else if(x < 0) {
-            x = -x;
-            tileCountX = (x / DEFAULT_SIZE_DIV) + 1;
-            newPos.x -= tileCountX * 32;
-        }
-        
-        if(y > height) {
-            y -= height;
-            tileCountY = (y / DEFAULT_SIZE_DIV) + 1;
-            
-        }
-        else if(y < 0) {
-            y = -y;
-            tileCountY = (y / DEFAULT_SIZE_DIV) + 1;
-            newPos.y -= tileCountY * 32;
-        }
-        
-        width += tileCountX * 32;
-        height += tileCountY * 32;
-        
-        return newPos;
+    public void expand(int x, int y) {
+        width += x * DEFAULT_SIZE;
+        height += y * DEFAULT_SIZE;
     }
-    
+        
     public void drawBorder(GraphicsHandle handle, int x, int y) {
         Color tmp = handle.getColor();
         handle.setColor(Color.BLACK);
@@ -93,4 +57,7 @@ public class Context {
     public void render(GraphicsHandle handle, int x, int y) {
         //handle.drawImage(data, x, y);
     }
+    
+    public int getWidth() { return width; }
+    public int getHeight() { return height; }
 }
