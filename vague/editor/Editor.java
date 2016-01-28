@@ -31,6 +31,7 @@ public class Editor extends Module {
     Vector panPos;
     
     ContextView view;
+    Context context;
     
     private Editor(Window w) {
         super(w);
@@ -39,6 +40,7 @@ public class Editor extends Module {
         centery = 0;
         
         view = new ContextView();
+        context = Context.getContext();
     }
     
     @Override
@@ -53,53 +55,81 @@ public class Editor extends Module {
     
     @Override
     public void mouseMove(Vector pos, Vector dif) {
-        if(LMBDown) {
-            if(view.checkMouse(pos)) {
+        if(!context.activeTool.mouseMove(pos, dif)) {
+            if(LMBDown) {
+                if(view.checkMouse(pos)) {
+                    repaint();
+                }
+            }
+            else if(MMBDown) {
+                view.panX(dif.x);
+                view.panY(dif.y);
                 repaint();
             }
-        }
-        else if(MMBDown) {
-            view.panX(dif.x);
-            view.panY(dif.y);
-            repaint();
         }
     }
     
     @Override
     public void mouseDown(MouseEvent e) {
-        switch(e.getButton()) {
-            case MouseEvent.BUTTON1:
-                LMBDown = true;
-                break;
-            case MouseEvent.BUTTON2:
-                MMBDown = true;
-                panPos = mousePosition();
-                break;
+        if(!context.activeTool.mouseDown(e)) {
+            switch(e.getButton()) {
+                case MouseEvent.BUTTON1:
+                    LMBDown = true;
+                    break;
+                case MouseEvent.BUTTON2:
+                    MMBDown = true;
+                    panPos = mousePosition();
+                    break;
+            }
         }
     }
     
     @Override
     public void mouseUp(MouseEvent e) {
-        switch(e.getButton()) {
-            case MouseEvent.BUTTON1:
-                LMBDown = false;
-                break;
-            case MouseEvent.BUTTON2:
-                MMBDown = false;
-                break;
+        if(!context.activeTool.mouseUp(e)) {
+            switch(e.getButton()) {
+                case MouseEvent.BUTTON1:
+                    LMBDown = false;
+                    break;
+                case MouseEvent.BUTTON2:
+                    MMBDown = false;
+                    break;
+            }
         }
     }
     
     @Override
+    public void onUnfocus() {
+        LMBDown = false;
+        MMBDown = false;
+    }
+    
+    @Override
     public void mouseScroll(MouseWheelEvent e) {
-        if(Controls.bank.status(Controls.EDITOR_MODIFIER_PAN_HORZ)) {
-            view.panXScalar(-3 * (int)e.getPreciseWheelRotation());
-        } else if(Controls.bank.status(Controls.EDITOR_MODIFIER_PAN_VERT)) {
-            view.panYScalar(3 * (int)e.getPreciseWheelRotation());
-        } else {
-            view.zoom(-(int)e.getPreciseWheelRotation());
+        if(!context.activeTool.mouseScroll(e)) {
+            if(Controls.bank.status(Controls.EDITOR_MODIFIER_PAN_HORZ)) {
+                view.panXScalar(-3 * (int)e.getPreciseWheelRotation());
+            } else if(Controls.bank.status(Controls.EDITOR_MODIFIER_PAN_VERT)) {
+                view.panYScalar(3 * (int)e.getPreciseWheelRotation());
+            } else {
+                view.zoom(-(int)e.getPreciseWheelRotation());
+            }
+            repaint();
         }
-        repaint();
+    }
+    
+    @Override
+    public void keyDown() {
+        if(!context.activeTool.keyDown()) {
+            
+        }
+    }
+    
+    @Override
+    public void keyUp() {
+        if(!context.activeTool.keyUp()) {
+            
+        }
     }
     
     @Override
