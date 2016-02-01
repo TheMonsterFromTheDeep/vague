@@ -2,26 +2,27 @@ package vague.editor.shape;
 
 import java.awt.Color;
 import module.paint.GraphicsHandle;
+import module.util.FloatVector;
 import module.util.Vector;
 
 public class Pencil implements Shape {
 
     public static class Builder implements Shape.Builder {
-        Vector[] points;
+        FloatVector[] points;
         
         int nextWrite;
         
         public Builder() {
-            points = new Vector[10];
+            points = new FloatVector[10];
             nextWrite = 0;
         }
         
-        public void addPoint(Vector v) {
+        public void addPoint(FloatVector v) {
             if(nextWrite < points.length) {
                 points[nextWrite] = v;
             } else {
-                Vector[] tmp = points;
-                points = new Vector[points.length + 10];
+                FloatVector[] tmp = points;
+                points = new FloatVector[points.length + 10];
                 System.arraycopy(tmp, 0, points, 0, tmp.length);
                 
                 points[nextWrite] = v;
@@ -31,8 +32,8 @@ public class Pencil implements Shape {
         
         public Pencil getLine() {
             if(nextWrite < points.length) {
-                Vector[] tmp = points;
-                points = new Vector[nextWrite];
+                FloatVector[] tmp = points;
+                points = new FloatVector[nextWrite];
                 System.arraycopy(tmp, 0, points, 0, points.length);
             }
             return new Pencil(points);
@@ -48,9 +49,9 @@ public class Pencil implements Shape {
         }
     }
     
-    Vector[] points;
+    FloatVector[] points;
     
-    public Pencil(Vector[] points) {
+    public Pencil(FloatVector[] points) {
         this.points = points;
     }
     

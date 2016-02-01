@@ -54,8 +54,8 @@ public class GraphicsHandle {
         graphics.drawImage(image, offsetx + x, offsety + y, io);
     }
     
-    public void drawLine(int sx, int sy, int ex, int ey) {
-        graphics.drawLine(offsetx + sx, offsety + sy, offsetx + ex, offsety + ey);
+    public void drawLine(float sx, float sy, float ex, float ey) {
+        graphics.drawLine((int)(offsetx + sx), (int)(offsety + sy), (int)(offsetx + ex), (int)(offsety + ey));
     }
     
     public void fill(Color c) {

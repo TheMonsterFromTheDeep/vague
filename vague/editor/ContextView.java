@@ -2,6 +2,7 @@ package vague.editor;
 
 import java.awt.Color;
 import module.paint.GraphicsHandle;
+import module.util.FloatVector;
 import module.util.Vector;
 import vague.editor.tool.Tool;
 
@@ -59,8 +60,8 @@ public class ContextView {
     
     public boolean moveMouseTool(Tool t, Vector pos, Vector dif) {
         //TODO: Implement floating-point vectors cuz why not
-        Vector prPos = new Vector((int)((pos.x - x) / zoomSize), (int)((pos.y - y) / zoomSize));
-        Vector prDif = new Vector((int)(dif.x * zoomSize), (int)(dif.y * zoomSize));
+        FloatVector prPos = new FloatVector((pos.x - x) / zoomSize, (pos.y - y) / zoomSize);
+        FloatVector prDif = new FloatVector(dif.x * zoomSize, dif.y * zoomSize);
         
         return t.mouseMove(prPos, prDif);
     }

@@ -2,6 +2,7 @@ package vague.editor.tool;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import module.util.FloatVector;
 import module.util.Vector;
 
 /**
@@ -19,9 +20,9 @@ public class NullTool implements Tool {
     @Override
     public boolean mouseScroll(MouseWheelEvent e) { return false; }
 
-    @Override
+    @Override 
+    public boolean mouseMove(FloatVector pos, FloatVector dif) { return false; }
     
-    public boolean mouseMove(Vector pos, Vector dif) { return false; }
     @Override
     public boolean keyUp() { return false; }
 
