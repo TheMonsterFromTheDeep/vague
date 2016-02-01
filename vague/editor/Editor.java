@@ -60,7 +60,7 @@ public class Editor extends Module {
                 repaint();
             }
         }
-        if(!context.activeTool.mouseMove(pos, dif)) {
+        if(!view.moveMouseTool(context.activeTool, pos, dif)) {
             if(MMBDown) {
                 view.panX(dif.x);
                 view.panY(dif.y);

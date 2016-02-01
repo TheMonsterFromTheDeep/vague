@@ -3,6 +3,7 @@ package vague.editor;
 import java.awt.Color;
 import module.paint.GraphicsHandle;
 import module.util.Vector;
+import vague.editor.tool.Tool;
 
 /**
  * The ContextView is a handle to the Context that stores a position and zoom.
@@ -54,6 +55,14 @@ public class ContextView {
     public void zoom(int amount) {
         this.zoom += amount;
         calculateZoom();
+    }
+    
+    public boolean moveMouseTool(Tool t, Vector pos, Vector dif) {
+        //TODO: Implement floating-point vectors cuz why not
+        Vector prPos = new Vector((int)((pos.x - x) / zoomSize), (int)((pos.y - y) / zoomSize));
+        Vector prDif = new Vector((int)(dif.x * zoomSize), (int)(dif.y * zoomSize));
+        
+        return t.mouseMove(prPos, prDif);
     }
     
     public boolean checkMouse(Vector mousePos) {
