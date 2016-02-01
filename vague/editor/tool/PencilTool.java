@@ -4,23 +4,27 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import module.util.Vector;
 import vague.editor.Context;
-import vague.editor.shape.Line;
+import vague.editor.shape.Pencil;
 
 /**
- * Draws lines.
+ * The pencil tool draws curves using hundreds of nodes.
  * @author TheMonsterFromTheDeep
  */
-public class LineTool implements Tool {
+public class PencilTool implements Tool {
 
     boolean drawing = false;
     
-    Line.Builder builder;
+    Pencil.Builder builder;
+    
+    public PencilTool() {
+        builder = new Pencil.Builder();
+    }
     
     @Override
     public boolean mouseDown(MouseEvent e) {
         if(e.getButton() == MouseEvent.BUTTON1) {
             drawing = true;
-            builder = new Line.Builder();
+            builder = new Pencil.Builder();
             return true;
         }
         return false;
@@ -43,6 +47,9 @@ public class LineTool implements Tool {
 
     @Override
     public boolean mouseMove(Vector pos, Vector dif) {
+        if(drawing) {
+            builder.addPoint(new Vector(pos));
+        }
         return true;
     }
 

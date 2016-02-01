@@ -55,13 +55,13 @@ public class Editor extends Module {
     
     @Override
     public void mouseMove(Vector pos, Vector dif) {
-        if(!context.activeTool.mouseMove(pos, dif)) {
-            if(LMBDown) {
-                if(view.checkMouse(pos)) {
-                    repaint();
-                }
+        if(LMBDown) {
+            if(view.checkMouse(pos)) {
+                repaint();
             }
-            else if(MMBDown) {
+        }
+        if(!context.activeTool.mouseMove(pos, dif)) {
+            if(MMBDown) {
                 view.panX(dif.x);
                 view.panY(dif.y);
                 repaint();
@@ -71,30 +71,28 @@ public class Editor extends Module {
     
     @Override
     public void mouseDown(MouseEvent e) {
-        if(!context.activeTool.mouseDown(e)) {
-            switch(e.getButton()) {
-                case MouseEvent.BUTTON1:
-                    LMBDown = true;
-                    break;
-                case MouseEvent.BUTTON2:
-                    MMBDown = true;
-                    panPos = mousePosition();
-                    break;
-            }
+        context.activeTool.mouseDown(e);
+        switch(e.getButton()) {
+            case MouseEvent.BUTTON1:
+                LMBDown = true;
+                break;
+            case MouseEvent.BUTTON2:
+                MMBDown = true;
+                panPos = mousePosition();
+                break;
         }
     }
     
     @Override
     public void mouseUp(MouseEvent e) {
-        if(!context.activeTool.mouseUp(e)) {
-            switch(e.getButton()) {
-                case MouseEvent.BUTTON1:
-                    LMBDown = false;
-                    break;
-                case MouseEvent.BUTTON2:
-                    MMBDown = false;
-                    break;
-            }
+        context.activeTool.mouseUp(e);
+        switch(e.getButton()) {
+            case MouseEvent.BUTTON1:
+                LMBDown = false;
+                break;
+            case MouseEvent.BUTTON2:
+                MMBDown = false;
+                break;
         }
     }
     

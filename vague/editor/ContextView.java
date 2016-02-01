@@ -13,12 +13,12 @@ public class ContextView {
     private int y;
     
     private int zoom; //Stores the zoom level - a whole number
-    private double zoomSize; //Equals 2 ^ zoom - the multiplier that the zoom actually does.
+    private float zoomSize; //Equals 2 ^ zoom - the multiplier that the zoom actually does.
     
     Context context;
     
     private void calculateZoom() {
-        zoomSize = Math.pow(2, zoom);
+        zoomSize = (float)Math.pow(2, zoom);
     }
     
     public ContextView() {
@@ -93,6 +93,7 @@ public class ContextView {
         
         handle.setColor(Color.BLACK);
         handle.drawRect(x, y, (int)(width * zoomSize), (int)(height * zoomSize));
+        context.render(handle, x, y, zoomSize);
         
         handle.setColor(oldColor);
     }

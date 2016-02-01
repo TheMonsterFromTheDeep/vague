@@ -18,12 +18,16 @@ public class GraphicsHandle {
     private final Graphics graphics;
     
     public GraphicsHandle(int x, int y, int width, int height, Graphics g) {
-        offsetx = x;
-        offsety = y;
+        this(x,y,x,y,width,height,g);
+    }
+    
+    private GraphicsHandle(int offsetx, int offsety, int clipx, int clipy, int width, int height, Graphics g) {
+        this.offsetx = offsetx;
+        this.offsety = offsety;
         this.width = width;
         this.height = height;
         graphics = g.create();
-        graphics.setClip(x, y, width, height);
+        graphics.setClip(clipx, clipy, width, height);
     }
     
     public void setColor(Color c) {
@@ -50,10 +54,32 @@ public class GraphicsHandle {
         graphics.drawImage(image, offsetx + x, offsety + y, io);
     }
     
+    public void drawLine(int sx, int sy, int ex, int ey) {
+        graphics.drawLine(offsetx + sx, offsety + sy, offsetx + ex, offsety + ey);
+    }
+    
     public void fill(Color c) {
         Color old = graphics.getColor();
         graphics.setColor(c);
         graphics.fillRect(offsetx, offsety, width, height);
         graphics.setColor(old);
+    }
+    
+    public GraphicsHandle getClip(int x, int y, int width, int height) {
+        int newx = offsetx + x;
+        int newy = offsety + y;
+        int clipx = newx;
+        int clipy = newy;
+        int nwidth = width;
+        int nheight = height;
+        if(newx < offsetx) { nwidth -= (offsetx - newx); clipx = offsetx; }
+        if(newy < offsety) { nheight -= (offsety - newy); clipy = offsety; }
+        if(newx + nwidth > offsetx + this.width) {
+            nwidth = this.width + offsetx - clipx;
+        }
+        if(newy + nheight > offsety + this.height) {
+            nheight = this.height + offsety - clipy;
+        }
+        return new GraphicsHandle(newx, newy, clipx, clipy, nwidth, nheight, this.graphics);
     }
 }

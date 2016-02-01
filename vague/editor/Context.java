@@ -4,6 +4,7 @@ import java.awt.Color;
 import module.paint.GraphicsHandle;
 import module.util.Vector;
 import vague.editor.shape.Shape;
+import vague.editor.tool.PencilTool;
 import vague.editor.tool.NullTool;
 import vague.editor.tool.Tool;
 
@@ -33,7 +34,7 @@ public class Context {
         width = DEFAULT_SIZE;
         height = DEFAULT_SIZE;
         
-        activeTool = new NullTool();
+        activeTool = new PencilTool();
         
         //TODO: Optimize shape array stuffz
         shapes = new Shape[0];
@@ -66,8 +67,14 @@ public class Context {
         handle.setColor(tmp);
     }
     
-    public void render(GraphicsHandle handle, int x, int y) {
+    public void render(GraphicsHandle handle, int x, int y, float scale) {
         //handle.drawImage(data, x, y);
+        
+        GraphicsHandle clippedHandle = handle.getClip(x, y, (int)(width * scale), (int)(height * scale));
+        
+        for(Shape s : shapes) {
+            s.draw(clippedHandle, scale);
+        }
     }
     
     public int getWidth() { return width; }

@@ -8,8 +8,8 @@ import module.paint.GraphicsHandle;
  */
 public interface Shape {
     public static interface Builder {
-        void draw(GraphicsHandle handle);
+        void draw(GraphicsHandle handle, float scale);
     }
     
-    void draw(GraphicsHandle handle);
+    void draw(GraphicsHandle handle, float scale);
 }
