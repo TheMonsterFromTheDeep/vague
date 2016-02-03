@@ -14,13 +14,18 @@ public class ContextView {
     private int x; //Stores the top-left corner position of the context in this view.
     private int y;
     
+    int contextx, contexty;
+    
     private int zoom; //Stores the zoom level - a whole number
     private float zoomSize; //Equals 2 ^ zoom - the multiplier that the zoom actually does.
     
     Context context;
     
-    private void calculateZoom() {
+    public void calculateZoom() {
         zoomSize = (float)Math.pow(2, zoom);
+        
+        contextx = (int)(context.getX() * zoomSize);
+        contexty = (int)(context.getY() * zoomSize);
     }
     
     public ContextView() {
@@ -31,10 +36,10 @@ public class ContextView {
         this.x = x;
         this.y = y;
         
+        context = Context.getContext();
+        
         zoom = 0;
         calculateZoom();
-        
-        context = Context.getContext();
     }
     
     public void panX(int x) {
@@ -81,8 +86,8 @@ public class ContextView {
         int addTileX = 0;
         int addTileY = 0;
         
-        int compx = x + (int)(context.getX() * zoomSize);
-        int compy = y + (int)(context.getY() * zoomSize);
+        int compx = x + contextx;
+        int compy = y + contexty;
         
         if(mousePos.x < compx) {
             addTileX = (int)((mousePos.x - compx) / (Context.DEFAULT_SIZE * zoomSize)) - 1;
@@ -103,6 +108,8 @@ public class ContextView {
             return false;
         }
         context.expand(addTileX, addTileY);
+        
+        calculateZoom();
         return true;
     }
     
@@ -113,8 +120,8 @@ public class ContextView {
         int height = context.getHeight();
         
         handle.setColor(Color.BLACK);
-        handle.drawRect(x + (int)(context.getX() * zoomSize), y + (int)(context.getY() * zoomSize), (int)(width * zoomSize), (int)(height * zoomSize));
-        context.render(handle, x, y, zoomSize);
+        handle.drawRect(x + contextx, y + contexty, (int)(width * zoomSize), (int)(height * zoomSize));
+        context.render(handle, x + contextx, y + contexty, zoomSize);
         
         handle.setColor(oldColor);
     }

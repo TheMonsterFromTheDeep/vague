@@ -31,6 +31,7 @@ public class Context {
     Vector bottomRight;
     
     public Tool activeTool; //A handle to the currently active tool.
+    public Editor activeEditor; //If an editor is currently active, this holds a handle to it.
     
     private static Context context;
     
@@ -80,6 +81,8 @@ public class Context {
         //width += x * DEFAULT_SIZE;
         //height += y * DEFAULT_SIZE;
         
+        //TODO: Prevent expansion beyond min/max int size
+        
         if(x < 0) {
             topLeft.x += x * DEFAULT_SIZE;
         } else if(x > 0) {
@@ -101,13 +104,22 @@ public class Context {
         handle.setColor(tmp);
     }
     
+    /**
+     * Renders the Context using the specified handle at the specified x and y with the specified scale.
+     * 
+     * The x and y SHOULD BE THE TOP LEFT CORNER WHERE THIS IS BEING RENDERED.
+     * @param handle The handle to render the Context with.
+     * @param x The x of the top-left corner of the render.
+     * @param y The y of the top-left corner of the render.
+     * @param scale The scale of the render.
+     */
     public void render(GraphicsHandle handle, int x, int y, float scale) {
         //handle.drawImage(data, x, y);
         
-        int dx = x + (int)(topLeft.x * scale);
-        int dy = y + (int)(topLeft.y * scale);
+        //int dx = x + (int)(topLeft.x * scale);
+        //int dy = y + (int)(topLeft.y * scale);
         
-        GraphicsHandle clippedHandle = handle.getClip(dx, dy, (int)(width * scale), (int)(height * scale));
+        GraphicsHandle clippedHandle = handle.getClip(x, y, (int)(width * scale), (int)(height * scale));
         
         for(Shape s : shapes) {
             s.draw(-topLeft.x, -topLeft.y, clippedHandle, scale);
@@ -122,5 +134,15 @@ public class Context {
         shapes = new Shape[shapes.length + 1];
         System.arraycopy(tmp, 0, shapes, 0, tmp.length);
         shapes[tmp.length] = s;
+    }
+    
+    public void setEditor(Editor e) {
+        activeEditor = e;
+    }
+    
+    public void clearEditor(Editor e) {
+        if(activeEditor == e) {
+            activeEditor = null;
+        }
     }
 }

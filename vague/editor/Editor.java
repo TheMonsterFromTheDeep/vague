@@ -97,9 +97,16 @@ public class Editor extends Module {
     }
     
     @Override
+    public void onFocus() {
+        context.setEditor(this);
+        view.calculateZoom(); //Make sure that the ContextView has the latest image of the Context
+    }
+    
+    @Override
     public void onUnfocus() {
         LMBDown = false;
         MMBDown = false;
+        context.clearEditor(this);
     }
     
     @Override
