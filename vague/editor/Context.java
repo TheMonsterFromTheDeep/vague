@@ -23,6 +23,10 @@ public class Context {
     public static final int DEFAULT_SIZE_HALF = DEFAULT_SIZE / 2;
     public static final int DEFAULT_SIZE_DIV = DEFAULT_SIZE + 1;
     
+    //Min size is half so a 32bit int can be used to store difference between them
+    public static final int MIN_SIZE = (Integer.MIN_VALUE / 2) + 2 * DEFAULT_SIZE;
+    public static final int MAX_SIZE = (Integer.MAX_VALUE / 2) - 2 * DEFAULT_SIZE;
+    
     private int width;
     private int height;
     
@@ -81,16 +85,14 @@ public class Context {
         //width += x * DEFAULT_SIZE;
         //height += y * DEFAULT_SIZE;
         
-        //TODO: Prevent expansion beyond min/max int size
-        
-        if(x < 0) {
+        if(x < 0 && topLeft.x > MIN_SIZE) {
             topLeft.x += x * DEFAULT_SIZE;
-        } else if(x > 0) {
+        } else if(x > 0 && bottomRight.x < MAX_SIZE) {
             bottomRight.x += x * DEFAULT_SIZE;
         }
-        if(y < 0) {
+        if(y < 0 && topLeft.y > MIN_SIZE) {
             topLeft.y += y * DEFAULT_SIZE;
-        } else if(y > 0) {
+        } else if(y > 0 && bottomRight.y < MAX_SIZE) {
             bottomRight.y += y * DEFAULT_SIZE;
         }
         
