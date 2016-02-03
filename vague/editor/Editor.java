@@ -110,7 +110,7 @@ public class Editor extends Module {
             } else if(Controls.bank.status(Controls.EDITOR_MODIFIER_PAN_VERT)) {
                 view.panYScalar(3 * (int)e.getPreciseWheelRotation());
             } else {
-                view.zoom(-(int)e.getPreciseWheelRotation());
+                view.zoom(-(int)e.getPreciseWheelRotation(), mousePosition());
             }
             repaint();
         }

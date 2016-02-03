@@ -53,9 +53,17 @@ public class ContextView {
         this.y += (int)(y * (1 + zoomSize));
     }
     
-    public void zoom(int amount) {
+    public void zoom(int amount, Vector anchor) {
         this.zoom += amount;
+        
+        double change = zoomSize;
+        
         calculateZoom();
+        
+        change = zoomSize / change; //The difference in the zoom
+        
+        this.x = anchor.x + (int)((this.x - anchor.x) * change);
+        this.y = anchor.y + (int)((this.y - anchor.y) * change);
     }
     
     public boolean moveMouseTool(Tool t, Vector pos, Vector dif) {
