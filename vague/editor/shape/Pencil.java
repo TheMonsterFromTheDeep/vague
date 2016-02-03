@@ -40,7 +40,7 @@ public class Pencil implements Shape {
         }
 
         @Override
-        public void draw(GraphicsHandle handle, float scale) {
+        public void draw(int offx, int offy, GraphicsHandle handle, float scale) {
             //Stupid derp optimization (i + 1)
             //[i'm sorry]
             for(int i = 0; i + 1 < points.length; i++) {
@@ -56,7 +56,7 @@ public class Pencil implements Shape {
     }
     
     @Override
-    public void draw(GraphicsHandle handle, float scale) {
+    public void draw(int offx, int offy, GraphicsHandle handle, float scale) {
         
         
         handle.setColor(Color.BLACK);
@@ -68,7 +68,7 @@ public class Pencil implements Shape {
             for(int i = 0; i + 1 < points.length; i++) {
                 //nx = (int)(points[i + 1].x * scale);
                 //ny = (int)(points[i + 1].y * scale);
-                handle.drawLine((int)(scale * points[i].x), (int)(scale * points[i].y), (int)(scale * points[i + 1].x), (int)(scale * points[i + 1].y));
+                handle.drawLine((int)(scale * (points[i].x + offx)), (int)(scale * (points[i].y + offy)), (int)(scale * (points[i + 1].x + offx)), (int)(scale * (points[i + 1].y + offy)));
                 //px = nx;
                 //py = ny;
             }

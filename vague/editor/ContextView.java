@@ -81,18 +81,21 @@ public class ContextView {
         int addTileX = 0;
         int addTileY = 0;
         
-        if(mousePos.x < x) {
-            addTileX = (int)((x - mousePos.x) / (Context.DEFAULT_SIZE * zoomSize)) + 1;
-            x -= (int)(addTileX * Context.DEFAULT_SIZE * zoomSize);
+        int compx = x + (int)(context.getX() * zoomSize);
+        int compy = y + (int)(context.getY() * zoomSize);
+        
+        if(mousePos.x < compx) {
+            addTileX = (int)((mousePos.x - compx) / (Context.DEFAULT_SIZE * zoomSize)) - 1;
+            //x -= (int)(addTileX * Context.DEFAULT_SIZE * zoomSize);
         }
-        else if(mousePos.x > x + width) {
+        else if(mousePos.x > compx + width) {
             addTileX = (int)((mousePos.x - (x + width)) / (Context.DEFAULT_SIZE * zoomSize)) + 1;
         }
-        if(mousePos.y < y) {
-            addTileY = (int)((y - mousePos.y) / (Context.DEFAULT_SIZE * zoomSize)) + 1;
-            y -= (int)(addTileY * Context.DEFAULT_SIZE * zoomSize);
+        if(mousePos.y < compy) {
+            addTileY = (int)((mousePos.y - compy) / (Context.DEFAULT_SIZE * zoomSize)) - 1;
+            //y -= (int)(addTileY * Context.DEFAULT_SIZE * zoomSize);
         }
-        else if(mousePos.y > y + height) {
+        else if(mousePos.y > compy + height) {
             addTileY = (int)((mousePos.y - (y + height)) / (Context.DEFAULT_SIZE * zoomSize)) + 1;
         }
         
@@ -110,7 +113,7 @@ public class ContextView {
         int height = context.getHeight();
         
         handle.setColor(Color.BLACK);
-        handle.drawRect(x, y, (int)(width * zoomSize), (int)(height * zoomSize));
+        handle.drawRect(x + (int)(context.getX() * zoomSize), y + (int)(context.getY() * zoomSize), (int)(width * zoomSize), (int)(height * zoomSize));
         context.render(handle, x, y, zoomSize);
         
         handle.setColor(oldColor);
