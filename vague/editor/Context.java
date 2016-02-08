@@ -69,13 +69,13 @@ public class Context {
         return context;
     }
     
-    public int getOffsetX() {
-        return width / -2;
-    }
+    //public int getOffsetX() {
+    //    return width / -2;
+    //}
     
-    public int getOffsetY() {
-        return height / -2;
-    }
+    //public int getOffsetY() {
+    //    return height / -2;
+    //}
     
     public int getX() { return topLeft.x; }
     
@@ -126,6 +126,10 @@ public class Context {
         for(Shape s : shapes) {
             s.draw(-topLeft.x, -topLeft.y, clippedHandle, scale);
         }
+    }
+    
+    public void renderShapeBuilder(Shape.Builder b, GraphicsHandle handle, int x, int y, float scale) {
+        b.draw(-topLeft.x, -topLeft.y, handle.getClip(x, y, (int)(width * scale), (int)(height * scale)), scale);
     }
     
     public int getWidth() { return width; }

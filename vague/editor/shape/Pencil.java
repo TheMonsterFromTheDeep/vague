@@ -41,19 +41,18 @@ public class Pencil implements Shape {
 
         @Override
         public void draw(int offx, int offy, GraphicsHandle handle, float scale) {
-
             handle.setColor(Color.BLACK);
-            if(points.length > 1) {
+            if(nextWrite > 1) {
                 //TODO: Use these variables for faster
-                int px = (int)(points[0].x * scale), py = (int)(points[0].y * scale), nx = (int)(points[1].x * scale), ny = (int)(points[1].y * scale);
+                int px = (int)((points[0].x + offx) * scale), py = (int)((points[0].y + offy) * scale), nx = (int)((points[1].x + offx) * scale), ny = (int)((points[1].y + offy) * scale);
                 //Stupid derp optimization (i + 1)
                 //[i'm sorry]
-                for(int i = 0; i + 1 < points.length; i++) {
-                    //nx = (int)(points[i + 1].x * scale);
-                    //ny = (int)(points[i + 1].y * scale);
-                    handle.drawLine((int)(scale * (points[i].x + offx)), (int)(scale * (points[i].y + offy)), (int)(scale * (points[i + 1].x + offx)), (int)(scale * (points[i + 1].y + offy)));
-                    //px = nx;
-                    //py = ny;
+                for(int i = 0; i + 1 < nextWrite; i++) {
+                    nx = (int)((points[i + 1].x + offx) * scale);
+                    ny = (int)((points[i + 1].y + offy) * scale);
+                    handle.drawLine(px, py, nx, ny);
+                    px = nx;
+                    py = ny;
                 }
             }
         }

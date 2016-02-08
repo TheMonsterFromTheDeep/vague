@@ -2,9 +2,11 @@ package vague.editor.tool;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import module.paint.GraphicsHandle;
 import module.util.FloatVector;
 import module.util.Vector;
 import vague.editor.Context;
+import vague.editor.Editor;
 import vague.editor.shape.Pencil;
 
 /**
@@ -50,6 +52,8 @@ public class PencilTool implements Tool {
     public boolean mouseMove(FloatVector pos, FloatVector dif) {
         if(drawing) {
             builder.addPoint(new FloatVector(pos));
+            Editor e = Context.getContext().activeEditor;
+            e.drawShapeBuilder(builder);
         }
         return true;
     }

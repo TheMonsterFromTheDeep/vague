@@ -4,6 +4,7 @@ import java.awt.Color;
 import module.paint.GraphicsHandle;
 import module.util.FloatVector;
 import module.util.Vector;
+import vague.editor.shape.Shape;
 import vague.editor.tool.Tool;
 
 /**
@@ -111,6 +112,10 @@ public class ContextView {
         
         calculateZoom();
         return true;
+    }
+    
+    public void drawShapeBuilder(GraphicsHandle handle, Shape.Builder b) {
+        context.renderShapeBuilder(b, handle, x + contextx, y + contexty, zoomSize);
     }
     
     public void draw(GraphicsHandle handle) {

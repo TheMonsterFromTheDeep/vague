@@ -447,6 +447,9 @@ public class WorkTool extends Module {
         child.resize(width() - 2 * INSET_WIDTH, height() - 2 * INSET_WIDTH);
         child.locate(INSET_WIDTH, INSET_WIDTH); //Locate the child inside the insets
         //child.draw(); //Set initial graphical state of child
+        if(active) { //If the child *will be* active, focus it
+            child.onFocus();
+        }
         repaint(); //Update WorkTool's graphical state to include that of the new child
     }
     

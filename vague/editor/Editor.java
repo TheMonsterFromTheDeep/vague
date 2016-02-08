@@ -14,6 +14,7 @@ import vague.input.Controls;
 import module.Module;
 import module.paint.GraphicsHandle;
 import module.util.Vector;
+import vague.editor.shape.Shape;
 
 /**
  * An Editor is simply an interface for drawing to the Context.
@@ -135,6 +136,12 @@ public class Editor extends Module {
         if(!context.activeTool.keyUp()) {
             
         }
+    }
+    
+    public void drawShapeBuilder(Shape.Builder b) {
+        GraphicsHandle handle = beginDraw();
+        view.drawShapeBuilder(handle, b);
+        endDraw(handle);
     }
     
     @Override
