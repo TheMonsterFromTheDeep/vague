@@ -28,6 +28,7 @@ public class PencilTool implements Tool {
         if(e.getButton() == MouseEvent.BUTTON1) {
             drawing = true;
             builder = new Pencil.Builder();
+            Context.getContext().activeEditor.beginRetainingFocus();
             return true;
         }
         return false;
@@ -38,6 +39,7 @@ public class PencilTool implements Tool {
         if(e.getButton() == MouseEvent.BUTTON1) {
             drawing = false;
             Context.getContext().addShape(builder.getLine());
+            Context.getContext().activeEditor.stopRetainingFocus();
             return true;
         }
         return false;

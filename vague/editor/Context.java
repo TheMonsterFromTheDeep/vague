@@ -24,8 +24,8 @@ public class Context {
     public static final int DEFAULT_SIZE_DIV = DEFAULT_SIZE + 1;
     
     //Min size is half so a 32bit int can be used to store difference between them
-    public static final int MIN_SIZE = (Integer.MIN_VALUE / 2) + 2 * DEFAULT_SIZE;
-    public static final int MAX_SIZE = (Integer.MAX_VALUE / 2) - 2 * DEFAULT_SIZE;
+    public static final int MIN_SIZE = -16777216;
+    public static final int MAX_SIZE = 16777216;
     
     private int width;
     private int height;

@@ -110,6 +110,9 @@ public class Editor extends Module {
         context.clearEditor(this);
     }
     
+    public void beginRetainingFocus() { this.keepFocus(); }
+    public void stopRetainingFocus() { this.releaseFocus(); }
+    
     @Override
     public void mouseScroll(MouseWheelEvent e) {
         if(!context.activeTool.mouseScroll(e)) {
