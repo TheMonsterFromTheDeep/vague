@@ -81,8 +81,8 @@ public class ContextView {
     }
     
     public boolean checkMouse(Vector mousePos) {
-        double width = (context.getWidth() * zoomSize);
-        double height = (context.getHeight() * zoomSize);
+        double width = context.getWidth() * zoomSize;
+        double height = context.getHeight() * zoomSize;
         
         int addTileX = 0;
         int addTileY = 0;
@@ -95,14 +95,14 @@ public class ContextView {
             //x -= (int)(addTileX * Context.DEFAULT_SIZE * zoomSize);
         }
         else if(mousePos.x > compx + width) {
-            addTileX = (int)((mousePos.x - (x + width)) / (Context.DEFAULT_SIZE * zoomSize)) + 1;
+            addTileX = (int)((mousePos.x - (compx + width)) / (Context.DEFAULT_SIZE * zoomSize)) + 1;
         }
         if(mousePos.y < compy) {
             addTileY = (int)((mousePos.y - compy) / (Context.DEFAULT_SIZE * zoomSize)) - 1;
             //y -= (int)(addTileY * Context.DEFAULT_SIZE * zoomSize);
         }
         else if(mousePos.y > compy + height) {
-            addTileY = (int)((mousePos.y - (y + height)) / (Context.DEFAULT_SIZE * zoomSize)) + 1;
+            addTileY = (int)((mousePos.y - (compy + height)) / (Context.DEFAULT_SIZE * zoomSize)) + 1;
         }
         
         if(addTileX == 0 && addTileY == 0) {
