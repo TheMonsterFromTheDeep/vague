@@ -17,12 +17,15 @@ public class ContextView {
     
     int contextx, contexty;
     
-    private int zoom; //Stores the zoom level - a whole number
+    private byte zoom; //Stores the zoom level - a whole number
     private float zoomSize; //Equals 2 ^ zoom - the multiplier that the zoom actually does.
     
     Context context;
     
     public void calculateZoom() {
+        if(zoom > 26) { zoom = 26; }
+        if(zoom < -20) { zoom = -20; }
+        
         zoomSize = (float)Math.pow(2, zoom);
         
         contextx = (int)(context.getX() * zoomSize);
