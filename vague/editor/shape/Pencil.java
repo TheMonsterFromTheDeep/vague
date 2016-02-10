@@ -8,13 +8,17 @@ import module.util.Vector;
 public class Pencil implements Shape {
 
     public static class Builder implements Shape.Builder {
+        Color color;
+        
         FloatVector[] points;
         
         int nextWrite;
         
-        public Builder() {
+        public Builder(Color c) {
             points = new FloatVector[10];
             nextWrite = 0;
+            
+            color = c;
         }
         
         public void addPoint(FloatVector v) {
@@ -36,12 +40,12 @@ public class Pencil implements Shape {
                 points = new FloatVector[nextWrite];
                 System.arraycopy(tmp, 0, points, 0, points.length);
             }
-            return new Pencil(points);
+            return new Pencil(points, color);
         }
 
         @Override
         public void draw(int offx, int offy, GraphicsHandle handle, float scale) {
-            handle.setColor(Color.BLACK);
+            handle.setColor(color);
             if(nextWrite > 1) {
                 //TODO: Use these variables for faster
                 int px = (int)((points[0].x + offx) * scale), py = (int)((points[0].y + offy) * scale), nx, ny;
@@ -58,17 +62,21 @@ public class Pencil implements Shape {
         }
     }
     
+    Color color;
+    
     FloatVector[] points;
     
-    public Pencil(FloatVector[] points) {
+    public Pencil(FloatVector[] points, Color c) {
         this.points = points;
+        
+        color = c;
     }
     
     @Override
     public void draw(int offx, int offy, GraphicsHandle handle, float scale) {
         
         
-        handle.setColor(Color.BLACK);
+        handle.setColor(color);
         if(points.length > 1) {
             //TODO: Use these variables for faster
             int px = (int)((points[0].x + offx) * scale), py = (int)((points[0].y + offy) * scale), nx, ny;

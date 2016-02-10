@@ -1,5 +1,6 @@
 package vague.editor.tool;
 
+import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import module.paint.GraphicsHandle;
@@ -7,7 +8,9 @@ import module.util.FloatVector;
 import module.util.Vector;
 import vague.editor.Context;
 import vague.editor.Editor;
+import vague.editor.settings.*;
 import vague.editor.shape.Pencil;
+import vague.input.Controls;
 
 /**
  * The pencil tool draws curves using hundreds of nodes.
@@ -15,19 +18,23 @@ import vague.editor.shape.Pencil;
  */
 public class PencilTool implements Tool {
 
-    boolean drawing = false;
+    static final ToolSetting[] toolSettings = { ColorSetting.getColorSetting() };
     
+    ColorSetting colorSetting;
+    
+    boolean drawing = false;
     Pencil.Builder builder;
     
     public PencilTool() {
-        builder = new Pencil.Builder();
+        colorSetting = ColorSetting.getColorSetting();
+        builder = new Pencil.Builder(colorSetting.color);
     }
     
     @Override
     public boolean mouseDown(MouseEvent e) {
         if(e.getButton() == MouseEvent.BUTTON1) {
             drawing = true;
-            builder = new Pencil.Builder();
+            builder = new Pencil.Builder(colorSetting.color);
             Context.getContext().activeEditor.beginRetainingFocus();
             return true;
         }
@@ -67,6 +74,10 @@ public class PencilTool implements Tool {
 
     @Override
     public boolean keyDown() {
+        if(Controls.bank.status(Controls.TEST_COLOR)) {
+            colorSetting.color = new Color(0xff0000);
+            return true;
+        }
         return false;
     }
     

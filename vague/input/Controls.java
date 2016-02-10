@@ -17,7 +17,7 @@ public class Controls {
     public static final int EDITOR_TOGGLE_GRID = 7;
     public static final int PENCIL_DRAW_LINE = 8;
     public static final int PENCIL_INVERT_COLORS = 9;
-    public static final int TEST_COLOR = 900; //A test control for changing drawing color on the TestModule
+    public static final int TEST_COLOR = 900; //A test control for changing drawing color using the Pencil tool
     
     //Initializes the default state of the controls of the application
     public static final Chord[] DEFAULT = new Chord[] {
@@ -31,7 +31,7 @@ public class Controls {
         new Chord(EDITOR_TOGGLE_GRID,new Control(KeyEvent.VK_S),Chord.MODIFIER_SHIFT),
         new Chord(PENCIL_DRAW_LINE,new Control(KeyEvent.VK_SHIFT)),
         new Chord(PENCIL_INVERT_COLORS,new Control(KeyEvent.VK_CONTROL)),
-        new Chord(TEST_COLOR,new Control(KeyEvent.VK_SPACE))
+        new Chord(TEST_COLOR,new Control(KeyEvent.VK_R))
     };
     
     public static Controls bank; //The static access controls object from which other objects access the state of controls

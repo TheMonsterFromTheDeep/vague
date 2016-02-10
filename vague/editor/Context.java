@@ -4,6 +4,7 @@ import java.awt.Color;
 import module.paint.GraphicsHandle;
 import module.util.FloatVector;
 import module.util.Vector;
+import vague.editor.settings.ToolSettings;
 import vague.editor.shape.Shape;
 import vague.editor.tool.PencilTool;
 import vague.editor.tool.NullTool;
@@ -40,6 +41,8 @@ public class Context {
     private static Context context;
     
     private Shape[] shapes; //Stores the various data for the image.
+    
+    public ToolSettings toolSettings;
     
     private void calculateDims() {
         width = bottomRight.x - topLeft.x;
