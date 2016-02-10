@@ -27,6 +27,6 @@ public class Program {
         Controls.bank = new Controls(Controls.DEFAULT);
         
         //Create a Window so that the user can use the actual application
-        window = new VagueWindow();
+        window = VagueWindow.getWindow();
     }
 }

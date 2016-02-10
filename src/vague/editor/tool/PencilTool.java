@@ -18,7 +18,7 @@ import vague.input.Controls;
  */
 public class PencilTool implements Tool {
 
-    static final ToolSetting[] toolSettings = { ColorSetting.getColorSetting() };
+    static final ToolSettings pencilSettings = new ToolSettings(new ToolSetting[] { ColorSetting.getColorSetting() });
     
     ColorSetting colorSetting;
     
@@ -80,5 +80,7 @@ public class PencilTool implements Tool {
         }
         return false;
     }
-    
+
+    @Override
+    public ToolSettings getSettings() { return pencilSettings; }
 }

@@ -13,6 +13,8 @@ import vague.workspace.Workspace;
  * @author TheMonsterFromTheDeep
  */
 public class VagueWindow extends Window {
+    private static VagueWindow instance;
+    
     public final static int DEFAULT_WIDTH = 800; //Default width and height of the window
     public final static int DEFAULT_HEIGHT = 600;
     
@@ -32,7 +34,7 @@ public class VagueWindow extends Window {
      * However, it should not yet run the program. The .run() method needs
      * to be called to begin the program.
      */
-    public VagueWindow() {
+    private VagueWindow() {
         //The format for the title is "$Filename | Vague".
         super("Untitled | Vague", DEFAULT_WIDTH, DEFAULT_HEIGHT); //Set the title of the window. The default file is "Untitled".
         //this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //When the window is closed, the program should exit.
@@ -53,5 +55,12 @@ public class VagueWindow extends Window {
     @Override
     public void keyUp(KeyEvent e) {
         Controls.bank.update(e.getKeyCode(), false);
+    }
+    
+    public static VagueWindow getWindow() {
+        if(instance == null) {
+            instance = new VagueWindow();
+        }
+        return instance;
     }
 }

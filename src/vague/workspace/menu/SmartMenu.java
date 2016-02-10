@@ -8,6 +8,7 @@ import module.Window;
 import module.paint.GraphicsHandle;
 import vague.module.TestModule;
 import module.util.Vector;
+import vague.menu.ToolOptions;
 import vague.workspace.WorkTool;
 
 /**
@@ -30,8 +31,7 @@ public class SmartMenu extends Module {
         controlSelectors = new ControlSelector[] {
             //Create a dummy test module Module to test SmartMenu module module
             new ControlSelector("Editor", Editor.create(w), 3, 20),
-            new ControlSelector("Test", TestModule.create(w,20,20), 3, 66),
-            new ControlSelector("Test 2", TestModule.create(w,20,20), 3, 89)
+            new ControlSelector("Tool Options", ToolOptions.create(w), 3, 66)
         };
     }
     

@@ -1,10 +1,14 @@
 package vague.editor.settings;
 
 public class ToolSettings {
-    ToolSetting[] settings;
+    public ToolSetting[] settings;
     
     public ToolSettings() {
         settings = new ToolSetting[0];
+    }
+    
+    public ToolSettings(ToolSetting[] settings) {
+        this.settings = settings;
     }
     
     public ToolSetting getSetting(String name) {
@@ -14,9 +18,5 @@ public class ToolSettings {
             }
         }
         return null;
-    }
-    
-    public void setSettings(ToolSetting[] settings) {
-        this.settings = settings;
     }
 }

@@ -51,13 +51,18 @@ public class Context {
         center.y = topLeft.y + (height / 2.0f);
     }
     
+    private void setTool(Tool t) {
+        activeTool = t;
+        toolSettings = t.getSettings();
+    }
+    
     private Context() {
         topLeft = new Vector(-DEFAULT_SIZE_HALF, -DEFAULT_SIZE_HALF);
         bottomRight = new Vector(DEFAULT_SIZE_HALF, DEFAULT_SIZE_HALF);
         
         center = new FloatVector(0, 0);
         
-        activeTool = new PencilTool();
+        setTool(new PencilTool());
         
         //TODO: Optimize shape array stuffz
         shapes = new Shape[0];

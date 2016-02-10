@@ -3,6 +3,7 @@ package vague.editor.tool;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import module.util.FloatVector;
+import vague.editor.settings.ToolSettings;
 
 /**
  * A tool intercepts events from the Editor and chooses whether to make a change to the current edited image
@@ -21,4 +22,6 @@ public interface Tool {
     
     boolean keyUp();
     boolean keyDown();
+    
+    ToolSettings getSettings();
 }

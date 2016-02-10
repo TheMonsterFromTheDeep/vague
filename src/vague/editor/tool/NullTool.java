@@ -4,6 +4,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import module.util.FloatVector;
 import module.util.Vector;
+import vague.editor.settings.ToolSettings;
 
 /**
  * The NullTool is the default tool (no tool), and as such consumes no events.
@@ -11,6 +12,8 @@ import module.util.Vector;
  */
 public class NullTool implements Tool {
 
+    static final ToolSettings nullSettings = new ToolSettings();
+    
     @Override
     public boolean mouseDown(MouseEvent e) { return false; }
 
@@ -28,5 +31,7 @@ public class NullTool implements Tool {
 
     @Override
     public boolean keyDown() { return false; }
-    
+
+    @Override
+    public ToolSettings getSettings() { return nullSettings; }
 }
