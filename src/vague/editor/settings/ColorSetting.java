@@ -15,6 +15,24 @@ public class ColorSetting extends ToolSetting {
         @Override
         public void paint(GraphicsHandle g) {
             g.fill(Color.RED);
+            
+            int lcos = 50;
+            int lsin = 50;
+            int ncos, nsin;
+            
+            for(float i = 0; i < 360; i += 0.125) {
+                float hue = i / 360;
+                double rad = Math.toRadians(i);
+                for(int s = 0; s < 50; s++) {
+                    g.setColor(new Color(Color.HSBtoRGB(hue, s / 50f, 1)));
+                    ncos = 50 + (int)Math.round(s * Math.cos(rad));
+                    nsin = 50 + (int)Math.round(s * Math.sin(rad));
+                    //System.err.println(":: " + ncos + " " + nsin);
+                    g.drawLine(lcos, lsin, ncos, nsin);
+                    lcos = ncos;
+                    lsin = nsin;
+                }
+            }
         }
     }
     
