@@ -10,7 +10,7 @@ import vague.menu.ToolOptions;
 public class ColorSetting extends ToolSetting {
     static class ColorPanel extends ToolOptions.OptionPanel {
         
-        private static BufferedImage createColorWheel(int radius, float value) {
+        private static BufferedImage createColorWheel(int radius) {
             BufferedImage wheel = new BufferedImage(radius * 2, radius * 2, BufferedImage.TYPE_INT_ARGB);
             Graphics g = wheel.createGraphics();
             
@@ -19,7 +19,7 @@ public class ColorSetting extends ToolSetting {
                     float dist = (float)Math.sqrt(((x - radius) * (x - radius)) + ((y - radius) * (y - radius)));
                     if(dist <= radius) {
                         float hue = (float)(Math.atan2(y - radius, x - radius) / (Math.PI * 2));
-                        g.setColor(new Color(Color.HSBtoRGB(hue, dist / radius, value)));
+                        g.setColor(new Color(Color.HSBtoRGB(hue, dist / radius, 1)));
                         g.fillRect(x, y, 1, 1);
                     }
                 }
@@ -33,7 +33,7 @@ public class ColorSetting extends ToolSetting {
         private ColorPanel() {
             super(100);
             
-            colorWheel = createColorWheel(50, 1);
+            colorWheel = createColorWheel(50);
         }
         
         public static ColorPanel create() { return new ColorPanel(); }
@@ -43,14 +43,13 @@ public class ColorSetting extends ToolSetting {
             g.fill(Color.BLACK);
             
             g.drawImage(colorWheel, 0, 0);
-            //g.setColor(new Color(0xff000000 - ((int)(getColorSetting().value * 255) << 24), true));
-            //g.fillRect(0, 0, 100, 100);
+            g.setColor(new Color(0xff000000 - ((int)(getColorSetting().value * 255) << 24), true));
+            g.fillRect(0, 0, 100, 100);
         }
         
         @Override
         public void mouseMove(Vector pos, Vector dif) {
             getColorSetting().value = (float)pos.y / 100;
-            colorWheel = createColorWheel(50, getColorSetting().value);
             repaint();
         }
     }
