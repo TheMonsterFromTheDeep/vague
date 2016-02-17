@@ -72,11 +72,12 @@ public class ToolOptions extends Module {
     
     @Override
     public void mouseDown(MouseEvent e) {
-        
+        activeOption.mouseDown(e);
     }
     
     @Override
     public void mouseUp(MouseEvent e) {
+        activeOption.mouseUp(e);
     }
     
     @Override

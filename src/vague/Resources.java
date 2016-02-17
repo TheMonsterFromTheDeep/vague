@@ -26,6 +26,11 @@ public class Resources {
     public BufferedImage WORKTOOL_RESIZE_BR_HIGH;
     public BufferedImage WORKTOOL_REFRESH;
     public BufferedImage WORKTOOL_REFRESH_HIGH;
+    //--Tool Options
+    //---Color Setting
+    public BufferedImage SETTING_COLOR_HSV_CURSOR;
+    public BufferedImage SETTING_COLOR_VALUE_CURSOR;
+    
     
     //Text
     public TextDrawer text;
@@ -59,6 +64,9 @@ public class Resources {
         WORKTOOL_RESIZE_BR_HIGH = loadImageRelative("/img/worktool/resize_br_high.png");
         WORKTOOL_REFRESH = loadImageRelative("/img/worktool/refresh.png");
         WORKTOOL_REFRESH_HIGH = loadImageRelative("/img/worktool/refresh_high.png");
+        
+        SETTING_COLOR_HSV_CURSOR = loadImageRelative("/img/tool/options/color/hsvtarget.png");
+        SETTING_COLOR_VALUE_CURSOR = loadImageRelative("/img/tool/options/color/valuetarget.png");
         
         ////LOAD CURSORS       
         popup.updateLoadingMessage("images/cursors"); //Update the loading message
