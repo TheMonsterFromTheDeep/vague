@@ -32,6 +32,7 @@ public class ToolOptions extends Module {
     static final Color BG_COLOR = new Color(0xc2c2dd);
     
     OptionPanel[] options;
+    OptionPanel activeOption;
     
     private void update() {
         ToolSetting[] settings = Context.getContext().toolSettings.settings;
@@ -42,6 +43,9 @@ public class ToolOptions extends Module {
             options[i].setParent(this); //Parent the panel
             options[i].resize(width(), options[i].height()); //Make sure the panel is filling this panel horizontally
         }
+        
+        //DEBUG ONLY:
+        activeOption = options[0];
     }
     
     private ToolOptions(Window w) {
@@ -77,6 +81,9 @@ public class ToolOptions extends Module {
     
     @Override
     public void mouseMove(Vector mousePos, Vector mouseDif) {
+        //TODO: Implement focus changing, etc...
+        //for now, just implement basic control for testing individual controls
+        activeOption.mouseMove(mousePos, mouseDif);
     }
     
     @Override

@@ -27,14 +27,14 @@ public class PencilTool implements Tool {
     
     public PencilTool() {
         colorSetting = ColorSetting.getColorSetting();
-        builder = new Pencil.Builder(colorSetting.color);
+        builder = new Pencil.Builder(colorSetting.getColor());
     }
     
     @Override
     public boolean mouseDown(MouseEvent e) {
         if(e.getButton() == MouseEvent.BUTTON1) {
             drawing = true;
-            builder = new Pencil.Builder(colorSetting.color);
+            builder = new Pencil.Builder(colorSetting.getColor());
             Context.getContext().activeEditor.beginRetainingFocus();
             return true;
         }
@@ -74,10 +74,6 @@ public class PencilTool implements Tool {
 
     @Override
     public boolean keyDown() {
-        if(Controls.bank.status(Controls.TEST_COLOR)) {
-            colorSetting.color = new Color(0xff0000);
-            return true;
-        }
         return false;
     }
 
