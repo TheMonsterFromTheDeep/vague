@@ -211,12 +211,14 @@ public final class Workspace extends Module {
     }
     
     public void stopResizing() {
-        if(!validSize(moveTool)) {
-            moveTool.resetResize();
+        if(moveTool != null) {
+            if(!validSize(moveTool)) {
+                moveTool.resetResize();
+            }
+            moveTool = null;
+            repaint();
+            updateBuffer();
         }
-        moveTool = null;
-        repaint();
-        updateBuffer();
     }
     
     public boolean validPosition(WorkTool t) {
