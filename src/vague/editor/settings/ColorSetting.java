@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import module.paint.GraphicsHandle;
 import module.util.Vector;
 import vague.Resources;
+import vague.input.Controls;
 import vague.menu.ToolOptions;
 
 public class ColorSetting extends ToolSetting {
@@ -103,7 +104,6 @@ public class ColorSetting extends ToolSetting {
         private BufferedImage hsvCursor; //Reference to the HSV cursor
         private BufferedImage valueCursor; //Reference to the value cursor
         //TODO: Consolidate all redundant mousedown booleans into one control thing
-        boolean mouseDown;
         
         private ColorPanel() {
             super(256);
@@ -170,20 +170,18 @@ public class ColorSetting extends ToolSetting {
         
         @Override
         public void mouseDown(MouseEvent e) {
-            if(e.getButton() == MouseEvent.BUTTON1) { 
-                mouseDown = true;
+            if(Controls.bank.LMBDown) { 
                 updateColor(mousePosition());
             }
         }
         
         @Override
         public void mouseUp(MouseEvent e) {
-            mouseDown = false;
         }
         
         @Override
         public void mouseMove(Vector pos, Vector dif) {
-            if(mouseDown) {
+            if(Controls.bank.LMBDown) {
                 updateColor(pos);
             }
         }

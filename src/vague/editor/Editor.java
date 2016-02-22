@@ -26,9 +26,6 @@ public class Editor extends Module {
     private int centerx; //Stores the coordinates of the center of the Editor
     private int centery;
     
-    boolean LMBDown = false;
-    boolean MMBDown = false;
-    
     Vector panPos;
     
     ContextView view;
@@ -54,13 +51,13 @@ public class Editor extends Module {
     
     @Override
     public void mouseMove(Vector pos, Vector dif) {
-        if(LMBDown) {
+        if(Controls.bank.LMBDown) {
             if(view.checkMouse(pos)) {
                 repaint();
             }
         }
         if(!view.moveMouseTool(context.activeTool, pos, dif)) {
-            if(MMBDown) {
+            if(Controls.bank.MMBDown) {
                 view.panX(dif.x);
                 view.panY(dif.y);
                 repaint();
@@ -71,28 +68,11 @@ public class Editor extends Module {
     @Override
     public void mouseDown(MouseEvent e) {
         context.activeTool.mouseDown(e);
-        switch(e.getButton()) {
-            case MouseEvent.BUTTON1:
-                LMBDown = true;
-                break;
-            case MouseEvent.BUTTON2:
-                MMBDown = true;
-                panPos = mousePosition();
-                break;
-        }
     }
     
     @Override
     public void mouseUp(MouseEvent e) {
         context.activeTool.mouseUp(e);
-        switch(e.getButton()) {
-            case MouseEvent.BUTTON1:
-                LMBDown = false;
-                break;
-            case MouseEvent.BUTTON2:
-                MMBDown = false;
-                break;
-        }
     }
     
     @Override
@@ -103,8 +83,6 @@ public class Editor extends Module {
     
     @Override
     public void onUnfocus() {
-        LMBDown = false;
-        MMBDown = false;
         context.clearEditor(this);
     }
     

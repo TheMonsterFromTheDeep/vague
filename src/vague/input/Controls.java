@@ -39,6 +39,10 @@ public class Controls {
     //Stores the controls of the controls object
     private Chord[] controls;
     
+    public boolean LMBDown;
+    public boolean RMBDown;
+    public boolean MMBDown;
+    
     //Creates a Controls object based on the array of 'Control's to use
     public Controls(Chord[] controls) {
         this.controls = controls;

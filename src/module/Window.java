@@ -174,13 +174,19 @@ public class Window implements ModuleParent, MouseListener, MouseMotionListener,
 
     @Override
     public final void mousePressed(MouseEvent me) {
+        mouseDown(me);
         child.mouseDown(me);
     }
+    
+    public void mouseDown(MouseEvent e) { }
 
     @Override
     public final void mouseReleased(MouseEvent me) {
+        mouseUp(me);
         child.mouseUp(me);
     }
+    
+    public void mouseUp(MouseEvent e) { }
 
     @Override
     public final void mouseEntered(MouseEvent me) {

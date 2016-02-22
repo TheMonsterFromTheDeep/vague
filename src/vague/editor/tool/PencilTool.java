@@ -22,7 +22,6 @@ public class PencilTool implements Tool {
     
     ColorSetting colorSetting;
     
-    boolean drawing = false;
     Pencil.Builder builder;
     
     public PencilTool() {
@@ -33,7 +32,6 @@ public class PencilTool implements Tool {
     @Override
     public boolean mouseDown(MouseEvent e) {
         if(e.getButton() == MouseEvent.BUTTON1) {
-            drawing = true;
             builder = new Pencil.Builder(colorSetting.getColor());
             Context.getContext().activeEditor.beginRetainingFocus();
             return true;
@@ -44,7 +42,6 @@ public class PencilTool implements Tool {
     @Override
     public boolean mouseUp(MouseEvent e) {
         if(e.getButton() == MouseEvent.BUTTON1) {
-            drawing = false;
             Context.getContext().addShape(builder.getLine());
             Context.getContext().activeEditor.stopRetainingFocus();
             return true;
@@ -59,7 +56,7 @@ public class PencilTool implements Tool {
 
     @Override
     public boolean mouseMove(FloatVector pos, FloatVector dif) {
-        if(drawing) {
+        if(Controls.bank.LMBDown) {
             builder.addPoint(new FloatVector(pos));
             Editor e = Context.getContext().activeEditor;
             e.drawShapeBuilder(builder);

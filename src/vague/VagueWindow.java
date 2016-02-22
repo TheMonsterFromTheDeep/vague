@@ -1,6 +1,7 @@
 package vague;
 
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import javax.swing.JFrame;
 import module.Module;
 import module.Window;
@@ -55,6 +56,36 @@ public class VagueWindow extends Window {
     @Override
     public void keyUp(KeyEvent e) {
         Controls.bank.update(e.getKeyCode(), false);
+    }
+    
+    @Override
+    public void mouseDown(MouseEvent e) {
+        switch(e.getButton()) {
+            case MouseEvent.BUTTON1:
+                Controls.bank.LMBDown = true;
+                break;
+            case MouseEvent.BUTTON2:
+                Controls.bank.MMBDown = true;
+                break;
+            case MouseEvent.BUTTON3:
+                Controls.bank.RMBDown = true;
+                break;
+        }
+    }
+    
+    @Override
+    public void mouseUp(MouseEvent e) {
+        switch(e.getButton()) {
+            case MouseEvent.BUTTON1:
+                Controls.bank.LMBDown = false;
+                break;
+            case MouseEvent.BUTTON2:
+                Controls.bank.MMBDown = false;
+                break;
+            case MouseEvent.BUTTON3:
+                Controls.bank.RMBDown = false;
+                break;
+        }
     }
     
     public static VagueWindow getWindow() {
