@@ -91,4 +91,9 @@ public class ToolOptions extends Module {
             p.repaint();
         }
     }
+    
+    @Override
+    public boolean retainFocus() {
+        return retaining || activeOption.retainFocus();
+    }
 }

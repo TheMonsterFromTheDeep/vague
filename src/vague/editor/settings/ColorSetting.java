@@ -101,9 +101,15 @@ public class ColorSetting extends ToolSetting {
         private BufferedImage colorWheel;
         private BufferedImage colorWheelMask;
         private BufferedImage bar;
-        private BufferedImage hsvCursor; //Reference to the HSV cursor
-        private BufferedImage valueCursor; //Reference to the value cursor
+        private final BufferedImage hsvCursor; //Reference to the HSV cursor
+        private final BufferedImage valueCursor; //Reference to the value cursor
         //TODO: Consolidate all redundant mousedown booleans into one control thing
+        
+        static final int ACTION_NONE = 0;
+        static final int ACTION_WHEEL = 1;
+        static final int ACTION_GRAY = 2;
+        
+        byte action;
         
         private ColorPanel() {
             super(256);
@@ -114,6 +120,8 @@ public class ColorSetting extends ToolSetting {
             bar = createBar(WHEEL_RADIUS * 2);
             hsvCursor = Resources.bank.SETTING_COLOR_HSV_CURSOR;
             valueCursor = Resources.bank.SETTING_COLOR_VALUE_CURSOR;
+            
+            action = ACTION_NONE;
         }
         
         public static ColorPanel create() { return new ColorPanel(); }
@@ -144,16 +152,29 @@ public class ColorSetting extends ToolSetting {
             g.drawImage(valueCursor, BAR_CURSOR_X - (valueCursor.getWidth() / 2), BAR_CURSOR_BASEY + (int)((1 - cs.value) * BAR_CALC_HEIGHT) - (valueCursor.getHeight() / 2));
         }
         
+        void getAction(Vector pos) {
+            if(pos.x > BAR_OFFSET && pos.x < BAR_END && pos.y > WHEEL_OFFSET && pos.y < WHEEL_END) {
+                action = ACTION_GRAY;
+            }
+            else if((float)Math.sqrt(((pos.x - WHEEL_CENTER) * (pos.x - WHEEL_CENTER)) + ((pos.y - WHEEL_CENTER) * (pos.y - WHEEL_CENTER))) <= WHEEL_RADIUS) {
+                action = ACTION_WHEEL;
+            }
+            else {
+                action = ACTION_NONE;
+            }
+        }
+        
         void updateColor(Vector pos) {
-            float dist = (float)Math.sqrt(((pos.x - WHEEL_CENTER) * (pos.x - WHEEL_CENTER)) + ((pos.y - WHEEL_CENTER) * (pos.y - WHEEL_CENTER)));
-            if(dist < WHEEL_RADIUS) {
+            if(action == ACTION_WHEEL) {
+                float dist = (float)Math.sqrt(((pos.x - WHEEL_CENTER) * (pos.x - WHEEL_CENTER)) + ((pos.y - WHEEL_CENTER) * (pos.y - WHEEL_CENTER)));
+                if(dist > WHEEL_RADIUS) { dist = WHEEL_RADIUS; }
                 float hue = (float)(Math.atan2(pos.y - WHEEL_CENTER, pos.x - WHEEL_CENTER) / (2 * Math.PI));
                 ColorSetting cs = getColorSetting();
                 cs.hue = hue;
                 cs.saturation = dist / WHEEL_RADIUS;
                 repaint();
             }
-            else if(pos.x > BAR_OFFSET && pos.x < BAR_END && pos.y > WHEEL_OFFSET && pos.y < WHEEL_END) {
+            else if(action == ACTION_GRAY) {
                 float value;
                 if(pos.y < BAR_CURSOR_BASEY) {
                     value = 1;
@@ -170,13 +191,19 @@ public class ColorSetting extends ToolSetting {
         
         @Override
         public void mouseDown(MouseEvent e) {
-            if(Controls.bank.LMBDown) { 
-                updateColor(mousePosition());
+            if(Controls.bank.LMBDown) {
+                keepFocus();
+                Vector pos = mousePosition();
+                getAction(pos);
+                updateColor(pos);
             }
         }
         
         @Override
         public void mouseUp(MouseEvent e) {
+            if(retaining) {
+                releaseFocus();
+            }
         }
         
         @Override
