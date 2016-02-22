@@ -119,7 +119,7 @@ public class Window implements ModuleParent, MouseListener, MouseMotionListener,
         
         loadBuffer();
         
-        child = Module.create(this); //Create a dummy Module so there are no problems with null objects
+        child = Module.create(); //Create a dummy Module so there are no problems with null objects
         
         frame.setVisible(true);
     }
@@ -135,6 +135,7 @@ public class Window implements ModuleParent, MouseListener, MouseMotionListener,
         panel.repaint(child.getAbsoluteX(), child.getAbsoluteY(), child.width(), child.height());
     }
     
+    @Override
     public final GraphicsHandle beginDraw(Module child) {
         return new GraphicsHandle(child.getAbsoluteX(), child.getAbsoluteY(), child.width(), child.height(), graphics);
     }
@@ -143,6 +144,7 @@ public class Window implements ModuleParent, MouseListener, MouseMotionListener,
         return new GraphicsHandle(x, y, width, height, graphics);
     }
     
+    @Override
     public final void endDraw(GraphicsHandle g) {
         panel.repaint(g.offsetx, g.offsety, g.width, g.height);
     }

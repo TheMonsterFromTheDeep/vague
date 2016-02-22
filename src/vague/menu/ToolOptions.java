@@ -16,12 +16,10 @@ import vague.editor.settings.ToolSetting;
  */
 public class ToolOptions extends Module {
     public static class OptionPanel extends Module {
-        protected OptionPanel() {
-            super(VagueWindow.getWindow());
-        }
+        protected OptionPanel() { }
         
         protected OptionPanel(int height) {
-            super(VagueWindow.getWindow(), 50, height);
+            super(50, height);
         }
         
         public static OptionPanel create() {
@@ -48,14 +46,12 @@ public class ToolOptions extends Module {
         activeOption = options[0];
     }
     
-    private ToolOptions(Window w) {
-        super(w);
-        
+    private ToolOptions() {
         options = new OptionPanel[0];
     }
     
-    public static ToolOptions create(Window w) {
-        return new ToolOptions(w);
+    public static ToolOptions create() {
+        return new ToolOptions();
     }
     
     @Override

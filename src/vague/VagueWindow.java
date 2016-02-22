@@ -42,7 +42,7 @@ public class VagueWindow extends Window {
         
         //this.setSize(800, 600);
         
-        workspace = Workspace.create(this, DEFAULT_WIDTH, DEFAULT_HEIGHT, new Module[0]);
+        workspace = Workspace.create(DEFAULT_WIDTH, DEFAULT_HEIGHT, new Module[0]);
         
         setChild(workspace);
     }

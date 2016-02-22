@@ -53,7 +53,7 @@ public class Module implements ModuleParent {
     
     protected boolean retaining = false;
     
-    private final Window windowHandle;
+    //private final Window windowHandle;
     
     //Stores the rendered version of the module. Private because nothing should modify it.
     //protected BufferedImage buffer;
@@ -95,7 +95,7 @@ public class Module implements ModuleParent {
         //doRenderCalc();
     }
     
-    protected Module(Window handle) {
+    protected Module() {
         /**
          * Default position and size of the Module.
          * The default position is 0, 0 and the default size is also 0, 0.
@@ -104,11 +104,11 @@ public class Module implements ModuleParent {
          */
         bounds = new Rectangle(0,0,0,0);
         parent = new NullParent();
-        windowHandle = handle;
+        //windowHandle = handle;
         //doRenderCalc();
     }
     
-    protected Module(Window handle, int width, int height) {
+    protected Module(int width, int height) {
         /**
          * Default position and size of the Module.
          * The default position is 0, 0 and the default size is also 0, 0.
@@ -117,12 +117,12 @@ public class Module implements ModuleParent {
          */
         bounds = new Rectangle(0,0,width,height);
         parent = new NullParent();
-        windowHandle = handle;
+       // windowHandle = handle;
         //doRenderCalc();
     }
     
-    public static Module create(Window handle) {
-        return new Module(handle);
+    public static Module create() {
+        return new Module();
     }
     
     /**
@@ -400,21 +400,32 @@ public class Module implements ModuleParent {
     
     
     public final void repaint() {
-        GraphicsHandle handle = windowHandle.beginDraw(this);
+        GraphicsHandle handle = parent.beginDraw(this);
         paint(handle);
-        windowHandle.endDraw(handle);
+        parent.endDraw(handle);
     }
     //TODO: Make these methods have a less ambiguous name
     public final GraphicsHandle beginDraw() {
-        return windowHandle.beginDraw(this);
+        return parent.beginDraw(this);
+    }
+    
+    /**
+     * Returns a GraphicsHandle the size and position of the specified child Module.
+     * @param m
+     * @return 
+     */
+    @Override
+    public final GraphicsHandle beginDraw(Module m) {
+        return parent.beginDraw(this).getClip(m.bounds.position.x, m.bounds.position.y, m.bounds.size.x, m.bounds.size.y);
     }
     
     public final GraphicsHandle beginDraw(int x, int y, int width, int height) {
-        return windowHandle.beginDraw(this, x, y, width, height);
+        return parent.beginDraw(this).getClip(x, y, width, height);
     }
     
+    @Override
     public final void endDraw(GraphicsHandle handle) {
-        windowHandle.endDraw(handle);
+        parent.endDraw(handle);
     }
     
     /**
@@ -479,7 +490,7 @@ public class Module implements ModuleParent {
     /**
      * Returns a handle to the Window that the Module is attached to.
      */
-    public final Window getHandle() {
-        return windowHandle;
-    }
+    //public final Window getHandle() {
+    //    return windowHandle;
+    //}
 }

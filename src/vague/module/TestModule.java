@@ -15,13 +15,12 @@ public class TestModule extends Module {
     
     int rectx;
     
-    private TestModule(Window w, int width, int height) {
-        super(w);
+    private TestModule(int width, int height) {
         //beginDraw(0, 0, 0, 0, callback);
     }
     
-    public static TestModule create(Window w, int width, int height) {
-        return new TestModule(w,width,height);
+    public static TestModule create(int width, int height) {
+        return new TestModule(width,height);
     }
     
     @Override

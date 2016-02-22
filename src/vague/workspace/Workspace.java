@@ -13,6 +13,7 @@ import module.Window;
 import module.container.Container;
 import module.paint.GraphicsHandle;
 import module.util.Vector;
+import vague.VagueWindow;
 
 /**
  * The Workspace defines a container in which the user can create and move small containers which
@@ -50,8 +51,8 @@ public final class Workspace extends Module {
     int activeIndex; //Similar to the Container's activeIndex, stores the index in 'children' of the active child Module. -1 if there is none.
     WorkTool activeChild; //Similar to the Container's activeChild, stores a handle to the active child Module.
     
-    private Workspace(Window w, int width, int height) {
-        super(w, width, height);
+    private Workspace(int width, int height) {
+        super(width, height);
         
         workspace = getValidBuffer(size());
         
@@ -63,8 +64,8 @@ public final class Workspace extends Module {
     }
     
     //Conform to Module.create() syntax
-    public static Workspace create(Window w, int width, int height, Module[] children) {
-        return new Workspace(w, width, height);
+    public static Workspace create(int width, int height, Module[] children) {
+        return new Workspace(width, height);
     }
     
     /**
@@ -240,7 +241,7 @@ public final class Workspace extends Module {
             toolStart.snap(GRID_SIZE); //Snaps the tool start to grid
             toolEnd.snap(GRID_SIZE); //Snaps the tool end to grid
         }
-        WorkTool newTool = WorkTool.create(getHandle(), toolStart,toolEnd); //Create the new tool
+        WorkTool newTool = WorkTool.create(toolStart,toolEnd); //Create the new tool
         /*
         Check if new tool is legitimate - this requires two checks:
         - The new tool has a size that is at least the minimum size
@@ -395,7 +396,7 @@ public final class Workspace extends Module {
     private void updateBuffer() {
         //As explained under 'WORKSPACE' BUFFER EXPLANATION, the static children are drawn to the 'workspace' buffer
         //as the Workspace takes up the entire screen, this can be done just by getting the screen buffer
-        workspace = getHandle().getBuffer();
+        workspace = VagueWindow.getWindow().getBuffer();
     }
     
     @Override

@@ -79,9 +79,7 @@ public class WorkTool extends Module {
     
     private boolean focused; //Stores whether the WorkTool has focus
     
-    private WorkTool(Window w, Vector start, Vector end) {
-        super(w);
-        
+    private WorkTool(Vector start, Vector end) {
         bgColor = BG_COLOR; //Set the Module background color to the static background color
         
         /*
@@ -116,8 +114,8 @@ public class WorkTool extends Module {
      * Initializes a nullified WorkTool that does nothing.
      * @param w 
      */
-    private WorkTool(Window w) {
-        super(w, 0, 0);
+    private WorkTool() {
+        super(0, 0);
     }
     
     /**
@@ -125,22 +123,22 @@ public class WorkTool extends Module {
      * @param window
      * @return 
      */
-    public static WorkTool create(Window window) {
+    public static WorkTool create() {
         //TODO: Figure out if this has side effects
-        return new WorkTool(window);
+        return new WorkTool();
     }
     
-    public static WorkTool create(Window window, Vector start, Vector end) {
-        WorkTool w = new WorkTool(window, start,end); //Create the WorkTool based on the start and end Vectors
+    public static WorkTool create(Vector start, Vector end) {
+        WorkTool w = new WorkTool(start,end); //Create the WorkTool based on the start and end Vectors
         
-        w.child = Module.create(window); //This makes sure that the child module is initialized.
+        w.child = Module.create(); //This makes sure that the child module is initialized.
         
         //TEST PURPOSES ONLY:
         //w.child = TestModule.create(0,0); //THIS IS USED TO TEST THE WorkTool AND IN THE FUTURE WILL NOT BE THERE
         //IN THE FUTURE, PLANS ARE TO HAVE A MENU APPEAR TO SELECT WHAT TYPE OF MODULE THIS WorkTool SHOULD REPRESENT
         //END TEST
         
-        w.child = SmartMenu.create(window, w);
+        w.child = SmartMenu.create(w);
         
         w.child.setParent(w); //Make sure there are no NullPointerExceptions thrown because of a loss of a parent     
         
@@ -363,7 +361,7 @@ public class WorkTool extends Module {
             workspace.removeChild(this); //If the nextAction was ACTION_CLOSE, this WorkTool needs to be dismissed
         }
         else if(nextAction == ACTION_REFRESH) {
-            this.fill(SmartMenu.create(getHandle(), this));
+            this.fill(SmartMenu.create(this));
         }
         else if(nextAction == ACTION_MOVE) { //If the nextAction is ACTION_MOVE, start moving the WorkTool
             startPos = position(); //The start position, used to reset the WorkTool's position if it is moved invalidly,

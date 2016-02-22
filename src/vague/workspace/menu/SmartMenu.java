@@ -22,21 +22,19 @@ public class SmartMenu extends Module {
     private WorkTool tool;
     private ControlSelector[] controlSelectors;
     
-    private SmartMenu(Window w, WorkTool tool) {
-        super(w);
-        
+    private SmartMenu(WorkTool tool) {
         this.tool = tool;
         this.bgColor = BG_COLOR;
         
         controlSelectors = new ControlSelector[] {
             //Create a dummy test module Module to test SmartMenu module module
-            new ControlSelector("Editor", Editor.create(w), 3, 20),
-            new ControlSelector("Tool Options", ToolOptions.create(w), 3, 66)
+            new ControlSelector("Editor", Editor.create(), 3, 20),
+            new ControlSelector("Tool Options", ToolOptions.create(), 3, 66)
         };
     }
     
-    public static SmartMenu create(Window w, WorkTool tool) {
-        return new SmartMenu(w, tool);
+    public static SmartMenu create(WorkTool tool) {
+        return new SmartMenu(tool);
     }
     
     @Override

@@ -1,6 +1,7 @@
 package module.meta;
 
 import module.Module;
+import module.paint.GraphicsHandle;
 import module.util.Vector;
 import vague.util.Cursor;
 
@@ -18,4 +19,7 @@ public interface ModuleParent {
     
     void setCursor(Cursor c);
     void clearCursor();
+    
+    GraphicsHandle beginDraw(Module m);
+    void endDraw(GraphicsHandle g);
 }

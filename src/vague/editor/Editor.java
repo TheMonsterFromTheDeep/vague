@@ -34,9 +34,7 @@ public class Editor extends Module {
     ContextView view;
     Context context;
     
-    private Editor(Window w) {
-        super(w);
-        
+    private Editor() {
         centerx = 0;
         centery = 0;
         
@@ -50,8 +48,8 @@ public class Editor extends Module {
         centery = size.y / 2;
     }
             
-    public static Editor create(Window w) {
-        return new Editor(w);
+    public static Editor create() {
+        return new Editor();
     }
     
     @Override
