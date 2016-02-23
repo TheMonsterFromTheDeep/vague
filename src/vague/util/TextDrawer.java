@@ -6,8 +6,9 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 
 public class TextDrawer {
-    public static final int TEXT_HEIGHT = 7;
-    public static final int TEXT_WIDTH = 5;
+    public static final int TEXT_HEIGHT = 14;
+    public static final int TEXT_WIDTH = 10;
+    public static final int TEXT_OFFSET = TEXT_WIDTH + 1;
     
     public static final double textHeight(double scale) {
         return TEXT_HEIGHT * scale;
@@ -28,7 +29,7 @@ public class TextDrawer {
     public TextDrawer(BufferedImage data) {
         chars = new BufferedImage[95];
         for(int i = 0; i < chars.length; i++) {
-            chars[i] = data.getSubimage(i * 5, 0, 5, 7);
+            chars[i] = data.getSubimage(i * TEXT_WIDTH, 0, TEXT_WIDTH, TEXT_HEIGHT);
             for(int x = 0; x < chars[i].getWidth(); x++) {
                 for(int y = 0; y < chars[i].getHeight(); y++) {
                     if(chars[i].getRGB(x, y) != 0xff000000) {
@@ -40,14 +41,14 @@ public class TextDrawer {
     }
     
     public BufferedImage draw(String text, double size) {
-        BufferedImage render = new BufferedImage(text.length() * 6 - 1, 7, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage render = new BufferedImage(text.length() * TEXT_OFFSET - 1, TEXT_HEIGHT, BufferedImage.TYPE_INT_ARGB);
         Graphics renderer = render.createGraphics();
         
         for(int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
             if(c >= 32 && c <= 126) {
                 c -= 32;
-                renderer.drawImage(chars[c], i * 6, 0, null);
+                renderer.drawImage(chars[c], i * TEXT_OFFSET, 0, null);
             }
         }
         

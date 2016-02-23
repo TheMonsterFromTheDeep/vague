@@ -76,7 +76,7 @@ public class SmartMenu extends Module {
         graphics.setColor(new Color(0x000000));
         graphics.drawRect(0, 0, width() - 1, height() - 1);
         
-        this.drawText("Choose control:", 2, 3, 3, graphics);
+        this.drawText("Choose control:", 1, 3, 3, graphics);
         for(int i = 0; i < controlSelectors.length; i++) {
             graphics.drawImage(controlSelectors[i].draw(), controlSelectors[i].x, controlSelectors[i].y, null);
         }

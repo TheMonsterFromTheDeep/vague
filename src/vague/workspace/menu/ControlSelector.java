@@ -12,7 +12,7 @@ public class ControlSelector {
     static final Color BG_PRESSED = new Color(0xb0b0dd);
     
     static final int INSET_WIDTH = 3;
-    static final double TEXT_SCALE = 2.0;
+    static final double TEXT_SCALE = 1.0;
     
     private String text;
     private Module type;
