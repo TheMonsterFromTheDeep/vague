@@ -15,9 +15,9 @@ import module.paint.GraphicsHandle;
 public class ScalarGraphics {
     GraphicsHandle handle;
     
-    int offx;
-    int offy;
-    float scale;
+    public final int offx;
+    public final int offy;
+    public final float scale;
     
     public ScalarGraphics(GraphicsHandle handle, int offx, int offy, float scale) {
         this.handle = handle;
