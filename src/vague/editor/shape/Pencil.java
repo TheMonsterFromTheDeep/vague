@@ -4,6 +4,7 @@ import java.awt.Color;
 import module.paint.GraphicsHandle;
 import module.util.FloatVector;
 import module.util.Vector;
+import vague.editor.ScalarGraphics;
 
 public class Pencil implements Shape {
 
@@ -44,20 +45,20 @@ public class Pencil implements Shape {
         }
 
         @Override
-        public void draw(int offx, int offy, GraphicsHandle handle, float scale) {
+        public void draw(ScalarGraphics handle) {
             handle.setColor(color);
             if(nextWrite > 1) {
                 //TODO: Use these variables for faster
-                int px = (int)((points[0].x + offx) * scale), py = (int)((points[0].y + offy) * scale), nx, ny;
-                //Stupid derp optimization (i + 1)
-                //[i'm sorry]
-                for(int i = 0; i + 1 < nextWrite; i++) {
-                    nx = (int)((points[i + 1].x + offx) * scale);
-                    ny = (int)((points[i + 1].y + offy) * scale);
-                    handle.drawLine(px, py, nx, ny);
-                    px = nx;
-                    py = ny;
-                }
+                //int px = (int)((points[0].x + offx) * scale), py = (int)((points[0].y + offy) * scale), nx, ny;
+                    //Stupid derp optimization (i + 1)
+                    //[i'm sorry]
+                    for(int i = 0; i + 1 < nextWrite; i++) {
+                        //nx = (int)((points[i + 1].x + offx) * scale);
+                        //ny = (int)((points[i + 1].y + offy) * scale);
+                        handle.drawLine(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y);
+                       // px = nx;
+                        //py = ny;
+                    }
             }
         }
     }
@@ -73,21 +74,21 @@ public class Pencil implements Shape {
     }
     
     @Override
-    public void draw(int offx, int offy, GraphicsHandle handle, float scale) {
+    public void draw(ScalarGraphics handle) {
         
         
         handle.setColor(color);
         if(points.length > 1) {
             //TODO: Use these variables for faster
-            int px = (int)((points[0].x + offx) * scale), py = (int)((points[0].y + offy) * scale), nx, ny;
+            //int px = (int)((points[0].x + offx) * scale), py = (int)((points[0].y + offy) * scale), nx, ny;
                 //Stupid derp optimization (i + 1)
                 //[i'm sorry]
                 for(int i = 0; i + 1 < points.length; i++) {
-                    nx = (int)((points[i + 1].x + offx) * scale);
-                    ny = (int)((points[i + 1].y + offy) * scale);
-                    handle.drawLine(px, py, nx, ny);
-                    px = nx;
-                    py = ny;
+                    //nx = (int)((points[i + 1].x + offx) * scale);
+                    //ny = (int)((points[i + 1].y + offy) * scale);
+                    handle.drawLine(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y);
+                   // px = nx;
+                    //py = ny;
                 }
         }
     }

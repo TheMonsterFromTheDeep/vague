@@ -130,14 +130,15 @@ public class Context {
         //int dy = y + (int)(topLeft.y * scale);
         
         GraphicsHandle clippedHandle = handle.getClip(x, y, (int)(width * scale), (int)(height * scale));
+        ScalarGraphics sg = new ScalarGraphics(clippedHandle, -topLeft.x, -topLeft.y, scale);
         
         for(Shape s : shapes) {
-            s.draw(-topLeft.x, -topLeft.y, clippedHandle, scale);
+            s.draw(sg);
         }
     }
     
     public void renderShapeBuilder(Shape.Builder b, GraphicsHandle handle, int x, int y, float scale) {
-        b.draw(-topLeft.x, -topLeft.y, handle.getClip(x, y, (int)(width * scale), (int)(height * scale)), scale);
+        b.draw(new ScalarGraphics(handle.getClip(x, y, (int)(width * scale), (int)(height * scale)), -topLeft.x, -topLeft.y, scale));
     }
     
     public int getWidth() { return width; }
