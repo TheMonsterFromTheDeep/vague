@@ -181,7 +181,7 @@ public final class Workspace extends Module {
     public void keyDown(KeyEvent e) {
         if(activeIndex != -1) { //If there is an active tool (activeIndex > -1), then it's key down method should be called
             if(Controls.bank.status(Controls.WORKSPACE_TAKE_SCREENSHOT)) {
-                activeChild.fill(new SaveFile(VagueWindow.getWindow().getBuffer(), activeChild));
+                activeChild.fill(new SaveFile("Save screenshot:", VagueWindow.getWindow().getBuffer(), activeChild));
             }
             activeChild.keyDown(e);
         }

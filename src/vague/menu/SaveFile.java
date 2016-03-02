@@ -29,11 +29,13 @@ public class SaveFile extends Module {
     static final Color BG_PRESSED = new Color(0xb0b0dd);
     
     static final int OFFSET_LEFT = 16;
-    static final int OFFSET_CANCEL = 64;
-    static final int OFFSET_SAVE = 16;
-    static final int OFFSET_BUTTON = 32;
+    static final int OFFSET_CANCEL = 80;
+    static final int OFFSET_TITLE = 16;
+    static final int OFFSET_SAVE = 48;
+    static final int OFFSET_BUTTON = 80;
     
     String filePath;
+    String prompt;
     
     BufferedImage toSave;
     
@@ -44,6 +46,8 @@ public class SaveFile extends Module {
     Rectangle cancelButton;
     
     WorkTool parent;
+    
+    final int filePathOffset;
     
     /**
      * Modifies a string to represent what it should look like by taking out special characters.
@@ -66,13 +70,16 @@ public class SaveFile extends Module {
         return ret;
     }
     
-    public SaveFile(BufferedImage toSave, WorkTool parent) {
+    public SaveFile(String prompt, BufferedImage toSave, WorkTool parent) {
         filePath = "";
+        this.prompt = prompt;
         this.toSave = toSave;
         this.parent = parent;
         
-        okButton = new Rectangle(OFFSET_LEFT - 2, OFFSET_SAVE + OFFSET_BUTTON - 2, (int)TextDrawer.stringWidth("OK", 1) + 4, TextDrawer.TEXT_HEIGHT + 4);
-        cancelButton = new Rectangle(OFFSET_LEFT + OFFSET_CANCEL - 2, OFFSET_SAVE + OFFSET_BUTTON - 2, (int)TextDrawer.stringWidth("Cancel", 1) + 4, TextDrawer.TEXT_HEIGHT + 4);
+        filePathOffset = (int)TextDrawer.stringWidth("Path: ", 1);
+        
+        okButton = new Rectangle(OFFSET_LEFT - 2, OFFSET_BUTTON - 2, (int)TextDrawer.stringWidth("OK", 1) + 4, TextDrawer.TEXT_HEIGHT + 4);
+        cancelButton = new Rectangle(OFFSET_CANCEL - 2, OFFSET_BUTTON - 2, (int)TextDrawer.stringWidth("Cancel", 1) + 4, TextDrawer.TEXT_HEIGHT + 4);
     }
     
     @Override
@@ -114,12 +121,15 @@ public class SaveFile extends Module {
     @Override
     public void paint(GraphicsHandle handle) {
         handle.fill(BG_COLOR);
-        this.drawText(filePath, 1, OFFSET_LEFT, OFFSET_SAVE, handle);
-        //TODO: Better text drawing?
         
+        this.drawText(prompt, 1, OFFSET_LEFT, OFFSET_TITLE, handle);
+        
+        this.drawText("Path:", 1, OFFSET_LEFT, OFFSET_SAVE, handle);
         int textWidth = (int)TextDrawer.stringWidth(filePath, 1);
         handle.setColor(Color.BLACK);
-        handle.drawRect(OFFSET_LEFT - 2, OFFSET_SAVE - 2, textWidth + 4, TextDrawer.TEXT_HEIGHT + 4);
+        handle.drawRect(OFFSET_LEFT + filePathOffset - 2, OFFSET_SAVE - 2, textWidth + 4, TextDrawer.TEXT_HEIGHT + 4);
+        this.drawText(filePath, 1, OFFSET_LEFT + filePathOffset, OFFSET_SAVE, handle);
+        //TODO: Better text drawing?
         
         //TODO: Centralized color resource base
         handle.setColor(okPress ? BG_PRESSED : BG_NORMAL);
@@ -127,13 +137,13 @@ public class SaveFile extends Module {
         handle.setColor(Color.BLACK);
         handle.drawRect(okButton.position.x, okButton.position.y, okButton.size.x, okButton.size.y);
         
-        this.drawText("OK", 1, OFFSET_LEFT, OFFSET_SAVE + OFFSET_BUTTON, handle);
+        this.drawText("OK", 1, OFFSET_LEFT, OFFSET_BUTTON, handle);
         
         handle.setColor(cancelPress ? BG_PRESSED : BG_NORMAL);
         handle.fillRect(cancelButton.position.x, cancelButton.position.y, cancelButton.size.x, cancelButton.size.y);
         handle.setColor(Color.BLACK);
         handle.drawRect(cancelButton.position.x, cancelButton.position.y, cancelButton.size.x, cancelButton.size.y);
         
-        this.drawText("Cancel", 1, OFFSET_LEFT + OFFSET_CANCEL, OFFSET_SAVE + OFFSET_BUTTON, handle);
+        this.drawText("Cancel", 1, OFFSET_CANCEL, OFFSET_BUTTON, handle);
     }
 }
