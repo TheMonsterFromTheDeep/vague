@@ -41,6 +41,9 @@ public class TextDrawer {
     }
     
     public BufferedImage draw(String text, double size) {
+        if(text.length() == 0) {
+            return new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+        }
         BufferedImage render = new BufferedImage(text.length() * TEXT_OFFSET - 1, TEXT_HEIGHT, BufferedImage.TYPE_INT_ARGB);
         Graphics renderer = render.createGraphics();
         

@@ -2,6 +2,7 @@ package vague.editor;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
 import module.Window;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -104,14 +105,14 @@ public class Editor extends Module {
     }
     
     @Override
-    public void keyDown() {
+    public void keyDown(KeyEvent e) {
         if(!context.activeTool.keyDown()) {
             
         }
     }
     
     @Override
-    public void keyUp() {
+    public void keyUp(KeyEvent e) {
         if(!context.activeTool.keyUp()) {
             
         }

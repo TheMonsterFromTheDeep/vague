@@ -272,8 +272,8 @@ public class Module implements ModuleParent {
     /*
     Key Event methods to be overloaded in subclasses.
     */
-    public void keyDown() { }
-    public void keyUp() { }
+    public void keyDown(KeyEvent e) { }
+    public void keyUp(KeyEvent e) { }
     public void keyType(KeyEvent e) { }
     
     /**

@@ -9,20 +9,22 @@ import java.awt.event.KeyEvent;
 public class Controls {
     public static final int WORKSPACE_GRID_SNAP = 0;
     public static final int WORKSPACE_SQUARE_TOOL = 1;
-    public static final int EDITOR_MODIFIER_PAN_VERT = 2;
-    public static final int EDITOR_MODIFIER_PAN_HORZ = 3;
-    public static final int EDITOR_RESET_ZOOM = 4;
-    public static final int EDITOR_RESET_PAN = 5;
-    public static final int EDITOR_RESET_ZOOM_AND_PAN = 6;
-    public static final int EDITOR_TOGGLE_GRID = 7;
-    public static final int PENCIL_DRAW_LINE = 8;
-    public static final int PENCIL_INVERT_COLORS = 9;
+    public static final int WORKSPACE_TAKE_SCREENSHOT = 2;
+    public static final int EDITOR_MODIFIER_PAN_VERT = 3;
+    public static final int EDITOR_MODIFIER_PAN_HORZ = 4;
+    public static final int EDITOR_RESET_ZOOM = 5;
+    public static final int EDITOR_RESET_PAN = 6;
+    public static final int EDITOR_RESET_ZOOM_AND_PAN = 7;
+    public static final int EDITOR_TOGGLE_GRID = 8;
+    public static final int PENCIL_DRAW_LINE = 9;
+    public static final int PENCIL_INVERT_COLORS = 10;
     public static final int TEST_COLOR = 900; //A test control for changing drawing color using the Pencil tool
     
     //Initializes the default state of the controls of the application
     public static final Chord[] DEFAULT = new Chord[] {
         new Chord(WORKSPACE_GRID_SNAP,new Control(KeyEvent.VK_CONTROL)),
         new Chord(WORKSPACE_SQUARE_TOOL,new Control(KeyEvent.VK_SHIFT)),
+        new Chord(WORKSPACE_TAKE_SCREENSHOT,new Control[] { new Control(KeyEvent.VK_S), new Control(KeyEvent.VK_ALT), new Control(KeyEvent.VK_SHIFT)}),
         new Chord(EDITOR_MODIFIER_PAN_VERT,new Control(KeyEvent.VK_CONTROL)),
         new Chord(EDITOR_MODIFIER_PAN_HORZ,new Control(KeyEvent.VK_SHIFT)),
         new Chord(EDITOR_RESET_ZOOM,new Control(KeyEvent.VK_8),Chord.MODIFIER_SHIFT),

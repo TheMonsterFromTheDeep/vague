@@ -71,6 +71,7 @@ public class WorkTool extends Module {
     private Vector startSize; //Stores the size to reset to if a resize fails
     
     private Module child; //The WorkTool contains a single Module child which does what it needs to do
+    private Module flip; //The WorkTool also stores its last used child
     private boolean active; //Stores whether the child Module is being controlled by the user
     
     private Workspace workspace; //Stores a class reference to the Workspace that this WorkTool is a child of.
@@ -439,7 +440,29 @@ public class WorkTool extends Module {
      * @param m The new Module to become the child.
      */
     public void fill(Module m) {
+        this.flip = this.child;
         this.child = m;
+        child.setParent(this); //Set the parent of the child so it can call drawParent() and other methods
+        //Resize the new child Module to fill the WorkTool
+        child.resize(width() - 2 * INSET_WIDTH, height() - 2 * INSET_WIDTH);
+        child.locate(INSET_WIDTH, INSET_WIDTH); //Locate the child inside the insets
+        //child.draw(); //Set initial graphical state of child
+        if(active) { //If the child *will be* active, focus it
+            child.onFocus();
+        }
+        repaint(); //Update WorkTool's graphical state to include that of the new child
+    }
+    
+    /**
+     * Changes the WorkTool's module back to the last one before it was replaced.
+    */
+    public void flip() {
+        Module tmp = this.flip;
+        this.flip = this.child;
+        if(tmp == null) {
+            tmp = SmartMenu.create(this);
+        }
+        this.child = tmp;
         child.setParent(this); //Set the parent of the child so it can call drawParent() and other methods
         //Resize the new child Module to fill the WorkTool
         child.resize(width() - 2 * INSET_WIDTH, height() - 2 * INSET_WIDTH);
@@ -464,9 +487,9 @@ public class WorkTool extends Module {
       be passed down the event chain
     */
     @Override
-    public void keyDown() { child.keyDown(); }
+    public void keyDown(KeyEvent e) { child.keyDown(null); }
     @Override
-    public void keyUp() { child.keyUp(); }
+    public void keyUp(KeyEvent e) { child.keyUp(null); }
     @Override
     public void keyType(KeyEvent e) { child.keyType(e); }
        

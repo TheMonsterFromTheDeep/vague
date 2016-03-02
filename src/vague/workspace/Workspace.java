@@ -2,9 +2,13 @@ package vague.workspace;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import vague.Resources;
 import module.util.Rectangle;
 import vague.input.Controls;
@@ -14,6 +18,7 @@ import module.container.Container;
 import module.paint.GraphicsHandle;
 import module.util.Vector;
 import vague.VagueWindow;
+import vague.menu.SaveFile;
 
 /**
  * The Workspace defines a container in which the user can create and move small containers which
@@ -173,16 +178,26 @@ public final class Workspace extends Module {
     }
     
     @Override
-    public void keyDown() {
+    public void keyDown(KeyEvent e) {
         if(activeIndex != -1) { //If there is an active tool (activeIndex > -1), then it's key down method should be called
-            activeChild.keyDown();
+            if(Controls.bank.status(Controls.WORKSPACE_TAKE_SCREENSHOT)) {
+                activeChild.fill(new SaveFile(VagueWindow.getWindow().getBuffer(), activeChild));
+            }
+            activeChild.keyDown(e);
         }
     }
     
     @Override
-    public void keyUp() {
+    public void keyUp(KeyEvent e) {
         if(activeIndex != -1) { //If there is an active tool (activeIndex > -1), then it's key up method should be updated
-            activeChild.keyUp();
+            activeChild.keyUp(e);
+        }
+    }
+    
+    @Override
+    public void keyType(KeyEvent e) {
+        if(activeIndex != -1) { //If there is an active tool (activeIndex > -1), then it's key up method should be updated
+            activeChild.keyType(e);
         }
     }
     

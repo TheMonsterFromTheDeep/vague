@@ -227,7 +227,7 @@ public class Window implements ModuleParent, MouseListener, MouseMotionListener,
     @Override
     public final void keyPressed(KeyEvent ke) {
         keyDown(ke);
-        child.keyDown();
+        child.keyDown(ke);
     }
     
     public void keyDown(KeyEvent e) { }
@@ -235,7 +235,7 @@ public class Window implements ModuleParent, MouseListener, MouseMotionListener,
     @Override
     public final void keyReleased(KeyEvent ke) {
         keyUp(ke);
-        child.keyUp();
+        child.keyUp(ke);
     }
     
     public void keyUp(KeyEvent e) { }
