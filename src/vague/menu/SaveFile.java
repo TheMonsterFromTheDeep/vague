@@ -106,6 +106,12 @@ public class SaveFile extends Module {
     }
     
     @Override
+    public void onUnfocus() {
+        okPress = false;
+        cancelPress = false;
+    }
+    
+    @Override
     public void paint(GraphicsHandle handle) {
         handle.fill(BG_COLOR);
         this.drawText(filePath, 1, OFFSET_LEFT, OFFSET_SAVE, handle);

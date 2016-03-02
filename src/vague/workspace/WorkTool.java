@@ -451,6 +451,7 @@ public class WorkTool extends Module {
      */
     public void fill(Module m) {
         this.flip = this.child;
+        this.flip.onUnfocus();
         this.child = m;
         child.setParent(this); //Set the parent of the child so it can call drawParent() and other methods
         //Resize the new child Module to fill the WorkTool
@@ -470,6 +471,7 @@ public class WorkTool extends Module {
      * @param m The new Module to become the child.
      */
     public void replace(Module m) {
+        //No need to unfocus anything, as no modules are being preserved
         this.child = m;
         child.setParent(this); //Set the parent of the child so it can call drawParent() and other methods
         //Resize the new child Module to fill the WorkTool
@@ -488,6 +490,7 @@ public class WorkTool extends Module {
     public void flip() {
         Module tmp = this.flip;
         this.flip = this.child;
+        this.flip.onUnfocus();
         if(tmp == null) {
             tmp = SmartMenu.create(this);
         }
