@@ -53,6 +53,7 @@ public class WorkTool extends Module {
     static final byte ACTION_RESIZE_BL = 5; //The WorkTool is being resized (by the bottom-left corner)
     static final byte ACTION_RESIZE_BR = 6; //The WorkTool is being resized (by the bottom-right corner)
     static final byte ACTION_REFRESH = 7; //The WorkTool can be refreshed (a new control can be selected)
+    static final byte ACTION_FLIP = 8; //The WorkTool can be flipped (it will go back to the last tool before it was replaced)
     /*
     NOTE: In the future, there may also be ACTION_CHILD, meaning simply that the child is active (the mouse is INSIDE
       the child / the child is retaining focus). This would replace the active boolean, making things slightly less
@@ -303,12 +304,17 @@ public class WorkTool extends Module {
                     
                     if(pos.y <= INSET_WIDTH) {
                         if(pos.x > INSET_WIDTH) {
-                            if(pos.x >= width() - (2 * INSET_WIDTH)) {
-                                if(pos.x >= width() - INSET_WIDTH) {
-                                    nextAction = ACTION_CLOSE;
+                            if(pos.x >= width() - (3 * INSET_WIDTH)) {
+                                if(pos.x >= width() - (2 * INSET_WIDTH)) {
+                                    if(pos.x >= width() - INSET_WIDTH) {
+                                        nextAction = ACTION_CLOSE;
+                                    }
+                                    else {
+                                        nextAction = ACTION_REFRESH;
+                                    }
                                 }
                                 else {
-                                    nextAction = ACTION_REFRESH;
+                                    nextAction = ACTION_FLIP;
                                 }
                             }
                             else {
@@ -362,7 +368,10 @@ public class WorkTool extends Module {
             workspace.removeChild(this); //If the nextAction was ACTION_CLOSE, this WorkTool needs to be dismissed
         }
         else if(nextAction == ACTION_REFRESH) {
-            this.fill(SmartMenu.create(this));
+            this.replace(SmartMenu.create(this));
+        }
+        else if(nextAction == ACTION_FLIP) {
+            this.flip();
         }
         else if(nextAction == ACTION_MOVE) { //If the nextAction is ACTION_MOVE, start moving the WorkTool
             startPos = position(); //The start position, used to reset the WorkTool's position if it is moved invalidly,
@@ -435,12 +444,32 @@ public class WorkTool extends Module {
     }
     
     /**
-     * Changes the child of the WorkTool to the specified Module. Should be called by SmartMenu
-     * when the user is specifying what this WorkTool should represent.
+     * Changes the child of the WorkTool to the specified Module. Also pushes
+     * back the current Module into 'flip', making it accessible through a call
+     * to flip().
      * @param m The new Module to become the child.
      */
     public void fill(Module m) {
         this.flip = this.child;
+        this.child = m;
+        child.setParent(this); //Set the parent of the child so it can call drawParent() and other methods
+        //Resize the new child Module to fill the WorkTool
+        child.resize(width() - 2 * INSET_WIDTH, height() - 2 * INSET_WIDTH);
+        child.locate(INSET_WIDTH, INSET_WIDTH); //Locate the child inside the insets
+        //child.draw(); //Set initial graphical state of child
+        if(active) { //If the child *will be* active, focus it
+            child.onFocus();
+        }
+        repaint(); //Update WorkTool's graphical state to include that of the new child
+    }
+    
+    /**
+     * Changes the child of the WorkTool to the specified Module without pushing
+     * its current child to flip. This should be called by SmartMenu when the user
+     * selects a control.
+     * @param m The new Module to become the child.
+     */
+    public void replace(Module m) {
         this.child = m;
         child.setParent(this); //Set the parent of the child so it can call drawParent() and other methods
         //Resize the new child Module to fill the WorkTool
@@ -549,6 +578,12 @@ public class WorkTool extends Module {
                 ? Resources.bank.WORKTOOL_REFRESH_HIGH
                 : Resources.bank.WORKTOOL_REFRESH,
                 width() - (2 * INSET_WIDTH),
+                0, null);
+        graphics.drawImage(
+                (nextAction == ACTION_FLIP)
+                ? Resources.bank.WORKTOOL_FLIP_HIGH
+                : Resources.bank.WORKTOOL_FLIP,
+                width() - (3 * INSET_WIDTH),
                 0, null);
         
         //graphics.drawImage(child.render(), INSET_WIDTH, INSET_WIDTH, null); //Draw the child module at its position (right inside the insets)

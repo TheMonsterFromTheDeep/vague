@@ -41,7 +41,7 @@ public class SmartMenu extends Module {
     public void mouseDown(MouseEvent e) {
         for(ControlSelector cs : controlSelectors) {
             if(cs.pressed()) {
-                tool.fill(cs.getFill());
+                tool.replace(cs.getFill());
             }
         }
     }

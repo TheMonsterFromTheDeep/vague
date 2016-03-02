@@ -26,6 +26,8 @@ public class Resources {
     public BufferedImage WORKTOOL_RESIZE_BR_HIGH;
     public BufferedImage WORKTOOL_REFRESH;
     public BufferedImage WORKTOOL_REFRESH_HIGH;
+    public BufferedImage WORKTOOL_FLIP;
+    public BufferedImage WORKTOOL_FLIP_HIGH;
     //--Tool Options
     //---Color Setting
     public BufferedImage SETTING_COLOR_HSV_CURSOR;
@@ -64,6 +66,8 @@ public class Resources {
         WORKTOOL_RESIZE_BR_HIGH = loadImageRelative("/img/worktool/resize_br_high.png");
         WORKTOOL_REFRESH = loadImageRelative("/img/worktool/refresh.png");
         WORKTOOL_REFRESH_HIGH = loadImageRelative("/img/worktool/refresh_high.png");
+        WORKTOOL_FLIP = loadImageRelative("/img/worktool/flip.png");
+        WORKTOOL_FLIP_HIGH = loadImageRelative("/img/worktool/flip_high.png");
         
         SETTING_COLOR_HSV_CURSOR = loadImageRelative("/img/tool/options/color/hsvtarget.png");
         SETTING_COLOR_VALUE_CURSOR = loadImageRelative("/img/tool/options/color/valuetarget.png");
