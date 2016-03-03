@@ -6,6 +6,8 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import module.Module;
 import module.paint.GraphicsHandle;
@@ -70,6 +72,31 @@ public class SaveFile extends Module {
         return ret;
     }
     
+    static final boolean save(BufferedImage image, String path) {
+        boolean valid = false;
+        if(path.contains(".")) {
+            String extension;
+            extension = path.substring(path.lastIndexOf(".") + 1);
+            String[] allowed = ImageIO.getWriterFileSuffixes();
+            for(int i = 0; i < allowed.length; i++) {
+                if(allowed[i].equals(extension)) {
+                    valid = true;
+                    break;
+                }
+            }
+            if(valid) {
+                try {
+                    ImageIO.write(image, extension, new File(path));
+                } 
+                catch (IOException ex) {
+                    valid = false;
+                }
+            }
+        }
+        //TODO: Show error message
+        return valid;
+    }
+    
     public SaveFile(String prompt, BufferedImage toSave, WorkTool parent) {
         filePath = "";
         this.prompt = prompt;
@@ -100,10 +127,7 @@ public class SaveFile extends Module {
     public void mouseDown(MouseEvent e) {
         if(Controls.bank.LMBDown) {
             if(okPress) {
-                try {
-                    ImageIO.write(toSave, "PNG", new File(filePath));
-                } catch (IOException ex) {
-                }
+                save(toSave, filePath);
                 parent.flip();
             }
             if(cancelPress) {
