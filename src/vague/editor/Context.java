@@ -1,6 +1,7 @@
 package vague.editor;
 
 import java.awt.Color;
+import java.awt.image.BufferedImage;
 import module.paint.GraphicsHandle;
 import module.util.FloatVector;
 import module.util.Vector;
@@ -135,6 +136,16 @@ public class Context {
         for(Shape s : shapes) {
             s.draw(sg);
         }
+    }
+    
+    public BufferedImage renderAsSave() {
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        GraphicsHandle g = new GraphicsHandle(0, 0, width, height, image.createGraphics());
+        ScalarGraphics sg = new ScalarGraphics(g, -topLeft.x, -topLeft.y, 1);
+        for(Shape s : shapes) {
+            s.draw(sg);
+        }
+        return image;
     }
     
     public void renderShapeBuilder(Shape.Builder b, GraphicsHandle handle, int x, int y, float scale) {

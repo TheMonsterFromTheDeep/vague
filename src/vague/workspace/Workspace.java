@@ -18,6 +18,7 @@ import module.container.Container;
 import module.paint.GraphicsHandle;
 import module.util.Vector;
 import vague.VagueWindow;
+import vague.editor.Context;
 import vague.menu.SaveFile;
 
 /**
@@ -183,7 +184,12 @@ public final class Workspace extends Module {
             if(Controls.bank.status(Controls.WORKSPACE_TAKE_SCREENSHOT)) {
                 activeChild.fill(new SaveFile("Save screenshot:", VagueWindow.getWindow().getBuffer(), activeChild));
             }
-            activeChild.keyDown(e);
+            else if(Controls.bank.status(Controls.WORKSPACE_SAVE_IMAGE)) {
+                activeChild.fill(new SaveFile("Save image:", Context.getContext().renderAsSave(), activeChild));
+            }
+            else {
+                activeChild.keyDown(e);
+            }
         }
     }
     
