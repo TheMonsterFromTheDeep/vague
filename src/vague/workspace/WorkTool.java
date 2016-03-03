@@ -79,6 +79,8 @@ public class WorkTool extends Module {
     //This is so the child can reference special methods of the Workspace (such as beginMoving()) without casting
     //its parent to a Workspace.
     
+    public boolean warn = false; //Stores whether the yellow warning triangle should be displayed
+    
     private boolean focused; //Stores whether the WorkTool has focus
     
     private WorkTool(Vector start, Vector end) {
@@ -450,6 +452,7 @@ public class WorkTool extends Module {
      * @param m The new Module to become the child.
      */
     public void fill(Module m) {
+        warn = false;
         this.flip = this.child;
         this.flip.onUnfocus();
         this.child = m;
@@ -471,6 +474,7 @@ public class WorkTool extends Module {
      * @param m The new Module to become the child.
      */
     public void replace(Module m) {
+        warn = false;
         //No need to unfocus anything, as no modules are being preserved
         this.child = m;
         child.setParent(this); //Set the parent of the child so it can call drawParent() and other methods
@@ -488,6 +492,7 @@ public class WorkTool extends Module {
      * Changes the WorkTool's module back to the last one before it was replaced.
     */
     public void flip() {
+        warn = false;
         Module tmp = this.flip;
         this.flip = this.child;
         this.flip.onUnfocus();
@@ -588,6 +593,9 @@ public class WorkTool extends Module {
                 : Resources.bank.WORKTOOL_FLIP,
                 width() - (3 * INSET_WIDTH),
                 0, null);
+        if(warn) {
+            graphics.drawImage(Resources.bank.WORKTOOL_WARNING, 0, INSET_WIDTH);
+        }
         
         //graphics.drawImage(child.render(), INSET_WIDTH, INSET_WIDTH, null); //Draw the child module at its position (right inside the insets)
         child.repaint();

@@ -127,8 +127,13 @@ public class SaveFile extends Module {
     public void mouseDown(MouseEvent e) {
         if(Controls.bank.LMBDown) {
             if(okPress) {
-                save(toSave, filePath);
-                parent.flip();
+                if(save(toSave, filePath)) {
+                    parent.flip();
+                }
+                else {
+                    parent.warn = true;
+                    parent.repaint();
+                }
             }
             if(cancelPress) {
                 parent.flip();
