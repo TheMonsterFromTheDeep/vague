@@ -29,7 +29,8 @@ public class SmartMenu extends Module {
         controlSelectors = new ControlSelector[] {
             //Create a dummy test module Module to test SmartMenu module module
             new ControlSelector("Editor", Editor.create(), 3, 20),
-            new ControlSelector("Tool Options", ToolOptions.create(), 3, 66)
+            new ControlSelector("Tool Options", ToolOptions.create(), 3, 66),
+            new ControlSelector("Renderer Test", vague.renderer.RendererTest.create(), 3, 112)
         };
     }
     
