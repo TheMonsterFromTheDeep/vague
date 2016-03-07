@@ -54,6 +54,8 @@ public final class Workspace extends Module {
     
     private WorkTool[] children;
     
+    private StringBuilder lastSavePath; //The last path where the actual image was saved (control-s)
+    
     int activeIndex; //Similar to the Container's activeIndex, stores the index in 'children' of the active child Module. -1 if there is none.
     WorkTool activeChild; //Similar to the Container's activeChild, stores a handle to the active child Module.
     
@@ -67,6 +69,8 @@ public final class Workspace extends Module {
         clearActiveChild();
         
         this.bgColor = new Color(0xcfcfcf);
+        
+        lastSavePath = new StringBuilder();
     }
     
     //Conform to Module.create() syntax
@@ -185,7 +189,16 @@ public final class Workspace extends Module {
                 activeChild.fill(new SaveFile("Save screenshot:", VagueWindow.getWindow().getBuffer(), activeChild));
             }
             else if(Controls.bank.status(Controls.WORKSPACE_SAVE_IMAGE)) {
-                activeChild.fill(new SaveFile("Save image:", Context.getContext().renderAsSave(), activeChild));
+                BufferedImage save = Context.getContext().renderAsSave();
+                if(!SaveFile.save(save, lastSavePath.toString())) {
+                    lastSavePath = new StringBuilder(); //Clear save path
+                    activeChild.fill(new SaveFile("Save image:", save, activeChild, lastSavePath));
+                }
+            }
+            else if(Controls.bank.status(Controls.WORKSPACE_SAVE_AS)) {
+                System.err.println("save as!");
+                lastSavePath = new StringBuilder(); //Clear save path
+                activeChild.fill(new SaveFile("Save image:", Context.getContext().renderAsSave(), activeChild, lastSavePath));
             }
             else {
                 activeChild.keyDown(e);

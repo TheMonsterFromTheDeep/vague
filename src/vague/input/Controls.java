@@ -11,14 +11,15 @@ public class Controls {
     public static final int WORKSPACE_SQUARE_TOOL = 1;
     public static final int WORKSPACE_TAKE_SCREENSHOT = 2;
     public static final int WORKSPACE_SAVE_IMAGE = 3;
-    public static final int EDITOR_MODIFIER_PAN_VERT = 4;
-    public static final int EDITOR_MODIFIER_PAN_HORZ = 5;
-    public static final int EDITOR_RESET_ZOOM = 6;
-    public static final int EDITOR_RESET_PAN = 7;
-    public static final int EDITOR_RESET_ZOOM_AND_PAN = 8;
-    public static final int EDITOR_TOGGLE_GRID = 9;
-    public static final int PENCIL_DRAW_LINE = 10;
-    public static final int PENCIL_INVERT_COLORS = 11;
+    public static final int WORKSPACE_SAVE_AS = 4;
+    public static final int EDITOR_MODIFIER_PAN_VERT = 5;
+    public static final int EDITOR_MODIFIER_PAN_HORZ = 6;
+    public static final int EDITOR_RESET_ZOOM = 7;
+    public static final int EDITOR_RESET_PAN = 8;
+    public static final int EDITOR_RESET_ZOOM_AND_PAN = 9;
+    public static final int EDITOR_TOGGLE_GRID = 10;
+    public static final int PENCIL_DRAW_LINE = 11;
+    public static final int PENCIL_INVERT_COLORS = 12;
     public static final int TEST_COLOR = 900; //A test control for changing drawing color using the Pencil tool
     
     //Initializes the default state of the controls of the application
@@ -27,6 +28,7 @@ public class Controls {
         new Chord(WORKSPACE_SQUARE_TOOL,new Control(KeyEvent.VK_SHIFT)),
         new Chord(WORKSPACE_TAKE_SCREENSHOT,new Control[] { new Control(KeyEvent.VK_S), new Control(KeyEvent.VK_ALT), new Control(KeyEvent.VK_SHIFT)}),
         new Chord(WORKSPACE_SAVE_IMAGE,new Control(KeyEvent.VK_S), Chord.MODIFIER_CONTROL),
+        new Chord(WORKSPACE_SAVE_AS,new Control(KeyEvent.VK_S), Chord.MODIFIER_SHIFT),
         new Chord(EDITOR_MODIFIER_PAN_VERT,new Control(KeyEvent.VK_CONTROL)),
         new Chord(EDITOR_MODIFIER_PAN_HORZ,new Control(KeyEvent.VK_SHIFT)),
         new Chord(EDITOR_RESET_ZOOM,new Control(KeyEvent.VK_8),Chord.MODIFIER_SHIFT),

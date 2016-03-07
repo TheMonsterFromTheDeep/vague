@@ -39,6 +39,8 @@ public class SaveFile extends Module {
     String filePath;
     String prompt;
     
+    StringBuilder out; //Used by Workspace to get reference to String yes
+    
     BufferedImage toSave;
     
     boolean okPress;
@@ -72,7 +74,8 @@ public class SaveFile extends Module {
         return ret;
     }
     
-    static final boolean save(BufferedImage image, String path) {
+    public static final boolean save(BufferedImage image, String path) {
+        if(image == null || path == null) { return false; }
         boolean valid = false;
         if(path.contains(".")) {
             String extension;
@@ -97,8 +100,9 @@ public class SaveFile extends Module {
         return valid;
     }
     
-    public SaveFile(String prompt, BufferedImage toSave, WorkTool parent) {
-        filePath = "";
+    public SaveFile(String prompt, BufferedImage toSave, WorkTool parent, StringBuilder out) {
+        this.filePath = "";
+        this.out = out;
         this.prompt = prompt;
         this.toSave = toSave;
         this.parent = parent;
@@ -107,6 +111,10 @@ public class SaveFile extends Module {
         
         okButton = new Rectangle(OFFSET_LEFT - 2, OFFSET_BUTTON - 2, (int)TextDrawer.stringWidth("OK", 1) + 4, TextDrawer.TEXT_HEIGHT + 4);
         cancelButton = new Rectangle(OFFSET_CANCEL - 2, OFFSET_BUTTON - 2, (int)TextDrawer.stringWidth("Cancel", 1) + 4, TextDrawer.TEXT_HEIGHT + 4);
+    }
+    
+    public SaveFile(String prompt, BufferedImage toSave, WorkTool parent) {
+        this(prompt, toSave, parent, null);
     }
     
     @Override
@@ -129,6 +137,11 @@ public class SaveFile extends Module {
             if(okPress) {
                 if(save(toSave, filePath)) {
                     parent.flip();
+                    if(out != null) {
+                        out.append(filePath); //Write to out
+                    }
+                    toSave.flush();
+                    toSave = null;
                 }
                 else {
                     parent.warn = true;
