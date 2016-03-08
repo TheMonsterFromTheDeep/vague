@@ -14,55 +14,60 @@ import java.awt.image.BufferedImage;
  * be rather slow...
  * @author TheMonsterFromTheDeep
  */
-public class Renderer {    
-    public static BufferedImage drawLine(float sx, float sy, float ex, float ey, float width, Color c) {
+public class Renderer {
+    BufferedImage buffer;
+    
+    public Renderer(int width, int height) {
+        buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    }
+    
+    public void drawLine(float sx, float sy, float ex, float ey, float width, Color c) {
+        float dx = ex - sx;
+        float dy = ey - sy;
+        float xStep, yStep;
+        
+        float cw = width / 2;
+        
         int color = c.getRGB();
         
-        float xChange, yChange;
+        float length = (float)Math.sqrt(dx * dx + dy * dy);
         
-        float dw = width / 2;
-        
-        xChange = ex - sx;
-        yChange = ey - sy;
-        float length = (float)Math.sqrt((xChange * xChange) + (yChange * yChange));
-        if(xChange > 1.0f) {
-            yChange /= xChange;
-            xChange = 1.0f;
+        if(Math.abs(dx) < 0.001f) {
+            xStep = 0;
+            yStep = 1.0f;
         }
-        if(xChange < -1.0f) {
-            yChange /= xChange;
-            xChange = -1.0f;
+        else if(Math.abs(dy) < 0.001f) {
+            xStep = 1.0f;
+            yStep = 0;
         }
-        if(yChange > 1.0f) {
-            xChange /= yChange;
-            yChange = 1.0f;
-        }
-        if(yChange < -1.0f) {
-            xChange /= yChange;
-            yChange = -1.0f;
+        else {
+            xStep = dx / dy;
+            yStep = dy / dx;
         }
         
-        BufferedImage buffer = new BufferedImage((int)(width * yChange + Math.abs(ex - sx)) + 1, (int)(width * xChange + Math.abs(ey - sy)) + 1, BufferedImage.TYPE_INT_ARGB);
+        if(Math.abs(xStep) > 1.0) {
+            yStep /= Math.abs(xStep);
+            xStep /= Math.abs(xStep);
+        }
+        else if(Math.abs(yStep) > 1.0) {
+            xStep /= Math.abs(yStep);
+            yStep /= Math.abs(yStep);
+        }
         
-        System.err.println("Buffer size: " + buffer.getWidth() + " " + buffer.getHeight());
+        //int imgWidth = (int)(Math.abs(ex - sx) + width * yStep) + 1;
+        //int imgHeight = (int)(Math.abs(ey - sy) + width * xStep) + 1;
         
-        float dx = yChange * dw, dy = xChange * dw;
-        if(dx < 0) { dx = buffer.getWidth() - dx; }
-        if(dy < 0) { dy = buffer.getHeight() - dy; }
-        System.err.println("Starting position: " + dx + " " + dy);
-        while(dx < buffer.getWidth()) {
-            for(float w = -dw; w < dw; w++) {
-                int x = (int)(dx - (w * yChange)) - 1;
-                int y = (int)(dy + (w * xChange));
-                //System.err.println("Coordinate: " + x + " " + y);
-                buffer.setRGB(x, y, color);
-                //buffer.setRGB(x + 1, y, color);
-                //buffer.setRGB(x, y + 1, color);
-                //buffer.setRGB(x + 1, y + 1, color);
+        float x, y;
+        x = sx;
+        y = sy;
+        
+        for(float f = 0; f < length; f++) {
+            for(float w = -cw; w < cw; w++) {
+                buffer.setRGB((int)(x - w * yStep), (int)(y + w * xStep), color);
             }
-            dx += xChange;
-            dy += yChange;
+            x += xStep;
+            y += yStep;
+            System.err.println("Non-width coords: " + x + " " + y);
         }
-        return buffer;
     } 
 }
