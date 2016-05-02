@@ -91,7 +91,7 @@ public class SaveFile extends Module {
                 try {
                     ImageIO.write(image, extension, new File(path));
                 } 
-                catch (IOException ex) {
+                catch (Exception ex) {
                     valid = false;
                 }
             }
