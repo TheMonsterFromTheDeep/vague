@@ -107,7 +107,19 @@ public class Editor extends Module {
     @Override
     public void keyDown(KeyEvent e) {
         if(!context.activeTool.keyDown()) {
-            
+            if(Controls.bank.status(Controls.EDITOR_RESET_ZOOM_AND_PAN)) { //must be first if if else if else
+                //TODO: Make control chords only work with *exact* keys
+                view.resetPanAndZoom(); //TODO : Names are incosistent
+                repaint();
+            }
+            else if(Controls.bank.status(Controls.EDITOR_RESET_ZOOM)) {
+                view.resetZoom();
+                repaint();
+            }
+            else if(Controls.bank.status(Controls.EDITOR_RESET_PAN)) {
+                view.resetPan();
+                repaint();
+            }
         }
     }
     

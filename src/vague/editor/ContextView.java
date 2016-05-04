@@ -62,6 +62,11 @@ public class ContextView {
         this.y += (int)(y * (1 + zoomSize));
     }
     
+    public void resetPan() {
+        this.x = 0;
+        this.y = 0;
+    }
+    
     public void zoom(int amount, Vector anchor) {
         this.zoom += amount;
         
@@ -73,6 +78,16 @@ public class ContextView {
         
         this.x = anchor.x + (int)((this.x - anchor.x) * change);
         this.y = anchor.y + (int)((this.y - anchor.y) * change);
+    }
+    
+    public void resetZoom() {
+        zoom(-zoom, new Vector(x, y));
+    }
+    
+    public void resetPanAndZoom() {
+        resetPan();
+        zoom = 0;
+        calculateZoom();
     }
     
     public boolean moveMouseTool(Tool t, Vector pos, Vector dif) {

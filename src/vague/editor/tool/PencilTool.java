@@ -60,8 +60,9 @@ public class PencilTool implements Tool {
             builder.addPoint(new FloatVector(pos));
             Editor e = Context.getContext().activeEditor;
             e.drawShapeBuilder(builder);
+            return true;
         }
-        return true;
+        return false;
     }
 
     @Override
